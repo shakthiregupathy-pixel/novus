@@ -191,12 +191,13 @@ ul {
     </div>
 </div>
 
+<!-- CERTIFICATE UPLOAD SECTION -->
 <div class="row mt-3">
     <div class="col-md-9">
-        <input type="text" id="certName" class="form-control" placeholder="Certification Name">
+        <input type="file" id="certFile" class="form-control" accept=".pdf,.jpg,.png">
     </div>
     <div class="col-md-3">
-        <button class="btn btn-pastel w-100" onclick="addCertification()">Add</button>
+        <button class="btn btn-pastel w-100" onclick="addCertification()">Upload</button>
     </div>
 </div>
 
@@ -247,19 +248,31 @@ ul {
 let certifications = [];
 
 function addCertification() {
-    const certInput = document.getElementById("certName");
-    if(certInput.value !== "") {
-        certifications.push(certInput.value);
+    const fileInput = document.getElementById("certFile");
+    const file = fileInput.files[0];
+
+    if (file) {
+        const fileURL = URL.createObjectURL(file);
+        certifications.push({
+            name: file.name,
+            url: fileURL
+        });
+
         displayCertifications();
-        certInput.value = "";
+        fileInput.value = "";
     }
 }
 
 function displayCertifications() {
     const list = document.getElementById("certList");
     list.innerHTML = "";
+
     certifications.forEach(cert => {
-        list.innerHTML += "<li>🌷 " + cert + "</li>";
+        list.innerHTML += `
+            <li>
+                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
+            </li>
+        `;
     });
 }
 
