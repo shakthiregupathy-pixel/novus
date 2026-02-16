@@ -35,20 +35,23 @@ body{
 .navbar{
   background:#fff;
   box-shadow:0 6px 20px rgba(0,0,0,.06);
-}
-.brand{
-  width:48px;
-  height:48px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  min-height: 72px;
 }
 
-.brand img{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
+.brand {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
+.brand img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
 
 
 /* PAGES */
@@ -89,7 +92,59 @@ body{
 /* CHECKLIST */
 .checklist li{margin-bottom:6px}
 .check-done{color:#16a34a}
-.check-pending{color:#9ca3af}
+.check-pending{color:#9ca3af}<style>
+/* ===== AESTHETIC ASSESSMENT BOX ===== */
+.assessment-box{
+  background:#ffffff;
+  border-radius:12px;              /* square but soft */
+  box-shadow:0 12px 30px rgba(0,0,0,.08);
+  padding:22px;
+  border:1px solid #eef2ff;
+}
+
+.assessment-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:16px;
+}
+
+.assessment-title{
+  font-weight:600;
+  color:#1e293b;
+}
+
+.assessment-score{
+  font-size:28px;
+  font-weight:700;
+  color:#4f46e5;
+}
+
+.assessment-progress{
+  height:10px;
+  border-radius:6px;
+  background:#e5e7eb;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+
+.assessment-progress-bar{
+  height:100%;
+  transition:width .4s ease;
+  background:linear-gradient(135deg,#6366f1,#8b5cf6);
+}
+
+.assessment-feedback{
+  font-size:14px;
+  padding:10px 12px;
+  border-radius:8px;
+  background:#f8fafc;
+  color:#475569;
+  border:1px solid #e5e7eb;
+  text-align:center;
+}
+</style>
+
 </style>
 </head>
 
@@ -204,23 +259,84 @@ body{
     <button class="btn btn-pink w-100" onclick="go('assignments')">Submit Assignment</button>
   </div>
 </div>
-
-<!-- Certification -->
+<!-- ================= OVERALL ASSESSMENT (REDESIGNED) ================= -->
 <div class="col-md-4">
-  <div class="card card-purple p-4">
-    <div class="d-flex justify-content-between">
-      <h6>Certification</h6>
-      <span class="badge bg-warning text-dark">In Progress</span>
+  <div class="assessment-box">
+
+    <div class="assessment-header">
+      <div class="assessment-title">Overall Assessment</div>
+      <div id="assessmentScore" class="assessment-score">--%</div>
     </div>
-    <p class="mt-2">Completion</p>
-    <h3>45%</h3>
-    <div class="progress mb-2">
-      <div class="progress-bar bg-primary" style="width:45%"></div>
+
+    <div class="assessment-progress">
+      <div id="assessmentBar"
+           class="assessment-progress-bar"
+           style="width:0%">
+      </div>
     </div>
-    <div class="alert alert-info py-2">🏅 3 modules remaining</div>
-    <button class="btn btn-purple w-100">Continue Learning</button>
+
+    <div id="assessmentFeedback" class="assessment-feedback">
+      Complete activities to see feedback.
+    </div>
+
   </div>
 </div>
+
+<script>
+/* ================= OVERALL ASSESSMENT LOGIC (ADDED ONLY) ================= */
+
+function calculateAssessment() {
+  // Quiz score (existing)
+  const quizText = document.getElementById("quizScore")?.innerText || "0 / 100";
+  const quizValue = parseInt(quizText.split("/")[0]) || 0;
+
+  // Coding progress (existing)
+  const codingText = document.getElementById("codingProgressText")?.innerText || "0%";
+  const codingValue = parseInt(codingText.replace("%","")) || 0;
+
+  // Overall calculation (simple average)
+  const overall = Math.round((quizValue + codingValue) / 2);
+
+  // Update UI
+  document.getElementById("assessmentScore").innerText = overall + "%";
+  document.getElementById("assessmentBar").style.width = overall + "%";
+
+  const feedbackBox = document.getElementById("assessmentFeedback");
+
+  if (overall >= 80) {
+    feedbackBox.className = "alert alert-success";
+    feedbackBox.innerText =
+      "Excellent performance. You are consistently meeting assessment expectations.";
+  }
+  else if (overall >= 50) {
+    feedbackBox.className = "alert alert-warning";
+    feedbackBox.innerText =
+      "Good progress. Focus on improving weak areas to increase your score.";
+  }
+  else {
+    feedbackBox.className = "alert alert-danger";
+    feedbackBox.innerText =
+      "Needs improvement. Please complete pending tasks and revise concepts.";
+  }
+}
+
+// Auto‑update when page loads
+window.addEventListener("load", calculateAssessment);
+
+// Auto‑update when quiz or coding updates
+const originalQuiz = window.completeQuiz;
+window.completeQuiz = function () {
+  originalQuiz();
+  setTimeout(calculateAssessment, 300);
+};
+
+const originalCoding = window.increaseCoding;
+window.increaseCoding = function () {
+  originalCoding();
+  setTimeout(calculateAssessment, 300);
+};
+</script>
+
 
 <!-- Quick Actions -->
 <div class="col-md-4">
