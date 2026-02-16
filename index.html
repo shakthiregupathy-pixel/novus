@@ -1,0 +1,576 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-Powered Maverick Onboarding Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet"/>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+/* --- 1. NEW COLOR PALETTE & GLOBAL STYLES --- */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    /* Updated to horizontal: Lavender on the left, Sky Blue on the right */
+    background: linear-gradient(to right, #b099e4 0%, #8ec5fc 100%);
+    color: #2c3e50; 
+    min-height: 100vh;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    /* Keeps the gradient fixed so it doesn't stretch when you scroll */
+    background-attachment: fixed;
+}
+section {
+    padding: 80px 0;
+}
+
+h1, h2, h3, h4, h5 {
+    font-weight: 700;
+    color: #6a5acd; /* Slate Blue Headers */
+}
+
+/* --- 2. CUSTOM BUTTONS --- */
+
+/* Slate Blue Button (Generate / Primary) */
+.btn-slate {
+    background-color: #6a5acd;
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(106, 90, 205, 0.3);
+}
+
+.btn-slate:hover {
+    background-color: #5848c2;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Mint Green Gradient Button (Download / Accent) */
+.btn-mint {
+    background: linear-gradient(90deg, #84fab0, #8fd3f4);
+    color: white;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(132, 250, 176, 0.4);
+}
+
+.btn-mint:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(132, 250, 176, 0.6);
+    color: white;
+}
+
+/* --- 3. GLASS CARDS (Light Mode Version) --- */
+.glass-card {
+    background: rgba(255, 255, 255, 0.65); /* Higher opacity for light bg */
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 30px;
+    transition: 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05); /* Soft shadow */
+    color: #444;
+}
+
+.glass-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 15px 35px rgba(106, 90, 205, 0.15); /* Slate glow */
+}
+
+/* --- 4. SECTIONS SPECIFIC --- */
+.hero {
+    /* Transparent so body gradient shows */
+    background: transparent; 
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.workflow-step {
+    text-align: center;
+    font-weight: 600;
+    color: #444;
+}
+
+.arrow {
+    font-size: 2rem;
+    color: #6a5acd; /* Slate Blue Arrow */
+}
+
+.tech-icon {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1));
+}
+
+.cta {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid white;
+    padding: 60px;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+}
+
+.hero-img {
+    max-width: 250px;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+footer {
+    background: rgba(255,255,255,0.4);
+    padding: 20px;
+    text-align: center;
+    color: #6a5acd;
+    font-weight: 600;
+}
+
+/* --- 5. AI CHAT WIDGET STYLES --- */
+#ai-chat-widget {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+}
+
+.chat-trigger {
+    width: 65px;
+    height: 65px;
+    background: #6a5acd; /* Slate Blue */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(106, 90, 205, 0.4);
+    transition: transform 0.3s;
+}
+
+.chat-trigger:hover {
+    transform: scale(1.1);
+}
+
+#ai-modal {
+    position: fixed;
+    bottom: 110px;
+    right: 30px;
+    width: 360px;
+    height: 550px;
+    background: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba(106, 90, 205, 0.1);
+}
+
+.hidden { display: none !important; }
+
+.chat-header {
+    background: #6a5acd; /* Slate Blue */
+    color: white;
+    padding: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.chat-footer {
+    padding: 15px;
+    background: white;
+    border-top: 1px solid #eee;
+    display: flex;
+    gap: 10px;
+}
+
+/* Message Bubbles */
+.msg-user {
+    align-self: flex-end;
+    background: #6a5acd; /* Slate Blue */
+    color: white;
+    padding: 10px 15px;
+    border-radius: 15px 15px 0 15px;
+    max-width: 80%;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(106,90,205,0.2);
+}
+
+.msg-ai {
+    align-self: flex-start;
+    background: white;
+    color: #333;
+    padding: 15px;
+    border-radius: 15px 15px 15px 0;
+    max-width: 85%;
+    font-size: 0.9rem;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* Custom Scrollbar */
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+#chat-messages::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+    border-radius: 10px;
+}
+
+</style>
+</head>
+<body>
+
+<section class="hero text-center text-lg-start">
+<div class="container">
+<div class="row align-items-center">
+
+    <div class="col-lg-6" data-aos="fade-right">
+        <h1 class="display-4 fw-bold" style="color: black;">AI-Powered Maverick Onboarding</h1>
+        <p class="lead mt-4" style="color: #020101;">
+        Transforming Enterprise Onboarding with Intelligent Multi-Agent Automation.
+        </p>
+        <div class="mt-4">
+            <a href="#" class="btn btn-slate rounded-pill px-4 me-2">📄Sign in</a>
+            <a href="#" class="btn btn-slate rounded-pill px-4 me-2"> 📄Sign up</a>
+        </div>
+    </div>
+
+    <div class="col-lg-6 text-center" data-aos="fade-left">
+        <img src="https://cdn-icons-png.flaticon.com/512/4149/4149677.png" 
+        class="img-fluid drop-shadow" style="max-width: 400px; filter: drop-shadow(0 10px 20px rgba(106,90,205,0.3));">
+    </div>
+
+</div>
+</div>
+</section>
+
+<section>
+  <div class="container text-center">
+    <h2 data-aos="fade-up">Why Do Enterprises Struggle?</h2>
+
+    <div class="row mt-5 g-4 justify-content-center">
+
+      <div class="col-md-4" data-aos="zoom-in">
+        <div class="glass-card">
+          <i class="bi bi-diagram-3 fs-1 text-primary"></i>
+          <p class="mt-3">Multiple Touchpoints</p>
+        </div>
+      </div>
+
+      <div class="col-md-4" data-aos="zoom-in">
+        <div class="glass-card">
+          <i class="bi bi-bar-chart-line fs-1 text-primary"></i>
+          <p class="mt-3">Manual Tracking</p>
+        </div>
+      </div>
+
+      <div class="col-md-4" data-aos="zoom-in">
+        <div class="glass-card">
+          <i class="bi bi-file-earmark-text fs-1 text-primary"></i>
+          <p class="mt-3">Fragmented Reporting</p>
+        </div>
+      </div>
+
+      <div class="col-md-5" data-aos="zoom-in">
+        <div class="glass-card">
+          <i class="bi bi-eye-slash fs-1 text-primary"></i>
+          <p class="mt-3">Lack of Real-Time Visibility</p>
+        </div>
+      </div>
+
+      <div class="col-md-5" data-aos="zoom-in">
+        <div class="glass-card">
+          <i class="bi bi-clock-history fs-1 text-primary"></i>
+          <p class="mt-3">High Administrative Overhead</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<section>
+<div class="container text-center">
+<h2 data-aos="fade-up">Intelligent Multi-Agent Solution</h2>
+
+<div class="row mt-5 g-4">
+    <div class="col-md-3" data-aos="flip-left"><div class="glass-card"><h5>🤖 Onboarding Agent</h5><p>Personalized training plans based on fresher profile</p></div></div>
+    <div class="col-md-3" data-aos="flip-left"><div class="glass-card"><h5>🧠 Assessment Agent</h5><p>Evaluates quizzes & coding challenges intelligently.</p></div></div>
+    <div class="col-md-3" data-aos="flip-left"><div class="glass-card"><h5>📈 Profile Agent</h5><p>Tracks skill growth & certification progress..</p></div></div>
+    <div class="col-md-3" data-aos="flip-left"><div class="glass-card"><h5>📊 Reporting Agent</h5><p>Generates downloadable enterprise insights.</p></div></div>
+</div>
+</div>
+</section>
+
+<!-- BENEFITS SECTION -->
+<section>
+<div class="container text-center">
+<h2 data-aos="fade-up">Why Choose Our Platform?</h2>
+
+<div class="row mt-5 g-4">
+<div class="col-md-4 glass-card" data-aos="zoom-in">📉 Reduce Training Cost</div>
+<div class="col-md-4 glass-card" data-aos="zoom-in">⚡ Faster Onboarding Cycle</div>
+<div class="col-md-4 glass-card" data-aos="zoom-in">📊 Data-Driven Decisions</div>
+<div class="col-md-6 glass-card" data-aos="zoom-in">📈 Improved Fresher Performance</div>
+<div class="col-md-6 glass-card" data-aos="zoom-in">🤖 Scalable AI Framework</div>
+</div>
+</div>
+</section>
+
+
+<section>
+    <div class="container text-center">
+        <h2 data-aos="fade-up">How It Works</h2>
+
+        <div class="row mt-5 align-items-center justify-content-center g-3">
+            <div class="col-md-2 workflow-step" data-aos="fade-right">
+                <div class="glass-card p-2"><i class="bi bi-person fs-2"></i><br>Fresher</div>
+            </div>
+            <div class="col-md-1 d-none d-md-block arrow">→</div>
+            
+            <div class="col-md-2 workflow-step" data-aos="fade-right" data-aos-delay="100">
+                <div class="glass-card p-2"><i class="bi bi-journal-text fs-2"></i><br>Training Plan</div>
+            </div>
+            <div class="col-md-1 d-none d-md-block arrow">→</div>
+            
+            <div class="col-md-2 workflow-step" data-aos="fade-right" data-aos-delay="200">
+                <div class="glass-card p-2"><i class="bi bi-trophy fs-2"></i><br>Assessment</div>
+            </div>
+            <div class="col-md-1 d-none d-md-block arrow">→</div>
+            
+            <div class="col-md-2 workflow-step" data-aos="fade-right" data-aos-delay="300">
+                <div class="glass-card p-2"><i class="bi bi-person-badge fs-2"></i><br>Profile Update</div>
+            </div>
+        </div>
+
+        <div class="row mt-4 align-items-center justify-content-center g-3">
+            <div class="col-md-2 workflow-step" data-aos="fade-up" data-aos-delay="400">
+                <div class="glass-card p-2"><i class="bi bi-file-earmark-bar-graph fs-2"></i><br>Report Generation</div>
+            </div>
+            
+            <div class="col-md-1 d-none d-md-block arrow">→</div>
+            
+            <div class="col-md-2 workflow-step" data-aos="fade-up" data-aos-delay="500">
+                <div class="glass-card p-2"><i class="bi bi-speedometer2 fs-2"></i><br>Admin Dashboard</div>
+            </div>
+        </div>
+    </div>
+</section>
+<section>
+<div class="container">
+<h2 class="text-center" data-aos="zoom-in">Powerful Features</h2>
+
+<div class="row mt-5 g-4">
+
+<div class="col-md-6" data-aos="fade-right">
+<div class="feature-box">
+<i class="fa-solid fa-chart-line"></i>
+Real-Time Progress Tracking
+</div>
+</div>
+
+<div class="col-md-6" data-aos="fade-left">
+<div class="feature-box">
+<i class="fa-solid fa-brain"></i>
+AI-Based Performance Feedback
+</div>
+</div>
+
+<div class="col-md-6" data-aos="fade-right">
+<div class="feature-box">
+<i class="fa-solid fa-magnifying-glass-chart"></i>
+Smart Skill Gap Analysis
+</div>
+</div>
+
+<div class="col-md-6" data-aos="fade-left">
+<div class="feature-box">
+<i class="fa-solid fa-file-lines"></i>
+Automated Report Generation
+</div>
+</div>
+
+<div class="col-md-6" data-aos="fade-right">
+<div class="feature-box">
+<i class="fa-solid fa-sliders"></i>
+Admin Console with Filters
+</div>
+</div>
+
+<div class="col-md-6" data-aos="fade-left">
+<div class="feature-box">
+<i class="fa-solid fa-layer-group"></i>
+Multi-Phase Training Management
+</div>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- CTA -->
+
+
+
+<section>
+<div class="container text-center">
+<div class="cta" data-aos="zoom-in">
+    <h2>Ready to Transform Your Onboarding?</h2>
+    <div class="mt-4">
+        <a href="#" class="btn btn-slate rounded-pill px-4 me-3">Explore Dashboard</a>
+        <a href="#" class="btn btn-mint rounded-pill px-4">Get Started</a>
+    </div>
+</div>
+</div>
+</section>
+
+
+
+
+<footer>
+<p>© 2026 AI-Powered Maverick Onboarding Dashboard | Enterprise SaaS</p>
+</footer>
+
+<div id="ai-chat-widget">
+    <div id="ai-modal" class="hidden">
+        <div class="chat-header">
+            <span><i class="bi bi-robot me-2"></i>Maverick AI</span>
+            <button onclick="toggleAIChat()" class="btn btn-sm text-white"><i class="bi bi-x-lg"></i></button>
+        </div>
+        
+        <div id="chat-messages">
+            <div class="msg-ai">
+                Hello! 👋 I am your Onboarding Assistant. <br><br>
+                You can ask me:
+                <ul class="mb-0 ps-3 mt-1">
+                    <li>"Who is at risk?"</li>
+                    <li>"Search for Ravi"</li>
+                    <li>"Show me top performers"</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="chat-footer">
+            <input type="text" id="chat-input" class="form-control" placeholder="Type a message..." style="border-radius: 20px;">
+            <button onclick="sendMessage()" class="btn btn-slate" style="width: 50px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0;">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="chat-trigger" onclick="toggleAIChat()">
+        <i class="bi bi-chat-dots-fill fs-3"></i>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+<script>
+    // Initialize Animations
+    AOS.init({ duration: 1000, once: true });
+
+    // --- AI CHAT DATA & LOGIC ---
+
+    // 1. Employee Data
+    const freshersData = [
+        { id: "EMP001", name: "Ravi Kumar", dept: "Engineering", progress: 85, status: "Excellent", quiz: 92, skills: ["React", "Node.js"] },
+        { id: "EMP002", name: "Priya Singh", dept: "Product", progress: 40, status: "At Risk", quiz: 55, skills: ["UI Design"] },
+        { id: "EMP003", name: "Rahul Sharma", dept: "Engineering", progress: 95, status: "Excellent", quiz: 98, skills: ["Python", "AWS"] },
+        { id: "EMP004", name: "Anjali Gupta", dept: "HR", progress: 60, status: "Average", quiz: 70, skills: ["Recruitment"] },
+        { id: "EMP005", name: "Karthik R", dept: "Marketing", progress: 30, status: "At Risk", quiz: 45, skills: ["SEO"] }
+    ];
+
+    // 2. Toggle Chat Window
+    function toggleAIChat() {
+        document.getElementById('ai-modal').classList.toggle('hidden');
+    }
+
+    // 3. Send Message Logic
+    function sendMessage() {
+        const input = document.getElementById('chat-input');
+        const container = document.getElementById('chat-messages');
+        const query = input.value.trim().toLowerCase();
+        
+        if (!query) return;
+
+        // Add User Message
+        container.innerHTML += `<div class="msg-user">${input.value}</div>`;
+        input.value = '';
+
+        // Determine AI Response
+        let response = "";
+        let actionButton = ""; // For the "Download" gradient feature
+
+        // Logic
+        const employee = freshersData.find(f => query.includes(f.name.toLowerCase().split(' ')[0]));
+
+        if (employee) {
+            response = `<strong>${employee.name}</strong> (${employee.dept})<br>
+                        Progress: ${employee.progress}% <br>
+                        Status: <b>${employee.status}</b>`;
+            
+            // Add a "Download Report" button using the Mint Gradient
+            actionButton = `<button class="btn btn-mint btn-sm mt-2 w-100" onclick="alert('Downloading Report for ${employee.name}...')"><i class="bi bi-download me-1"></i> Download Report</button>`;
+        } 
+        else if (query.includes("at risk") || query.includes("low")) {
+            const riskList = freshersData.filter(f => f.status === "At Risk");
+            if (riskList.length > 0) {
+                response = `Found ${riskList.length} employees at risk: <br> ${riskList.map(f => f.name).join(', ')}.`;
+                actionButton = `<button class="btn btn-mint btn-sm mt-2 w-100" onclick="alert('Exporting Risk List...')"><i class="bi bi-file-earmark-spreadsheet me-1"></i> Export List</button>`;
+            } else {
+                response = "Great news! No employees are currently at risk.";
+            }
+        } 
+        else if (query.includes("excellent") || query.includes("top")) {
+            const top = freshersData.filter(f => f.status === "Excellent");
+            response = `Top Performers: ${top.map(f => f.name).join(', ')}.`;
+        }
+        else {
+            response = "I can track performance. Try asking 'Who is at risk?' or enter a name like 'Ravi'.";
+        }
+
+        // Simulate Typing Delay
+        setTimeout(() => {
+            container.innerHTML += `
+                <div class="msg-ai">
+                    ${response}
+                    ${actionButton} 
+                </div>`;
+            container.scrollTop = container.scrollHeight;
+        }, 500);
+    }
+
+    // 4. Enter Key Support
+    document.getElementById('chat-input').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+</script>
+
+</body>
+</html>
