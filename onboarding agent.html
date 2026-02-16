@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Onboarding Agent</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#3b5cff;
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --success:#22c55e;
+  --warning:#f59e0b;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+/* ---------- TRANSITIONS ---------- */
+.fade{
+  animation:fadeIn 0.6s ease forwards;
+}
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:none}
+}
+
+/* ---------- GETTING STARTED ---------- */
+#welcome{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#3b5cff,#6c7cff);
+}
+.welcome-card{
+  background:white;
+  width:520px;
+  padding:36px;
+  border-radius:24px;
+  text-align:center;
+  box-shadow:0 25px 60px rgba(0,0,0,0.15);
+}
+.welcome-icon{
+  width:64px;
+  height:64px;
+  margin:auto;
+  border-radius:50%;
+  background:#eef2ff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:30px;
+}
+.welcome-card h1{
+  margin:20px 0 8px;
+}
+.welcome-card p{
+  color:var(--muted);
+  font-size:15px;
+}
+.welcome-features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:26px 0;
+}
+.feature{
+  background:#f8fafc;
+  padding:14px;
+  border-radius:14px;
+  font-size:13px;
+}
+.start-btn{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  font-size:15px;
+  cursor:pointer;
+}
+
+/* ---------- HEADER ---------- */
+header{
+  background:linear-gradient(135deg,#3b5cff,#5f7cff);
+  color:white;
+  padding:26px 40px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+header h2{margin:0;font-size:20px}
+header span{font-size:14px;opacity:0.9}
+
+/* ---------- LAYOUT ---------- */
+.container{
+  max-width:1200px;
+  margin:30px auto;
+  padding:0 20px;
+}
+.grid{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:24px;
+}
+.card{
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,0.06);
+}
+.card-title{
+  font-weight:600;
+  margin-bottom:14px;
+}
+
+/* ---------- FORM ---------- */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+input,select{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  font-size:14px;
+}
+
+/* ---------- STATS ---------- */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:24px;
+}
+.stat{
+  background:#f9fafb;
+  padding:16px;
+  border-radius:14px;
+}
+.stat h3{
+  margin:0;
+  color:var(--primary);
+}
+.progress{
+  height:8px;
+  background:#e5e7eb;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.progress-fill{
+  height:100%;
+  background:var(--primary);
+}
+
+/* ---------- TASK ---------- */
+.task{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:14px;
+}
+.task-header{
+  display:flex;
+  justify-content:space-between;
+}
+.badge{
+  font-size:12px;
+  padding:4px 10px;
+  border-radius:20px;
+  background:#eef2ff;
+  color:var(--primary);
+}
+.task small{color:var(--muted)}
+.task button{
+  margin-top:12px;
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+
+/* ---------- SIDE ---------- */
+.goal{margin-bottom:14px}
+.achievement{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.badge-card{
+  border:1px dashed var(--border);
+  border-radius:14px;
+  padding:16px;
+  text-align:center;
+  font-size:13px;
+}
+.badge-card.active{
+  border:2px solid var(--warning);
+  background:#fff7ed;
+}
+
+/* ---------- HIDE ---------- */
+.hidden{display:none}
+</style>
+</head>
+
+<body>
+
+<!-- ================= GETTING STARTED ================= -->
+<section id="welcome">
+  <div class="welcome-card fade">
+    <div class="welcome-icon">✨</div>
+    <h1>Welcome to Your Onboarding Journey</h1>
+    <p>This dashboard will guide you through tasks, achievements and progress tracking.</p>
+
+    <div class="welcome-features">
+      <div class="feature">🎯 Track Progress</div>
+      <div class="feature">🏆 Earn Achievements</div>
+      <div class="feature">⚡ Gain Points</div>
+    </div>
+
+    <button class="start-btn" onclick="start()">Start Your Journey</button>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<section id="dashboard" class="hidden">
+
+<header>
+  <div>
+    <h2>Mavericks Onboarding Program</h2>
+    <span>Welcome to Hexaware Technologies</span>
+  </div>
+  <strong>100 / 1450 Points</strong>
+</header>
+
+<div class="container fade">
+
+<!-- FRESHER DETAILS -->
+<div class="card">
+  <div class="card-title">Fresher Details</div>
+  <div class="form-grid">
+    <input placeholder="Fresher Name">
+    <input placeholder="Employee ID">
+    <input placeholder="Role / Domain">
+  </div>
+</div>
+
+<!-- TRAINING CONFIG -->
+<div class="card" style="margin-top:20px">
+  <div class="card-title">Training Configuration</div>
+  <div class="form-grid">
+    <input type="date">
+    <input placeholder="Mentor Name">
+    <select>
+      <option>Online</option>
+      <option>Offline</option>
+      <option>Hybrid</option>
+    </select>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <h3>41%</h3>
+    <span>Overall Progress</span>
+    <div class="progress"><div class="progress-fill" style="width:41%"></div></div>
+  </div>
+  <div class="stat">
+    <h3>1</h3>
+    <span>Tasks Completed</span>
+    <div class="progress"><div class="progress-fill" style="width:25%"></div></div>
+  </div>
+  <div class="stat">
+    <h3>7%</h3>
+    <span>Points Earned</span>
+    <div class="progress"><div class="progress-fill" style="width:7%"></div></div>
+  </div>
+</div>
+
+<div class="grid">
+<!-- LEFT -->
+<div>
+  <div class="card">
+    <div class="card-title">Your Training Path</div>
+
+    <div class="task">
+      <div class="task-header">
+        <strong>Welcome to Hexaware</strong>
+        <span class="badge">Completed</span>
+      </div>
+      <small>Company culture and values</small>
+      <div class="progress"><div class="progress-fill" style="width:100%;background:var(--success)"></div></div>
+    </div>
+
+    <div class="task">
+      <div class="task-header">
+        <strong>Complete Your Profile</strong>
+        <span class="badge">In Progress</span>
+      </div>
+      <small>Add personal details</small>
+      <div class="progress"><div class="progress-fill" style="width:85%"></div></div>
+      <button>Continue</button>
+    </div>
+
+    <div class="task">
+      <div class="task-header">
+        <strong>Tool & Software Setup</strong>
+        <span class="badge">In Progress</span>
+      </div>
+      <small>Development environment</small>
+      <div class="progress"><div class="progress-fill" style="width:60%"></div></div>
+      <button>Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- RIGHT -->
+<div>
+  <div class="card">
+    <div class="card-title">Daily Goals</div>
+    <div class="goal">Complete 2 tasks<div class="progress"><div class="progress-fill" style="width:50%"></div></div></div>
+    <div class="goal">Earn 300 points<div class="progress"><div class="progress-fill" style="width:33%"></div></div></div>
+    <div class="goal">Watch 1 video<div class="progress"><div class="progress-fill" style="width:100%"></div></div></div>
+  </div>
+
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">Achievements</div>
+    <div class="achievement">
+      <div class="badge-card active">🏆 First Steps</div>
+      <div class="badge-card">🔒 Locked</div>
+      <div class="badge-card">🔒 Locked</div>
+      <div class="badge-card">🔒 Locked</div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+</section>
+
+<script>
+function start(){
+  document.getElementById('welcome').style.display='none';
+  document.getElementById('dashboard').classList.remove('hidden');
+}
+</script>
+
+</body>
+</html>
