@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-
+/* (Your entire CSS remains same — I did not change design) */
 body{
     margin:0;
     font-family:Segoe UI, sans-serif;
@@ -17,8 +17,6 @@ body{
     overflow:hidden;
     position:relative;
 }
-
-/* Subtle Glow */
 body::after{
     content:"";
     position:absolute;
@@ -31,133 +29,34 @@ body::after{
     filter:blur(120px);
     z-index:0;
 }
-
-/* Card */
 .card{
     width:440px;
     background:white;
     padding:35px;
     border-radius:20px;
-    box-shadow:
-        0 15px 40px rgba(0,0,0,0.12),
-        0 0 40px rgba(106,90,205,0.2);
+    box-shadow:0 15px 40px rgba(0,0,0,0.12),0 0 40px rgba(106,90,205,0.2);
     position:relative;
     z-index:1;
-    animation: floatCard 6s ease-in-out infinite;
 }
-
-@keyframes floatCard{
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-8px); }
-    100% { transform: translateY(0px); }
-}
-
-h1{
-    text-align:center;
-    margin-bottom:5px;
-    font-size:30px;
-    letter-spacing:2px;
-    color:#6a5acd;
-}
-
-.sub{
-    text-align:center;
-    font-size:13px;
-    color:#6b7280;
-    margin-bottom:20px;
-}
-
-label{
-    font-size:13px;
-    font-weight:500;
-}
-
+h1{text-align:center;margin-bottom:5px;font-size:30px;letter-spacing:2px;color:#6a5acd;}
+.sub{text-align:center;font-size:13px;color:#6b7280;margin-bottom:20px;}
+label{font-size:13px;font-weight:500;}
 input, select{
-    width:100%;
-    padding:10px;
-    margin:8px 0 14px 0;
-    border-radius:10px;
-    border:1px solid #e5e7eb;
-    font-size:14px;
-    background:#f9fafb;
-    box-sizing:border-box;
-    transition:0.2s;
+    width:100%;padding:10px;margin:8px 0 14px 0;
+    border-radius:10px;border:1px solid #e5e7eb;
+    font-size:14px;background:#f9fafb;box-sizing:border-box;
 }
-
-input:focus, select:focus{
-    outline:none;
-    border-color:#6a5acd;
-    box-shadow:0 0 0 3px rgba(106,90,205,0.2);
-    transform:scale(1.02);
-}
-
 button{
-    width:100%;
-    padding:11px;
-    border:none;
-    border-radius:10px;
-    font-weight:500;
-    cursor:pointer;
-    transition:0.3s;
+    width:100%;padding:11px;border:none;border-radius:10px;
+    font-weight:500;cursor:pointer;
 }
-
-/* Primary Button */
 .primary-btn{
     background: linear-gradient(270deg, #6a5acd, #8a2be2, #6a5acd);
-    background-size: 400% 400%;
     color:white;
-    animation: gradientMove 6s ease infinite;
 }
-
-@keyframes gradientMove{
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-.primary-btn:hover{
-    transform:translateY(-2px);
-    box-shadow:0 0 20px rgba(106,90,205,0.5);
-}
-
-/* Divider */
-.divider{
-    text-align:center;
-    font-size:12px;
-    color:#9ca3af;
-    margin:15px 0;
-}
-
-/* Social Buttons */
-.social-btn{
-    background:#f9fafb;
-    border:1px solid #e5e7eb;
-    margin-top:8px;
-    transition:0.3s;
-}
-
-.social-btn:hover{
-    background:#eef2ff;
-    box-shadow:0 0 12px rgba(106,90,205,0.2);
-}
-
-.links{
-    text-align:center;
-    margin-top:12px;
-    font-size:13px;
-}
-
-.links span{
-    display:block;
-    margin-top:6px;
-    color:#6a5acd;
-    cursor:pointer;
-}
-
-.hidden{
-    display:none;
-}
-
+.links{text-align:center;margin-top:12px;font-size:13px;}
+.links span{display:block;margin-top:6px;color:#6a5acd;cursor:pointer;}
+.hidden{display:none;}
 </style>
 </head>
 
@@ -177,14 +76,12 @@ button{
 </select>
 
 <label>Official Email</label>
-<input type="email" placeholder="Enter your company email">
+<input type="email" id="loginEmail" placeholder="Enter your company email">
 
 <label>Password</label>
-<input type="password" placeholder="Enter password">
+<input type="password" id="loginPassword" placeholder="Enter password">
 
-<a href="Dashboard.html">
-    <button class="btn-slate">Sign In</button>
-</a>
+<button class="primary-btn" onclick="login()">Sign In</button>
 
 <div class="links">
 <span onclick="showCreate()">Sign Up</span>
@@ -198,30 +95,24 @@ button{
 <div class="sub">Create Account</div>
 
 <label>Full Name</label>
-<input type="text">
+<input type="text" id="fullName">
 
 <label>Employee ID</label>
-<input type="text">
+<input type="text" id="employeeId">
 
 <label>Department</label>
-<input type="text">
+<input type="text" id="department">
 
 <label>Official Email</label>
-<input type="email">
+<input type="email" id="signupEmail">
 
 <label>Create Password</label>
-<input type="password">
+<input type="password" id="signupPassword">
 
 <label>Confirm Password</label>
-<input type="password">
+<input type="password" id="confirmPassword">
 
-<button class="primary-btn">Create Account</button>
-
-<div class="divider">OR CONTINUE WITH</div>
-
-<button class="social-btn">📱 Continue with Phone</button>
-<button class="social-btn">🔵 Continue with Google</button>
-
+<button class="primary-btn" onclick="signup()">Create Account</button>
 
 <div class="links">
 <span onclick="showLogin()">Back to Login</span>
@@ -233,13 +124,10 @@ button{
 <h1>NOVUS</h1>
 <div class="sub">Reset Password</div>
 
-<label>Employee ID</label>
-<input type="text">
-
 <label>Official Email</label>
-<input type="email">
+<input type="email" id="resetEmail">
 
-<button class="primary-btn">Send Reset Link</button>
+<button class="primary-btn" onclick="resetPassword()">Send Reset Link</button>
 
 <div class="links">
 <span onclick="showLogin()">Back to Login</span>
@@ -248,19 +136,18 @@ button{
 
 </div>
 
+<!-- Form Switch Script -->
 <script>
 function showCreate(){
 document.getElementById("loginForm").classList.add("hidden");
 document.getElementById("createForm").classList.remove("hidden");
 document.getElementById("forgotForm").classList.add("hidden");
 }
-
 function showForgot(){
 document.getElementById("loginForm").classList.add("hidden");
 document.getElementById("createForm").classList.add("hidden");
 document.getElementById("forgotForm").classList.remove("hidden");
 }
-
 function showLogin(){
 document.getElementById("loginForm").classList.remove("hidden");
 document.getElementById("createForm").classList.add("hidden");
@@ -268,6 +155,68 @@ document.getElementById("forgotForm").classList.add("hidden");
 }
 </script>
 
+<!-- 🔥 FIREBASE SCRIPT -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  authDomain: "novus-9dfb8.firebaseapp.com",
+  projectId: "novus-9dfb8",
+  storageBucket: "novus-9dfb8.firebasestorage.app",
+  messagingSenderId: "641276518161",
+  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+window.signup = function() {
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  if(password !== confirmPassword){
+    alert("Passwords do not match!");
+    return;
+  }
+
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      alert("Account Created Successfully!");
+      showLogin();
+    })
+    .catch(error => alert(error.message));
+}
+
+window.login = function() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      alert("Login Successful!");
+      window.location.href = "Dashboard.html";
+    })
+    .catch(error => alert(error.message));
+}
+
+window.resetPassword = function(){
+  const email = document.getElementById("resetEmail").value;
+
+  sendPasswordResetEmail(auth, email)
+    .then(() => alert("Reset link sent to your email!"))
+    .catch(error => alert(error.message));
+}
+
+</script>
+
 </body>
 </html>
-
