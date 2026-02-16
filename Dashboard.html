@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NOVUS Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+/* ================= BODY ================= */
+
+body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+    background:linear-gradient(90deg,#f4f6fb,#8ec5fc);
+}
+
+/* ================= TOP NAV ================= */
+
+.top-nav{
+    height:60px;
+    background:white;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo{
+    font-size:20px;
+    font-weight:bold;
+    color:#6a5acd;
+}
+
+.profile-circle{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#6a5acd,#8ec5fc);
+    color:white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+/* ================= LAYOUT ================= */
+
+.container{
+    display:flex;
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    width:220px;
+    background:#f1f2f6;
+    height:calc(100vh - 60px);
+    padding-top:20px;
+}
+
+.sidebar-item{
+    padding:15px 20px;
+    cursor:pointer;
+    border-radius:10px;
+    margin:5px 10px;
+    transition:0.3s;
+}
+
+.sidebar-item:hover{
+    background:#dcdde1;
+}
+
+.sidebar-item.active{
+    background:linear-gradient(135deg,#6a5acd,#8ec5fc);
+    color:white;
+    font-weight:bold;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    flex:1;
+    padding:30px;
+}
+
+.profile-card{
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* PROFILE HEADER */
+
+.profile-header{
+    display:flex;
+    align-items:center;
+    gap:20px;
+}
+
+.profile-avatar{
+    width:80px;
+    height:80px;
+    border-radius:50%;
+    background:linear-gradient(135deg,#6a5acd,#8ec5fc);
+    color:white;
+    font-size:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.info-box{
+    background:#f1f2f6;
+    padding:20px;
+    border-radius:15px;
+    margin-top:20px;
+}
+
+/* ================= STATS ================= */
+
+.stats-grid{
+    margin-top:25px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
+
+.stat-box{
+    padding:25px;
+    border-radius:18px;
+    text-align:center;
+    color:white;
+    font-weight:600;
+    background:linear-gradient(135deg,#6a5acd,#8ec5fc);
+    box-shadow:0 15px 30px rgba(0,0,0,0.1);
+    transition:0.3s;
+}
+
+.stat-box:hover{
+    transform:translateY(-5px);
+}
+
+.stat-box h3{
+    margin:0;
+    font-size:30px;
+}
+
+/* ================= MODAL ================= */
+
+#profileModal{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.3);
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:2000;
+}
+
+.modal-content{
+    width:400px;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 20px 50px rgba(0,0,0,0.2);
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.modal-content input{
+    padding:8px;
+    border-radius:6px;
+    border:1px solid #ccc;
+}
+
+.modal-buttons{
+    margin-top:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+button{
+    padding:8px 12px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TOP NAV -->
+<div class="top-nav">
+    <div class="logo">NOVUS</div>
+    <div class="profile-circle" onclick="openProfile()">SN</div>
+</div>
+
+<div class="container">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-item active">Profile Agent</div>
+        <div class="sidebar-item">Onboarding Agent</div>
+        <div class="sidebar-item">Assessment Agent</div>
+        <div class="sidebar-item">Reporting Agent</div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+        <div class="profile-card">
+
+            <div class="profile-header">
+                <div class="profile-avatar">SN</div>
+                <div>
+                    <h2 id="displayName">Sabeela N</h2>
+                    <p>Software Engineer Trainee</p>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <p><b>Employee ID:</b> <span id="displayEmp">EMP2026</span></p>
+                <p><b>Email:</b> <span id="displayEmail">sabeela.n@novus.com</span></p>
+            </div>
+
+            <div class="info-box">
+                <b>Professional Summary</b>
+                <p>Backend development trainee under NOVUS enterprise program.</p>
+            </div>
+
+            <!-- STATS -->
+            <div class="stats-grid">
+
+                <div class="stat-box">
+                    <h3 class="counter" data-target="80">0%</h3>
+                    <p>Onboarding Completion</p>
+                </div>
+
+                <div class="stat-box">
+                    <h3 class="counter" data-target="70">0%</h3>
+                    <p>Assessments Completed</p>
+                </div>
+
+                <div class="stat-box">
+                    <h3 class="counter" data-target="65">0%</h3>
+                    <p>Certifications Achieved</p>
+                </div>
+
+                <div class="stat-box">
+                    <h3 class="counter" data-target="75">0%</h3>
+                    <p>Overall Training Score</p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profileModal">
+    <div class="modal-content">
+
+        <h3>Profile Details</h3>
+
+        <label>Name</label>
+        <input type="text" id="editName" value="Sabeela N" disabled>
+
+        <label>Email</label>
+        <input type="email" id="editEmail" value="sabeela.n@novus.com" disabled>
+
+        <label>Employee ID</label>
+        <input type="text" id="editEmp" value="EMP2026" disabled>
+
+        <div class="modal-buttons">
+            <button onclick="enableEdit()">Edit</button>
+            <button onclick="saveProfile()">Save</button>
+            <button onclick="closeProfile()">Close</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+
+/* Sidebar Click Active */
+const items = document.querySelectorAll(".sidebar-item");
+items.forEach(item=>{
+    item.addEventListener("click",function(){
+        items.forEach(i=>i.classList.remove("active"));
+        this.classList.add("active");
+    });
+});
+
+/* Counter Animation */
+const counters=document.querySelectorAll('.counter');
+counters.forEach(counter=>{
+    const update=()=>{
+        const target=+counter.getAttribute('data-target');
+        const count=+counter.innerText.replace('%','');
+        const increment=target/60;
+
+        if(count<target){
+            counter.innerText=Math.ceil(count+increment)+"%";
+            setTimeout(update,20);
+        }else{
+            counter.innerText=target+"%";
+        }
+    };
+    update();
+});
+
+/* Modal Functions */
+function openProfile(){
+    document.getElementById("profileModal").style.display="flex";
+}
+
+function closeProfile(){
+    document.getElementById("profileModal").style.display="none";
+}
+
+function enableEdit(){
+    document.getElementById("editName").disabled=false;
+    document.getElementById("editEmail").disabled=false;
+    document.getElementById("editEmp").disabled=false;
+}
+
+function saveProfile(){
+    document.getElementById("displayName").innerText=document.getElementById("editName").value;
+    document.getElementById("displayEmail").innerText=document.getElementById("editEmail").value;
+    document.getElementById("displayEmp").innerText=document.getElementById("editEmp").value;
+
+    closeProfile();
+}
+
+</script>
+
+</body>
+</html>
