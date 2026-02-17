@@ -286,32 +286,36 @@ ul {
 
 let certifications = [];
 
-function addCertification() {
+window.addCertification = function () {
     const fileInput = document.getElementById("certFile");
     const file = fileInput.files[0];
 
-    if (file) {
-        const fileURL = URL.createObjectURL(file);
-        certifications.push({
-            name: file.name,
-            url: fileURL
-        });
-
-        displayCertifications();
-        fileInput.value = "";
+    if (!file) {
+        alert("Please select a file.");
+        return;
     }
-}
+
+    const fileURL = URL.createObjectURL(file);
+
+    certifications.push({
+        name: file.name,
+        url: fileURL
+    });
+
+    displayCertifications();
+    fileInput.value = "";
+};
 
 function displayCertifications() {
     const list = document.getElementById("certList");
     list.innerHTML = "";
 
     certifications.forEach(cert => {
-        list.innerHTML += `
-            <li>
-                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
-            </li>
+        const li = document.createElement("li");
+        li.innerHTML = `
+            📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
         `;
+        list.appendChild(li);
     });
 }
 
@@ -357,29 +361,7 @@ function calculateProfile() {
 
 </script>
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-    authDomain: "novus-9dfb8.firebaseapp.com",
-    projectId: "novus-9dfb8",
-    appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-  };
-
-  firebase.initializeApp(firebaseConfig);
-
-  const auth = firebase.auth();
-
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      document.getElementById("userName").innerText = user.displayName;
-    } else {
-      window.location.href = "login.html"; // redirect if not logged in
-    }
-  });
-</script>
 
 </body>
 </html>
