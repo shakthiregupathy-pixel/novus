@@ -246,8 +246,7 @@ ul {
 
 </div>
 
-<script>
-  <script type="module">
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -321,75 +320,32 @@ ul {
         url: downloadURL
       })
     });
-let certifications = [];
 
-function addCertification() {
-    const fileInput = document.getElementById("certFile");
-    const file = fileInput.files[0];
+    // Show immediately
+    displayCertificate(file.name, downloadURL);
 
-    if (file) {
-        const fileURL = URL.createObjectURL(file);
-        certifications.push({
-            name: file.name,
-            url: fileURL
-        });
+    fileInput.value = "";
+    alert("Certificate uploaded successfully!");
 
-        displayCertifications();
-        fileInput.value = "";
-    }
-}
+  } catch (error) {
+    console.error("Upload error:", error);
+    alert("Upload failed. Check console.");
+  }
+};
 
-function displayCertifications() {
-    const list = document.getElementById("certList");
-    list.innerHTML = "";
+/* ---------------- DISPLAY CERTIFICATE ---------------- */
+function displayCertificate(name, url) {
 
-    certifications.forEach(cert => {
-        list.innerHTML += `
-            <li>
-                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
-            </li>
-        `;
-    });
-}
+  const certList = document.getElementById("certList");
 
-function updateProgress(value) {
-    document.getElementById("progressValue").innerText = value;
-}
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <a href="${url}" target="_blank" class="text-decoration-none">
+      ${name}
+    </a>
+  `;
 
-function calculateProfile() {
-    const quiz = parseFloat(document.getElementById("quiz").value) || 0;
-    const coding = parseFloat(document.getElementById("coding").value) || 0;
-    const assignment = parseFloat(document.getElementById("assignment").value) || 0;
-    const progress = document.getElementById("progressSlider").value;
-
-    const average = ((quiz + coding + assignment) / 3).toFixed(2);
-    document.getElementById("averageScore").innerText = average;
-
-    let skill = "Beginner";
-    let badgeHTML = "";
-    let feedback = "";
-
-    if(average >= 85) {
-        skill = "Advanced";
-        badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
-        feedback = "Outstanding progress! Keep shining.";
-    } 
-    else if(average >= 60) {
-        skill = "Intermediate";
-        badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
-        feedback = "Great improvement. Stay consistent.";
-    } 
-    else {
-        feedback = "Keep practicing. You are improving steadily.";
-    }
-
-    document.getElementById("skillLevel").innerText = skill;
-    document.getElementById("badgeArea").innerHTML = badgeHTML;
-    document.getElementById("aiFeedback").innerText = feedback;
-
-    let completion = Math.min((Number(progress) + certifications.length * 10), 100);
-    document.getElementById("profileCompletionBar").style.width = completion + "%";
-    document.getElementById("profileCompletionBar").innerText = completion + "%";
+  certList.appendChild(li);
 }
 </script>
 
