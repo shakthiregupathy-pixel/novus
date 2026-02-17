@@ -318,11 +318,7 @@ onAuthStateChanged(auth, async (user) => {
     </select>
   </div>
 </div>
-<button onclick="saveOnboardingData()" 
-        style="margin-top:20px;padding:12px 20px;border:none;
-        background:#3b5cff;color:white;border-radius:10px;cursor:pointer;">
-  Save Onboarding Details
-</button>
+
 
 <!-- STATS -->
 <div class="stats">
@@ -416,7 +412,7 @@ function start(){
 
 
 </script>
-<script type="module" src="onboarding.js"></script>
+
 <script>
   function startJourney() {
     // Go to dashboard page
@@ -426,6 +422,15 @@ function start(){
 
 </script>
 
+</script>
+
 </body>
+<script>
+function start() {
+  document.getElementById("welcome").style.display = "none";
+  document.getElementById("dashboard").classList.remove("hidden");
+}
+</script>
+
 </html>
 
