@@ -1,1 +1,395 @@
-Hello
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pastel Profile Agent</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(135deg,#e0c3fc,#8ec5fc);
+    font-family: 'Poppins', sans-serif;
+    color: #444;
+    min-height: 100vh;
+}
+
+.container-main {
+    padding: 40px;
+}
+
+/* HEADER */
+.header-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 50px;
+}
+
+/* LOGO LEFT */
+.novus-logo-img {
+    position: absolute;
+    left: 0;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    object-fit: contain;
+    padding: 10px;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.18);
+    transition: 0.3s ease;
+}
+
+.novus-logo-img:hover {
+    transform: scale(1.08);
+}
+
+/* GLASS CARD */
+.glass-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    margin-bottom: 25px;
+    transition: 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.pastel-title {
+    color: #6a5acd;
+    font-weight: 600;
+}
+
+.btn-pastel {
+    background: linear-gradient(90deg, #ffafbd, #ffc3a0);
+    border: none;
+    color: #444;
+    font-weight: 600;
+    border-radius: 25px;
+    padding: 8px 20px;
+    transition: 0.3s;
+}
+
+.btn-pastel:hover {
+    opacity: 0.85;
+    transform: scale(1.03);
+}
+
+.progress {
+    height: 18px;
+    border-radius: 20px;
+    background: #eee;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #84fab0, #8fd3f4);
+    font-weight: 500;
+    color: #444;
+}
+
+.badge-gold {
+    background: #ffe29f;
+    color: #444;
+    border-radius: 12px;
+    padding: 5px 10px;
+}
+
+.badge-silver {
+    background: #d4d4f7;
+    color: #444;
+    border-radius: 12px;
+    padding: 5px 10px;
+}
+
+input, .form-control {
+    background: #ffffff;
+    border-radius: 15px;
+    border: 1px solid #ddd;
+    color: #444;
+}
+
+input::placeholder {
+    color: #999;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.fade-in {
+    animation: fadeIn 1s ease-in;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(15px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="container container-main">
+
+<!-- HEADER -->
+<div class="header-bar fade-in">
+
+    <!-- LEFT LOGO -->
+    <img src="novus-logo.png" alt="NOVUS Logo" class="novus-logo-img">
+
+    <!-- CENTER TITLE -->
+    <div class="text-center">
+        <h2 class="pastel-title mb-1">Profile Agent</h2>
+        <h5 class="pastel-title">MAVERIK TRAINING</h5>
+    </div>
+
+</div>
+
+<!-- PROFILE SUMMARY -->
+<div class="glass-card fade-in">
+<h5 class="mb-3 pastel-title">Candidate Details</h5>
+<div class="row">
+    <div class="col-md-4"><strong>Name:</strong> Arun Kumar</div>
+    <div class="col-md-4"><strong>ID:</strong> MX2026</div>
+    <div class="col-md-4"><strong>Department:</strong> Engineering</div>
+</div>
+<div class="row mt-2">
+    <div class="col-md-4"><strong>Role:</strong> Software Developer</div>
+    <div class="col-md-4"><strong>Phase:</strong> Foundation</div>
+    <div class="col-md-4"><strong>Batch:</strong> 2026</div>
+</div>
+
+<div class="mt-3">
+    <strong>Profile Completion:</strong>
+    <div class="progress mt-2">
+        <div id="profileCompletionBar" class="progress-bar" style="width:0%">0%</div>
+    </div>
+</div>
+</div>
+
+<!-- INPUT SECTION -->
+<div class="glass-card fade-in">
+<h5 class="pastel-title">Update Performance</h5>
+
+<div class="row">
+    <div class="col-md-4">
+        <input type="number" id="quiz" class="form-control" placeholder="Quiz Score">
+    </div>
+    <div class="col-md-4">
+        <input type="number" id="coding" class="form-control" placeholder="Coding Score">
+    </div>
+    <div class="col-md-4">
+        <input type="number" id="assignment" class="form-control" placeholder="Assignment Score">
+    </div>
+</div>
+
+<!-- CERTIFICATE UPLOAD SECTION -->
+<div class="row mt-3">
+    <div class="col-md-9">
+        <input type="file" id="certFile" class="form-control" accept=".pdf,.jpg,.png">
+    </div>
+    <div class="col-md-3">
+        <button class="btn btn-pastel w-100" onclick="addCertification()">Upload</button>
+    </div>
+</div>
+
+<div class="mt-3">
+<label>Learning Progress: <span id="progressValue">0</span>%</label>
+<input type="range" class="form-range" min="0" max="100" id="progressSlider" oninput="updateProgress(this.value)">
+</div>
+
+<button class="btn btn-pastel mt-3" onclick="calculateProfile()">Update Profile</button>
+</div>
+
+<!-- OUTPUT SECTION -->
+<div class="row fade-in">
+
+<div class="col-md-4">
+<div class="glass-card text-center">
+<h6>Average Score</h6>
+<h3 id="averageScore" class="pastel-title">0</h3>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="glass-card text-center">
+<h6>Skill Level</h6>
+<h4 id="skillLevel">Beginner</h4>
+<div id="badgeArea"></div>
+</div>
+</div>
+
+<div class="col-md-4">
+<div class="glass-card">
+<h6>Certifications</h6>
+<ul id="certList"></ul>
+</div>
+</div>
+
+</div>
+
+<!-- AI FEEDBACK -->
+<div class="glass-card fade-in">
+<h6 class="pastel-title">AI Performance Feedback</h6>
+<p id="aiFeedback">No feedback generated yet.</p>
+</div>
+
+</div>
+
+<script>
+  <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+    authDomain: "novus-9dfb8.firebaseapp.com",
+    projectId: "novus-9dfb8",
+    storageBucket: "novus-9dfb8.firebasestorage.app",
+    messagingSenderId: "641276518161",
+    appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        try {
+            // Assume you stored user details in Firestore under "users" collection
+            const userDocRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userDocRef);
+
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                document.getElementById("userName").innerText = userData.name;
+            } else {
+                document.getElementById("userName").innerText = "User";
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    } else {
+        // If not logged in redirect to login page
+        window.location.href = "login.html";
+    }
+  });
+
+
+    window.addCertification = async function () {
+
+  const fileInput = document.getElementById("certFile");
+  const file = fileInput.files[0];
+
+  if (!file) {
+    alert("Please select a certificate file.");
+    return;
+  }
+
+  if (!currentUser) {
+    alert("User not logged in.");
+    return;
+  }
+
+  try {
+    const storageRef = ref(storage, `certificates/${currentUser.uid}/${file.name}`);
+
+    // Upload file
+    await uploadBytes(storageRef, file);
+
+    // Get URL
+    const downloadURL = await getDownloadURL(storageRef);
+
+    // Save to Firestore
+    const userDocRef = doc(db, "users", currentUser.uid);
+
+    await updateDoc(userDocRef, {
+      certificates: arrayUnion({
+        name: file.name,
+        url: downloadURL
+      })
+    });
+let certifications = [];
+
+function addCertification() {
+    const fileInput = document.getElementById("certFile");
+    const file = fileInput.files[0];
+
+    if (file) {
+        const fileURL = URL.createObjectURL(file);
+        certifications.push({
+            name: file.name,
+            url: fileURL
+        });
+
+        displayCertifications();
+        fileInput.value = "";
+    }
+}
+
+function displayCertifications() {
+    const list = document.getElementById("certList");
+    list.innerHTML = "";
+
+    certifications.forEach(cert => {
+        list.innerHTML += `
+            <li>
+                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
+            </li>
+        `;
+    });
+}
+
+function updateProgress(value) {
+    document.getElementById("progressValue").innerText = value;
+}
+
+function calculateProfile() {
+    const quiz = parseFloat(document.getElementById("quiz").value) || 0;
+    const coding = parseFloat(document.getElementById("coding").value) || 0;
+    const assignment = parseFloat(document.getElementById("assignment").value) || 0;
+    const progress = document.getElementById("progressSlider").value;
+
+    const average = ((quiz + coding + assignment) / 3).toFixed(2);
+    document.getElementById("averageScore").innerText = average;
+
+    let skill = "Beginner";
+    let badgeHTML = "";
+    let feedback = "";
+
+    if(average >= 85) {
+        skill = "Advanced";
+        badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
+        feedback = "Outstanding progress! Keep shining.";
+    } 
+    else if(average >= 60) {
+        skill = "Intermediate";
+        badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
+        feedback = "Great improvement. Stay consistent.";
+    } 
+    else {
+        feedback = "Keep practicing. You are improving steadily.";
+    }
+
+    document.getElementById("skillLevel").innerText = skill;
+    document.getElementById("badgeArea").innerHTML = badgeHTML;
+    document.getElementById("aiFeedback").innerText = feedback;
+
+    let completion = Math.min((Number(progress) + certifications.length * 10), 100);
+    document.getElementById("profileCompletionBar").style.width = completion + "%";
+    document.getElementById("profileCompletionBar").innerText = completion + "%";
+}
+</script>
+
+</body>
+</html>
