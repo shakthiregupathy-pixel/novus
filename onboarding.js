@@ -3,14 +3,10 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ================= FIREBASE CONFIG =================
-// 🔴 Replace with YOUR Firebase config
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "XXXX",
-  appId: "XXXX"
 };
 
 // ================= INITIALIZE =================
@@ -18,14 +14,29 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // ================= SAVE ONBOARDING DATA =================
-async function saveOnboardingData() {
+window.saveOnboardingData = async function () {
+
+  // 👉 READ VALUES AFTER USER TYPES
+  const name = document.getElementById("name").value;
+  const employeeId = document.getElementById("employeeId").value;
+  const role = document.getElementById("role").value;
+  const startDate = document.getElementById("startDate").value;
+  const mentor = document.getElementById("mentor").value;
+  const mode = document.getElementById("mode").value;
+
+  // 👉 SIMPLE VALIDATION
+  if (!name || !employeeId || !mentor || !startDate) {
+    alert("❌ Please fill all fields");
+    return;
+  }
+
   const data = {
-    name: document.getElementById("name").value,
-    employeeId: document.getElementById("employeeId").value,
-    role: document.getElementById("role").value,
-    startDate: document.getElementById("startDate").value,
-    mentor: document.getElementById("mentor").value,
-    mode: document.getElementById("mode").value,
+    name,
+    employeeId,
+    role,
+    startDate,
+    mentor,
+    mode,
     createdAt: new Date()
   };
 
@@ -33,11 +44,8 @@ async function saveOnboardingData() {
     await addDoc(collection(db, "onboardingUsers"), data);
     alert("✅ Onboarding data saved successfully!");
   } catch (error) {
-    console.error("Error saving data:", error);
+    console.error(error);
     alert("❌ Error saving data");
   }
-}
+};
 
-// ================= BUTTON / AUTO SAVE =================
-// Save data when dashboard opens
-window.saveOnboardingData = saveOnboardingData;
