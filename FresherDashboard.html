@@ -6,6 +6,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+<script>
+function navigate(page){
+
+    // Highlight active item
+    const items = document.querySelectorAll(".sidebar-item");
+    items.forEach(i => i.classList.remove("active"));
+    event.target.classList.add("active");
+
+    // Navigation
+    if(page === "dashboard"){
+        window.location.href = "FresherDashboard.html";
+    }
+    else if(page === "onboarding"){
+        window.location.href = "OnboardingAgent.html";
+    }
+    else if(page === "assessment"){
+        window.location.href = "AssessmentAgent.html";
+    }
+    else if(page === "profile"){
+        window.location.href = "ProfileAgent.html";
+    }
+    else if(page === "report"){
+        window.location.href = "ReportAgent.html";
+    }
+}
+</script>
 
 body{
     margin:0;
@@ -131,8 +157,29 @@ body{
 <div class="container">
 
 <div class="sidebar">
-    <div class="sidebar-item">Dashboard</div>
+
+    <div class="sidebar-item active" onclick="navigate('dashboard')">
+        Dashboard
+    </div>
+
+    <div class="sidebar-item" onclick="navigate('onboarding')">
+        Onboarding Agent
+    </div>
+
+    <div class="sidebar-item" onclick="navigate('assessment')">
+        Assessment Agent
+    </div>
+
+    <div class="sidebar-item" onclick="navigate('profile')">
+        Profile
+    </div>
+
+    <div class="sidebar-item" onclick="navigate('report')">
+        Report
+    </div>
+
 </div>
+
 
 <div class="main">
 <div class="profile-card">
@@ -239,3 +286,4 @@ if(user){
 
 </body>
 </html>
+
