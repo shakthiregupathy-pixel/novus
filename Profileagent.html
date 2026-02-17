@@ -244,7 +244,46 @@ ul {
 
 </div>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+    authDomain: "novus-9dfb8.firebaseapp.com",
+    projectId: "novus-9dfb8",
+    storageBucket: "novus-9dfb8.firebasestorage.app",
+    messagingSenderId: "641276518161",
+    appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        try {
+            // Assume you stored user details in Firestore under "users" collection
+            const userDocRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userDocRef);
+
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                document.getElementById("userName").innerText = userData.name;
+            } else {
+                document.getElementById("userName").innerText = "User";
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    } else {
+        // If not logged in redirect to login page
+        window.location.href = "login.html";
+    }
+  });
+
 let certifications = [];
 
 function addCertification() {
