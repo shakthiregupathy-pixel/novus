@@ -258,9 +258,9 @@ input,select{
 <div class="card">
   <div class="card-title">Fresher Details</div>
   <div class="form-grid">
-    <input placeholder="Fresher Name">
-    <input placeholder="Employee ID">
-    <input placeholder="Role / Domain">
+    <input id="name" placeholder="Fresher Name">
+    <input id="employeeId" placeholder="Employee ID">
+    <input id="role" placeholder="Role / Domain">
   </div>
 </div>
 
@@ -268,9 +268,9 @@ input,select{
 <div class="card" style="margin-top:20px">
   <div class="card-title">Training Configuration</div>
   <div class="form-grid">
-    <input type="date">
-    <input placeholder="Mentor Name">
-    <select>
+    <input id="startDate" type="date">
+    <input id="mentor" placeholder="Mentor Name">
+    <select id="mode">
       <option>Online</option>
       <option>Offline</option>
       <option>Hybrid</option>
@@ -319,9 +319,7 @@ input,select{
       </div>
       <small>Add personal details</small>
       <div class="progress"><div class="progress-fill" style="width:85%"></div></div>
-      <a href="Profileagent.html" style="text-decoration: none;">
-    <button>Continue</button>
-</a>
+      <button>Continue</button>
     </div>
 
     <div class="task">
@@ -331,9 +329,7 @@ input,select{
       </div>
       <small>Development environment</small>
       <div class="progress"><div class="progress-fill" style="width:60%"></div></div>
-       <a href="assessment agent.html" style="text-decoration: none;">
-    <button>Continue</button>
-</a>
+      <button>Continue</button>
     </div>
   </div>
 </div>
@@ -365,8 +361,16 @@ input,select{
 function start(){
   document.getElementById('welcome').style.display='none';
   document.getElementById('dashboard').classList.remove('hidden');
+
+  // Save onboarding data
+  if (window.saveOnboardingData) {
+    window.saveOnboardingData();
+  }
 }
+
 </script>
 
 </body>
-</html>
+</html><script type="module" src="js/onboarding.js"></script>
+
+
