@@ -424,13 +424,15 @@ function start(){
   }
 </script>
 <script>
-function start() {
-  // hide welcome
-  document.getElementById('welcome').style.display = 'none';
+document.getElementById("startBtn").addEventListener("click", () => {
+  // hide welcome screen
+  document.getElementById("welcome").style.display = "none";
 
   // show dashboard
-  document.getElementById('dashboard').classList.remove('hidden');
-}
+  document.getElementById("dashboard").classList.remove("hidden");
+});
+</script>
+
 </script>
 
 </body>
