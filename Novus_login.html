@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* (Your entire CSS remains same — I did not change design) */
+/* YOUR DESIGN — NOT CHANGED */
 body{
     margin:0;
     font-family:Segoe UI, sans-serif;
@@ -70,16 +70,16 @@ button{
 <div class="sub">Maverick Onboarding System</div>
 
 <label>Login As</label>
-<select>
-<option>Fresher</option>
-<option>Admin</option>
+<select id="loginRole">
+<option value="fresher">Fresher</option>
+<option value="admin">Admin</option>
 </select>
 
 <label>Official Email</label>
-<input type="email" id="loginEmail" placeholder="Enter your company email">
+<input type="email" id="loginEmail">
 
 <label>Password</label>
-<input type="password" id="loginPassword" placeholder="Enter password">
+<input type="password" id="loginPassword">
 
 <button class="primary-btn" onclick="login()">Sign In</button>
 
@@ -97,12 +97,6 @@ button{
 <label>Full Name</label>
 <input type="text" id="fullName">
 
-<label>Employee ID</label>
-<input type="text" id="employeeId">
-
-<label>Department</label>
-<input type="text" id="department">
-
 <label>Official Email</label>
 <input type="email" id="signupEmail">
 
@@ -111,6 +105,12 @@ button{
 
 <label>Confirm Password</label>
 <input type="password" id="confirmPassword">
+
+<label>Role</label>
+<select id="signupRole">
+<option value="fresher">Fresher</option>
+<option value="admin">Admin</option>
+</select>
 
 <button class="primary-btn" onclick="signup()">Create Account</button>
 
@@ -136,35 +136,33 @@ button{
 
 </div>
 
-<!-- Form Switch Script -->
 <script>
 function showCreate(){
-document.getElementById("loginForm").classList.add("hidden");
-document.getElementById("createForm").classList.remove("hidden");
-document.getElementById("forgotForm").classList.add("hidden");
+loginForm.classList.add("hidden");
+createForm.classList.remove("hidden");
+forgotForm.classList.add("hidden");
 }
 function showForgot(){
-document.getElementById("loginForm").classList.add("hidden");
-document.getElementById("createForm").classList.add("hidden");
-document.getElementById("forgotForm").classList.remove("hidden");
+loginForm.classList.add("hidden");
+createForm.classList.add("hidden");
+forgotForm.classList.remove("hidden");
 }
 function showLogin(){
-document.getElementById("loginForm").classList.remove("hidden");
-document.getElementById("createForm").classList.add("hidden");
-document.getElementById("forgotForm").classList.add("hidden");
+loginForm.classList.remove("hidden");
+createForm.classList.add("hidden");
+forgotForm.classList.add("hidden");
 }
 </script>
 
-<!-- 🔥 FIREBASE SCRIPT -->
+<!-- FIREBASE -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword,
-  sendPasswordResetEmail
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import { getFirestore, doc, setDoc, getDoc } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
@@ -177,42 +175,73 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-window.signup = function() {
+
+// SIGNUP
+window.signup = async function() {
+
+  const name = document.getElementById("fullName").value;
   const email = document.getElementById("signupEmail").value;
   const password = document.getElementById("signupPassword").value;
   const confirmPassword = document.getElementById("confirmPassword").value;
+  const role = document.getElementById("signupRole").value;
 
   if(password !== confirmPassword){
     alert("Passwords do not match!");
     return;
   }
 
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      alert("Account Created Successfully!");
-      showLogin();
-    })
-    .catch(error => alert(error.message));
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+
+  await setDoc(doc(db, "users", email), {
+    name: name,
+    role: role
+  });
+
+  alert("Account Created Successfully!");
+  showLogin();
 }
 
-window.login = function() {
+
+// LOGIN
+window.login = async function() {
+
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPassword").value;
+  const selectedRole = document.getElementById("loginRole").value;
 
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => {
-      alert("Login Successful!");
-      window.location.href = "Dashboard.html";
-    })
-    .catch(error => alert(error.message));
+  const userCredential = await signInWithEmailAndPassword(auth, email, password);
+
+  const docRef = doc(db, "users", email);
+  const docSnap = await getDoc(docRef);
+
+  if(docSnap.exists()){
+
+    const actualRole = docSnap.data().role;
+
+    if(actualRole !== selectedRole){
+      alert("Wrong role selected!");
+      return;
+    }
+
+    if(actualRole === "admin"){
+      window.location.href = "AdminDashboard.html";
+    } else {
+      window.location.href = "FresherDashboard.html";
+    }
+
+  } else {
+    alert("User data not found!");
+  }
 }
 
+
+// RESET
 window.resetPassword = function(){
   const email = document.getElementById("resetEmail").value;
-
   sendPasswordResetEmail(auth, email)
-    .then(() => alert("Reset link sent to your email!"))
+    .then(() => alert("Reset link sent!"))
     .catch(error => alert(error.message));
 }
 
