@@ -188,6 +188,7 @@ input,select{
   color:var(--primary);
 }
 .task small{color:var(--muted)}
+
 .task button{
   margin-top:12px;
   background:var(--primary);
@@ -317,6 +318,11 @@ onAuthStateChanged(auth, async (user) => {
     </select>
   </div>
 </div>
+<button onclick="saveOnboardingData()" 
+        style="margin-top:20px;padding:12px 20px;border:none;
+        background:#3b5cff;color:white;border-radius:10px;cursor:pointer;">
+  Save Onboarding Details
+</button>
 
 <!-- STATS -->
 <div class="stats">
@@ -407,12 +413,16 @@ function start(){
     window.saveOnboardingData();
   }
 }
+<button onclick="saveOnboardingData()">Save Details</button>
+
 
 </script>
 <script type="module" src="onboarding.js"></script>
 
 </body>
 </html>
+
+
 
 
 
