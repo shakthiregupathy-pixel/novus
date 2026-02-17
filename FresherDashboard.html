@@ -7,15 +7,11 @@
 
 <style>
 
-/* ================= BODY ================= */
-
 body{
     margin:0;
     font-family:Arial, Helvetica, sans-serif;
     background:linear-gradient(90deg,#f4f6fb,#8ec5fc);
 }
-
-/* ================= TOP NAV ================= */
 
 .top-nav{
     height:60px;
@@ -42,16 +38,11 @@ body{
     display:flex;
     align-items:center;
     justify-content:center;
-    cursor:pointer;
 }
-
-/* ================= LAYOUT ================= */
 
 .container{
     display:flex;
 }
-
-/* ================= SIDEBAR ================= */
 
 .sidebar{
     width:220px;
@@ -62,23 +53,12 @@ body{
 
 .sidebar-item{
     padding:15px 20px;
-    cursor:pointer;
     border-radius:10px;
     margin:5px 10px;
-    transition:0.3s;
-}
-
-.sidebar-item:hover{
-    background:#dcdde1;
-}
-
-.sidebar-item.active{
     background:linear-gradient(135deg,#6a5acd,#8ec5fc);
     color:white;
     font-weight:bold;
 }
-
-/* ================= MAIN ================= */
 
 .main{
     flex:1;
@@ -91,8 +71,6 @@ body{
     border-radius:20px;
     box-shadow:0 20px 40px rgba(0,0,0,0.1);
 }
-
-/* PROFILE HEADER */
 
 .profile-header{
     display:flex;
@@ -119,8 +97,6 @@ body{
     margin-top:20px;
 }
 
-/* ================= STATS ================= */
-
 .stats-grid{
     margin-top:25px;
     display:grid;
@@ -135,7 +111,6 @@ body{
     color:white;
     font-weight:600;
     background:linear-gradient(135deg,#6a5acd,#8ec5fc);
-    box-shadow:0 15px 30px rgba(0,0,0,0.1);
 }
 
 .stat-box h3{
@@ -156,7 +131,7 @@ body{
 <div class="container">
 
 <div class="sidebar">
-    <div class="sidebar-item active">Dashboard</div>
+    <div class="sidebar-item">Dashboard</div>
 </div>
 
 <div class="main">
@@ -237,19 +212,21 @@ if(user){
 
         const data = userDoc.data();
 
-        document.getElementById("displayName").innerText = data.Fullname;
-        document.getElementById("displayEmail").innerText = data.Email;
-        document.getElementById("displaySummary").innerText = data.ProfessionalSummary;
+        document.getElementById("displayName").innerText = data.name || "No Name";
+        document.getElementById("displayEmail").innerText = user.email;
+        document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
 
-        document.getElementById("onboardingPercent").innerText = data.Onboarding + "%";
-        document.getElementById("assessmentPercent").innerText = data.Assessment + "%";
-        document.getElementById("certPercent").innerText = data.Certification + "%";
-        document.getElementById("overallPercent").innerText = data.Overall + "%";
+        document.getElementById("onboardingPercent").innerText = (data.onboardingPercentage || 0) + "%";
+        document.getElementById("assessmentPercent").innerText = (data.assessmentPercentage || 0) + "%";
+        document.getElementById("certPercent").innerText = (data.certificationPercentage || 0) + "%";
+        document.getElementById("overallPercent").innerText = (data.overallScore || 0) + "%";
 
-        const firstLetter = data.Fullname.charAt(0).toUpperCase();
+        const firstLetter = data.name ? data.name.charAt(0).toUpperCase() : "U";
         document.getElementById("avatarInitial").innerText = firstLetter;
         document.getElementById("topInitial").innerText = firstLetter;
 
+    } else {
+        alert("User document not found in Firestore");
     }
 
 }else{
