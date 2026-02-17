@@ -157,7 +157,9 @@ ul {
 <div class="glass-card fade-in">
 <h5 class="mb-3 pastel-title">Candidate Details</h5>
 <div class="row">
-    <div class="col-md-4"><strong>Name:</strong> Arun Kumar</div>
+    <div class="col-md-4">
+    <strong>Name:</strong> <span id="userName">Loading...</span>
+</div>
     <div class="col-md-4"><strong>ID:</strong> MX2026</div>
     <div class="col-md-4"><strong>Department:</strong> Engineering</div>
 </div>
@@ -244,79 +246,46 @@ ul {
 
 </div>
 
-<script>
-let certifications = [];
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-function addCertification() {
-    const fileInput = document.getElementById("certFile");
-    const file = fileInput.files[0];
+  const firebaseConfig = {
+    apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+    authDomain: "novus-9dfb8.firebaseapp.com",
+    projectId: "novus-9dfb8",
+    storageBucket: "novus-9dfb8.firebasestorage.app",
+    messagingSenderId: "641276518161",
+    appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+  };
 
-    if (file) {
-        const fileURL = URL.createObjectURL(file);
-        certifications.push({
-            name: file.name,
-            url: fileURL
-        });
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-        displayCertifications();
-        fileInput.value = "";
+    onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        try {
+            // Assume you stored user details in Firestore under "users" collection
+            const userDocRef = doc(db, "users", user.uid);
+            const userSnap = await getDoc(userDocRef);
+
+            if (userSnap.exists()) {
+                const userData = userSnap.data();
+                document.getElementById("userName").innerText = userData.name;
+            } else {
+                document.getElementById("userName").innerText = "User";
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    } else {
+        // If not logged in redirect to login page
+        window.location.href = "login.html";
     }
-}
-
-function displayCertifications() {
-    const list = document.getElementById("certList");
-    list.innerHTML = "";
-
-    certifications.forEach(cert => {
-        list.innerHTML += `
-            <li>
-                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
-            </li>
-        `;
-    });
-}
-
-function updateProgress(value) {
-    document.getElementById("progressValue").innerText = value;
-}
-
-function calculateProfile() {
-    const quiz = parseFloat(document.getElementById("quiz").value) || 0;
-    const coding = parseFloat(document.getElementById("coding").value) || 0;
-    const assignment = parseFloat(document.getElementById("assignment").value) || 0;
-    const progress = document.getElementById("progressSlider").value;
-
-    const average = ((quiz + coding + assignment) / 3).toFixed(2);
-    document.getElementById("averageScore").innerText = average;
-
-    let skill = "Beginner";
-    let badgeHTML = "";
-    let feedback = "";
-
-    if(average >= 85) {
-        skill = "Advanced";
-        badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
-        feedback = "Outstanding progress! Keep shining.";
-    } 
-    else if(average >= 60) {
-        skill = "Intermediate";
-        badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
-        feedback = "Great improvement. Stay consistent.";
-    } 
-    else {
-        feedback = "Keep practicing. You are improving steadily.";
-    }
-
-    document.getElementById("skillLevel").innerText = skill;
-    document.getElementById("badgeArea").innerHTML = badgeHTML;
-    document.getElementById("aiFeedback").innerText = feedback;
-
-    let completion = Math.min((Number(progress) + certifications.length * 10), 100);
-    document.getElementById("profileCompletionBar").style.width = completion + "%";
-    document.getElementById("profileCompletionBar").innerText = completion + "%";
-}
+  });
 </script>
 
 </body>
 </html>
-
