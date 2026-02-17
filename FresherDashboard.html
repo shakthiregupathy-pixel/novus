@@ -53,13 +53,18 @@ body{
 
 .sidebar-item{
     padding:15px 20px;
-    border-radius:10px;
-    margin:5px 10px;
+    border-radius:12px;
+    margin:15px 12px;   /* 🔥 THIS LINE CREATES GAP */
     cursor:pointer;
     background:linear-gradient(135deg,#6a5acd,#8ec5fc);
     color:white;
     font-weight:bold;
+    transition: transform 0.2s ease;
 }
+.sidebar-item:hover{
+    transform: translateX(5px);
+}
+
 
 .main{
     flex:1;
@@ -278,6 +283,7 @@ if(user){
 
 </body>
 </html>
+
 
 
 
