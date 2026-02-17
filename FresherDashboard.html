@@ -6,32 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-<script>
-function navigate(page){
-
-    // Highlight active item
-    const items = document.querySelectorAll(".sidebar-item");
-    items.forEach(i => i.classList.remove("active"));
-    event.target.classList.add("active");
-
-    // Navigation
-    if(page === "dashboard"){
-        window.location.href = "FresherDashboard.html";
-    }
-    else if(page === "onboarding"){
-        window.location.href = "OnboardingAgent.html";
-    }
-    else if(page === "assessment"){
-        window.location.href = "AssessmentAgent.html";
-    }
-    else if(page === "profile"){
-        window.location.href = "ProfileAgent.html";
-    }
-    else if(page === "report"){
-        window.location.href = "ReportAgent.html";
-    }
-}
-</script>
 
 body{
     margin:0;
@@ -81,6 +55,7 @@ body{
     padding:15px 20px;
     border-radius:10px;
     margin:5px 10px;
+    cursor:pointer;
     background:linear-gradient(135deg,#6a5acd,#8ec5fc);
     color:white;
     font-weight:bold;
@@ -158,7 +133,7 @@ body{
 
 <div class="sidebar">
 
-    <div class="sidebar-item active" onclick="navigate('dashboard')">
+    <div class="sidebar-item" onclick="navigate('dashboard')">
         Dashboard
     </div>
 
@@ -179,7 +154,6 @@ body{
     </div>
 
 </div>
-
 
 <div class="main">
 <div class="profile-card">
@@ -229,9 +203,30 @@ body{
 </div>
 </div>
 
-<!-- 🔥 FIREBASE SCRIPT -->
-<script type="module">
+<!-- NAVIGATION SCRIPT (CORRECT PLACE) -->
+<script>
+function navigate(page){
 
+    if(page === "dashboard"){
+        window.location.href = "FresherDashboard.html";
+    }
+    else if(page === "onboarding"){
+        window.location.href = "OnboardingAgent.html";
+    }
+    else if(page === "assessment"){
+        window.location.href = "AssessmentAgent.html";
+    }
+    else if(page === "profile"){
+        window.location.href = "ProfileAgent.html";
+    }
+    else if(page === "report"){
+        window.location.href = "ReportAgent.html";
+    }
+}
+</script>
+
+<!-- FIREBASE SCRIPT -->
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -272,8 +267,6 @@ if(user){
         document.getElementById("avatarInitial").innerText = firstLetter;
         document.getElementById("topInitial").innerText = firstLetter;
 
-    } else {
-        alert("User document not found in Firestore");
     }
 
 }else{
@@ -281,7 +274,6 @@ if(user){
 }
 
 });
-
 </script>
 
 </body>
