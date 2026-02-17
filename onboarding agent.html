@@ -249,6 +249,9 @@ onAuthStateChanged(auth, async (user) => {
       document.getElementById("name").value = data.name || "";
       document.getElementById("employeeId").value = data.employeeId || "";
       document.getElementById("role").value = data.role || "";
+      document.getElementById("startDate").value = data.startDate || "";
+      document.getElementById("mentor").value = data.mentor || "";
+      document.getElementById("mode").value = data.mode || "Online";
 
     } else {
       console.log("No user data found in Firestore");
@@ -406,9 +409,12 @@ function start(){
 }
 
 </script>
+<script type="module" src="onboarding.js"></script>
 
 </body>
-</html><script type="module" src="js/onboarding.js"></script>
+</html>
+
+
 
 
 
