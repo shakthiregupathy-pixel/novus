@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* DESIGN NOT CHANGED */
 body{
     margin:0;
     font-family:Segoe UI, sans-serif;
@@ -22,13 +21,13 @@ body{
     border-radius:20px;
     box-shadow:0 15px 40px rgba(0,0,0,0.12);
 }
-h1{text-align:center;margin-bottom:5px;font-size:30px;color:#6a5acd;}
+h1{text-align:center;margin-bottom:5px;color:#6a5acd;}
 .sub{text-align:center;font-size:13px;color:#6b7280;margin-bottom:20px;}
 label{font-size:13px;font-weight:500;}
 input, select{
     width:100%;padding:10px;margin:8px 0 14px 0;
     border-radius:10px;border:1px solid #e5e7eb;
-    font-size:14px;background:#f9fafb;
+    font-size:14px;background:#f9fafb;box-sizing:border-box;
 }
 button{
     width:100%;padding:11px;border:none;border-radius:10px;
@@ -59,7 +58,7 @@ button{
 <option value="admin">Admin</option>
 </select>
 
-<label>Official Email</label>
+<label>Email</label>
 <input type="email" id="loginEmail">
 
 <label>Password</label>
@@ -69,10 +68,11 @@ button{
 
 <div class="links">
 <span onclick="showCreate()">Sign Up</span>
+<span onclick="showForgot()">Forgot Password?</span>
 </div>
 </div>
 
-<!-- SIGN UP -->
+<!-- SIGNUP -->
 <div id="createForm" class="hidden">
 <h1>NOVUS</h1>
 <div class="sub">Create Account</div>
@@ -80,10 +80,10 @@ button{
 <label>Full Name</label>
 <input type="text" id="fullName">
 
-<label>Official Email</label>
+<label>Email</label>
 <input type="email" id="signupEmail">
 
-<label>Create Password</label>
+<label>Password</label>
 <input type="password" id="signupPassword">
 
 <label>Confirm Password</label>
@@ -102,16 +102,38 @@ button{
 </div>
 </div>
 
+<!-- FORGOT -->
+<div id="forgotForm" class="hidden">
+<h1>NOVUS</h1>
+<div class="sub">Reset Password</div>
+
+<label>Email</label>
+<input type="email" id="resetEmail">
+
+<button class="primary-btn" onclick="resetPassword()">Send Reset Link</button>
+
+<div class="links">
+<span onclick="showLogin()">Back to Login</span>
+</div>
+</div>
+
 </div>
 
 <script>
 function showCreate(){
 loginForm.classList.add("hidden");
 createForm.classList.remove("hidden");
+forgotForm.classList.add("hidden");
+}
+function showForgot(){
+loginForm.classList.add("hidden");
+createForm.classList.add("hidden");
+forgotForm.classList.remove("hidden");
 }
 function showLogin(){
 loginForm.classList.remove("hidden");
 createForm.classList.add("hidden");
+forgotForm.classList.add("hidden");
 }
 </script>
 
@@ -119,7 +141,7 @@ createForm.classList.add("hidden");
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import { getFirestore, doc, setDoc, getDoc } 
@@ -138,53 +160,62 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-
-// SIGNUP (FIXED — USING UID)
+// SIGNUP
 window.signup = async function() {
 
   const name = fullName.value;
   const email = signupEmail.value;
   const password = signupPassword.value;
-  const confirmPassword = confirmPassword.value;
+  const confirm = confirmPassword.value;
   const role = signupRole.value;
 
-  if(password !== confirmPassword){
+  if(password !== confirm){
     alert("Passwords do not match!");
     return;
   }
 
-  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
+  try{
 
-  await setDoc(doc(db, "users", user.uid), {
-    name: name,
-    email: email,
-    role: role,
-    onboardingPercentage: 0,
-    assessmentPercentage: 0,
-    certificationPercentage: 0,
-    overallScore: 0,
-    professionalSummary: "No Summary"
-  });
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-  alert("Account Created Successfully!");
-  showLogin();
+    // SAVE USING UID
+    await setDoc(doc(db, "users", user.uid), {
+      name: name,
+      role: role,
+      onboardingPercentage: 0,
+      assessmentPercentage: 0,
+      certificationPercentage: 0,
+      overallScore: 0,
+      professionalSummary: ""
+    });
+
+    alert("Account Created Successfully!");
+    showLogin();
+
+  }catch(error){
+    alert(error.message);
+  }
 }
 
-
-// LOGIN (FIXED — USING UID)
+// LOGIN
 window.login = async function() {
 
   const email = loginEmail.value;
   const password = loginPassword.value;
   const selectedRole = loginRole.value;
 
-  const userCredential = await signInWithEmailAndPassword(auth, email, password);
-  const user = userCredential.user;
+  try{
 
-  const docSnap = await getDoc(doc(db, "users", user.uid));
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
 
-  if(docSnap.exists()){
+    const docSnap = await getDoc(doc(db,"users",user.uid));
+
+    if(!docSnap.exists()){
+      alert("User data not found!");
+      return;
+    }
 
     const actualRole = docSnap.data().role;
 
@@ -199,9 +230,16 @@ window.login = async function() {
       window.location.href = "FresherDashboard.html";
     }
 
-  } else {
-    alert("User data not found!");
+  }catch(error){
+    alert(error.message);
   }
+}
+
+// RESET
+window.resetPassword = function(){
+  sendPasswordResetEmail(auth, resetEmail.value)
+    .then(()=> alert("Reset link sent!"))
+    .catch(error=> alert(error.message));
 }
 
 </script>
