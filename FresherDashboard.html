@@ -176,13 +176,12 @@ onAuthStateChanged(auth, async (user) => {
 
 if(user){
 
-    const emailKey = user.email.trim();
-    document.getElementById("displayEmail").innerText = emailKey;
-
     const userDoc = await getDoc(doc(db,"users",user.uid));
+
     if(userDoc.exists()){
         const data = userDoc.data();
         document.getElementById("displayName").innerText = data.name || "No Name";
+        document.getElementById("displayEmail").innerText = user.email;
         document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
         document.getElementById("onboardingPercent").innerText = (data.onboardingPercentage || 0) + "%";
         document.getElementById("assessmentPercent").innerText = (data.assessmentPercentage || 0) + "%";
@@ -194,7 +193,9 @@ if(user){
         document.getElementById("topInitial").innerText = firstLetter;
     }
 
-    const agentDoc = await getDoc(doc(db,"agents", emailKey));
+    // 🔥 EMPLOYEE ID FIXED LOGIC
+    const emailKey = user.email.trim();
+    const agentDoc = await getDoc(doc(db,"agents",emailKey));
 
     if(agentDoc.exists()){
         const agentData = agentDoc.data();
