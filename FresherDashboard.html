@@ -96,6 +96,27 @@ body{
     border-radius:15px;
     margin-top:20px;
 }
+
+.stats-grid{
+    margin-top:25px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:20px;
+}
+
+.stat-box{
+    padding:25px;
+    border-radius:18px;
+    text-align:center;
+    color:white;
+    font-weight:600;
+    background:linear-gradient(135deg,#6a5acd,#8ec5fc);
+}
+
+.stat-box h3{
+    margin:0;
+    font-size:30px;
+}
 </style>
 </head>
 
@@ -113,22 +134,18 @@ body{
 <a href="FresherDashboard.html" style="text-decoration:none;color:inherit;">
     <div class="sidebar-item">Dashboard</div>
 </a>
-<br>
 
-<a href="onboarding-agent.html" style="text-decoration:none;color:inherit;">
+<a href="onboarding agent.html" style="text-decoration:none;color:inherit;">
     <div class="sidebar-item">Onboarding Agent</div>
 </a>
-<br>
 
-<a href="assessment-agent.html" style="text-decoration:none;color:inherit;">
+<a href="assessment agent.html" style="text-decoration:none;color:inherit;">
     <div class="sidebar-item">Assessment Agent</div>
 </a>
-<br>
 
 <a href="Profileagent.html" style="text-decoration:none;color:inherit;">
     <div class="sidebar-item">Profile Agent</div>
 </a>
-<br>
 
 <a href="FresherReport.html" style="text-decoration:none;color:inherit;">
     <div class="sidebar-item">Report Agent</div>
@@ -151,6 +168,7 @@ body{
     <p><b>Email:</b> <span id="displayEmail">Loading...</span></p>
 </div>
 
+<!-- 🔥 EMPLOYEE ID ADDED -->
 <div class="info-box">
     <p><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></p>
 </div>
@@ -158,6 +176,30 @@ body{
 <div class="info-box">
     <b>Professional Summary</b>
     <p id="displaySummary">Loading...</p>
+</div>
+
+<div class="stats-grid">
+
+<div class="stat-box">
+    <h3 id="onboardingPercent">0%</h3>
+    <p>Onboarding Completion</p>
+</div>
+
+<div class="stat-box">
+    <h3 id="assessmentPercent">0%</h3>
+    <p>Assessments Completed</p>
+</div>
+
+<div class="stat-box">
+    <h3 id="certPercent">0%</h3>
+    <p>Certifications Achieved</p>
+</div>
+
+<div class="stat-box">
+    <h3 id="overallPercent">0%</h3>
+    <p>Overall Training Score</p>
+</div>
+
 </div>
 
 </div>
@@ -195,12 +237,18 @@ if(user){
         document.getElementById("displayEmail").innerText = user.email;
         document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
 
+        document.getElementById("onboardingPercent").innerText = (data.onboardingPercentage || 0) + "%";
+        document.getElementById("assessmentPercent").innerText = (data.assessmentPercentage || 0) + "%";
+        document.getElementById("certPercent").innerText = (data.certificationPercentage || 0) + "%";
+        document.getElementById("overallPercent").innerText = (data.overallScore || 0) + "%";
+
         const firstLetter = data.name ? data.name.charAt(0).toUpperCase() : "U";
         document.getElementById("avatarInitial").innerText = firstLetter;
         document.getElementById("topInitial").innerText = firstLetter;
     }
 
-    const agentDoc = await getDoc(doc(db,"agents",user.email));
+    // 🔥 EMPLOYEE ID FETCH
+    const agentDoc = await getDoc(doc(db,"agents",user.email.toLowerCase()));
 
     if(agentDoc.exists()){
         document.getElementById("displayEmpId").innerText =
