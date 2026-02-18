@@ -3,24 +3,29 @@
 <head>
 <title>NOVUS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
 
 body{
 height:100vh;
 display:flex;
 justify-content:center;
 align-items:center;
+background:radial-gradient(circle at 30% 30%,#081020,#02040a 70%);
 overflow:hidden;
-background:radial-gradient(circle at 30% 30%,#0b0f1f,#03050d 70%);
-position:relative;
 color:white;
 }
 
-/* 🌌 Stars */
-.stars{
+/* ⭐ Stars */
+body::before{
+content:"";
 position:absolute;
 width:200%;
 height:200%;
@@ -33,111 +38,127 @@ radial-gradient(1px 1px at 350px 300px, white, transparent),
 radial-gradient(1px 1px at 450px 120px, white, transparent),
 radial-gradient(1px 1px at 550px 260px, white, transparent),
 radial-gradient(1px 1px at 650px 180px, white, transparent),
-radial-gradient(1px 1px at 750px 350px, white, transparent),
-radial-gradient(1px 1px at 900px 400px, white, transparent);
+radial-gradient(1px 1px at 750px 350px, white, transparent);
 background-repeat:repeat;
 background-size:1000px 1000px;
-opacity:0.8;
+opacity:0.7;
 animation:twinkle 3s infinite alternate;
 }
+
 @keyframes twinkle{
 0%{opacity:0.5;}
 100%{opacity:1;}
 }
 
-/* Shooting star */
-.shooting-star{
-position:absolute;
-width:3px;height:3px;
-background:white;
-box-shadow:0 0 10px white;
-animation:shoot 8s linear infinite;
-}
-@keyframes shoot{
-0%{top:10%;left:-50px;opacity:1;}
-100%{top:60%;left:120%;opacity:0;}
-}
-
 /* Card */
 .card{
-width:850px;
-display:flex;
+width:420px;
+padding:45px 35px;
 border-radius:25px;
-backdrop-filter:blur(20px);
-background:rgba(255,255,255,0.08);
-box-shadow:0 0 40px rgba(0,0,0,0.6),
-0 0 80px rgba(0,198,255,0.15);
-overflow:hidden;
-z-index:5;
+background:#11162a;
+box-shadow:0 0 60px rgba(0,0,0,0.8),
+0 0 80px rgba(0,198,255,0.2);
+z-index:2;
+text-align:center;
 }
 
-.left{
-flex:1;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-padding:40px;
-background:linear-gradient(135deg,#4361ee,#7209b7);
+/* NOVUS Gradient */
+.novus{
+font-size:40px;
+font-weight:800;
+letter-spacing:4px;
+background:linear-gradient(90deg,#ff00cc,#00c6ff);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+margin-bottom:5px;
 }
-.left h1{font-size:42px;letter-spacing:3px;}
 
-.right{flex:1;padding:40px;}
+.subtitle{
+font-size:14px;
+opacity:0.7;
+margin-bottom:30px;
+}
 
-label{font-size:13px;}
+/* Labels */
+label{
+font-size:13px;
+display:block;
+text-align:left;
+margin-top:10px;
+margin-bottom:5px;
+}
 
-input,select{
+/* Inputs */
+input, select{
 width:100%;
-padding:10px;
-margin:8px 0 15px 0;
-border-radius:10px;
+padding:12px;
+margin-bottom:15px;
 border:none;
-background:rgba(255,255,255,0.15);
+border-radius:12px;
+background:#1c223d;
+color:white;
+font-size:14px;
+outline:none;
+}
+
+/* 🔥 MAKE DROPDOWN TEXT VISIBLE */
+select{
 color:white;
 }
+select option{
+color:black;
+}
 
+/* Button */
 button{
 width:100%;
-padding:11px;
+padding:13px;
 border:none;
-border-radius:25px;
+border-radius:30px;
 background:linear-gradient(90deg,#00c6ff,#0072ff);
 color:white;
 font-weight:600;
 cursor:pointer;
 transition:0.3s;
+margin-top:5px;
 }
+
 button:hover{
 transform:scale(1.05);
 box-shadow:0 0 20px #00c6ff;
 }
 
-.links{text-align:center;margin-top:10px;font-size:13px;}
-.links span{cursor:pointer;display:block;margin-top:5px;}
-.hidden{display:none;}
+.links{
+margin-top:15px;
+font-size:13px;
+}
 
-@media(max-width:900px){
-.card{flex-direction:column;width:90%;}
+.links span{
+display:block;
+margin-top:6px;
+cursor:pointer;
+opacity:0.8;
+}
+
+.links span:hover{
+text-decoration:underline;
+}
+
+.hidden{
+display:none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="stars"></div>
-<div class="shooting-star"></div>
-
 <div class="card">
-
-<div class="left">
-<h1>NOVUS</h1>
-<p>Maverick Onboarding System 🚀</p>
-</div>
-
-<div class="right">
 
 <!-- LOGIN -->
 <div id="loginForm">
+<div class="novus">NOVUS</div>
+<div class="subtitle">Maverick Onboarding System 🚀</div>
+
 <label>Login As</label>
 <select id="loginRole">
 <option value="fresher">Fresher</option>
@@ -160,6 +181,9 @@ box-shadow:0 0 20px #00c6ff;
 
 <!-- SIGNUP -->
 <div id="createForm" class="hidden">
+<div class="novus">NOVUS</div>
+<div class="subtitle">Create Account 🚀</div>
+
 <label>Full Name</label>
 <input type="text" id="fullName">
 
@@ -185,8 +209,11 @@ box-shadow:0 0 20px #00c6ff;
 </div>
 </div>
 
-<!-- FORGOT -->
+<!-- RESET -->
 <div id="forgotForm" class="hidden">
+<div class="novus">NOVUS</div>
+<div class="subtitle">Reset Password</div>
+
 <label>Email</label>
 <input type="email" id="resetEmail">
 
@@ -197,7 +224,6 @@ box-shadow:0 0 20px #00c6ff;
 </div>
 </div>
 
-</div>
 </div>
 
 <script>
@@ -241,61 +267,47 @@ const db = getFirestore(app);
 
 /* SIGNUP */
 window.signup = async function(){
-const name=fullName.value;
-const email=signupEmail.value;
-const password=signupPassword.value;
-const confirm=confirmPassword.value;
-const role=signupRole.value;
-
-if(password!==confirm){alert("Passwords do not match!");return;}
+if(signupPassword.value !== confirmPassword.value){
+alert("Passwords do not match!");
+return;
+}
 
 try{
-const userCredential=await createUserWithEmailAndPassword(auth,email,password);
-const user=userCredential.user;
-
-await setDoc(doc(db,"users",user.uid),{
-name:name,
-role:role,
+const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
+await setDoc(doc(db,"users",userCredential.user.uid),{
+name:fullName.value,
+role:signupRole.value,
 onboardingPercentage:0,
 assessmentPercentage:0,
 certificationPercentage:0,
 overallScore:0,
 professionalSummary:""
 });
-
 alert("Account Created!");
 showLogin();
-
 }catch(error){alert(error.message);}
 }
 
 /* LOGIN */
 window.login = async function(){
-const email=loginEmail.value;
-const password=loginPassword.value;
-const selectedRole=loginRole.value;
-
 try{
-const userCredential=await signInWithEmailAndPassword(auth,email,password);
-const user=userCredential.user;
-
-const docSnap=await getDoc(doc(db,"users",user.uid));
-if(!docSnap.exists()){alert("User data not found!");return;}
-
-const actualRole=docSnap.data().role;
-if(actualRole!==selectedRole){alert("Wrong role selected!");return;}
-
-if(actualRole==="admin"){
+const userCredential = await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
+const docSnap = await getDoc(doc(db,"users",userCredential.user.uid));
+if(!docSnap.exists()){alert("User not found!");return;}
+if(docSnap.data().role !== loginRole.value){
+alert("Wrong role selected!");
+return;
+}
+if(loginRole.value==="admin"){
 window.location.href="AdminDashboard.html";
 }else{
 window.location.href="FresherDashboard.html";
 }
-
 }catch(error){alert(error.message);}
 }
 
 /* RESET */
-window.resetPassword=function(){
+window.resetPassword = function(){
 sendPasswordResetEmail(auth, resetEmail.value)
 .then(()=>alert("Reset link sent!"))
 .catch(error=>alert(error.message));
