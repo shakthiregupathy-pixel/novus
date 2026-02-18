@@ -55,7 +55,7 @@ body{
 
 <body>
 
-<div class="quiz-card">
+<div class="quiz-card" id="quizCard">
   <h4 class="text-center mb-3">🧠 Daily Quiz</h4>
 
   <div class="progress mb-3">
@@ -76,56 +76,16 @@ body{
 <script>
 /* ================= QUESTIONS ================= */
 const quizData = [
-  {
-    q:"What does HTML stand for?",
-    o:["Hyper Text Markup Language","High Text Machine Language","Hyper Tool Markup","Home Tool Markup"],
-    a:0
-  },
-  {
-    q:"Which language styles web pages?",
-    o:["HTML","CSS","Java","Python"],
-    a:1
-  },
-  {
-    q:"Which is not a JS framework?",
-    o:["React","Angular","Vue","Django"],
-    a:3
-  },
-  {
-    q:"Which tag runs JavaScript?",
-    o:["<js>","<javascript>","<script>","<code>"],
-    a:2
-  },
-  {
-    q:"Which keyword creates constant?",
-    o:["var","let","const","static"],
-    a:2
-  },
-  {
-    q:"Output of typeof [] ?",
-    o:["array","object","list","undefined"],
-    a:1
-  },
-  {
-    q:"Which method parses JSON?",
-    o:["JSON.parse()","JSON.stringify()","JSON.convert()","JSON.object()"],
-    a:0
-  },
-  {
-    q:"Which symbol is used for comments?",
-    o:["//","##","<!-- -->","**"],
-    a:0
-  },
-  {
-    q:"Which company developed JavaScript?",
-    o:["Microsoft","Netscape","Google","Oracle"],
-    a:1
-  },
-  {
-    q:"Which keyword defines function?",
-    o:["func","function","define","method"],
-    a:1
-  }
+  { q:"What does HTML stand for?", o:["Hyper Text Markup Language","High Text Machine Language","Hyper Tool Markup","Home Tool Markup"], a:0 },
+  { q:"Which language styles web pages?", o:["HTML","CSS","Java","Python"], a:1 },
+  { q:"Which is not a JS framework?", o:["React","Angular","Vue","Django"], a:3 },
+  { q:"Which tag runs JavaScript?", o:["<js>","<javascript>","<script>","<code>"], a:2 },
+  { q:"Which keyword creates constant?", o:["var","let","const","static"], a:2 },
+  { q:"Output of typeof [] ?", o:["array","object","list","undefined"], a:1 },
+  { q:"Which method parses JSON?", o:["JSON.parse()","JSON.stringify()","JSON.convert()","JSON.object()"], a:0 },
+  { q:"Which symbol is used for comments?", o:["//","##","<!-- -->","**"], a:0 },
+  { q:"Which company developed JavaScript?", o:["Microsoft","Netscape","Google","Oracle"], a:1 },
+  { q:"Which keyword defines function?", o:["func","function","define","method"], a:1 }
 ];
 
 let index = 0;
@@ -162,7 +122,7 @@ function selectOption(el,i){
 /* ================= NEXT ================= */
 document.getElementById("nextBtn").onclick = ()=>{
   if(selected === null){
-    alert("Select an option 😅");
+    alert("Select an option bro 😅");
     return;
   }
 
@@ -174,13 +134,24 @@ document.getElementById("nextBtn").onclick = ()=>{
   if(index < quizData.length){
     loadQuestion();
   }else{
-    document.querySelector(".quiz-card").innerHTML = `
+    // ✅ ADDED: FINAL SUBMIT UI
+    document.getElementById("quizCard").innerHTML = `
       <h3 class="text-center">🎉 Quiz Completed</h3>
       <h4 class="text-center text-success">Score: ${score} / 10</h4>
       <p class="text-center">Great job 👏</p>
+
+      <button class="btn btn-success w-100 mt-3" onclick="goToDashboard()">
+        Go to Dashboard
+      </button>
     `;
   }
 };
+
+/* ✅ ADDED: REDIRECT FUNCTION */
+function goToDashboard(){
+  // change filename if needed
+  window.location.href = "assessment.html";
+}
 
 /* INIT */
 loadQuestion();
