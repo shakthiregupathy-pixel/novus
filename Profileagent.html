@@ -364,17 +364,25 @@ window.addCertification = async function () {
       url: downloadURL
     });
 
-    displayCertifications();
+    function displayCertifications() {
 
-    fileInput.value = "";
+  const container = document.getElementById("certificateContainer");
+  container.innerHTML = "";
 
-    alert("File uploaded successfully ✅");
+  certifications.forEach(cert => {
 
-  } catch (error) {
-    console.error("UPLOAD ERROR:", error);
-    alert(error.message);
-  }
-};
+    const certDiv = document.createElement("div");
+    certDiv.classList.add("certificate-item");
+
+    certDiv.innerHTML = `
+      <p>${cert.name}</p>
+      <a href="${cert.url}" target="_blank">View Certificate</a>
+    `;
+
+    container.appendChild(certDiv);
+  });
+}
+
 
 
 
