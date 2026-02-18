@@ -251,8 +251,17 @@ if(user){
     const agentDoc = await getDoc(doc(db,"agents",user.email.toLowerCase()));
 
     if(agentDoc.exists()){
-        document.getElementById("displayEmpId").innerText =
-            agentDoc.data().EMPID || "Not Assigned";
+        const agentData = agentDoc.data();
+
+const empId =
+    agentData.EMPID ||
+    agentData.employeeId ||
+    agentData.EmpId ||
+    agentData.empid ||
+    "Not Assigned";
+
+document.getElementById("displayEmpId").innerText = empId;
+
     } else {
         document.getElementById("displayEmpId").innerText = "Not Assigned";
     }
@@ -266,3 +275,4 @@ if(user){
 
 </body>
 </html>
+
