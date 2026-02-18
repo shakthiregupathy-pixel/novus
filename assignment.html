@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Assignment Module</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+  background: linear-gradient(135deg,#c9b6f3,#8ec5fc);
+  font-family: Inter, sans-serif;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+.card{
+  border-radius:16px;
+  box-shadow:0 10px 25px rgba(0,0,0,.1);
+  animation: fadeUp .4s ease;
+}
+
+@keyframes fadeUp{
+  from{opacity:0; transform:translateY(20px)}
+  to{opacity:1; transform:translateY(0)}
+}
+
+.option{
+  transition:.2s;
+}
+.option:hover{background:#eef2ff; cursor:pointer}
+.option.active{background:#198754; color:#fff}
+
+.result-box{
+  background:#fff;
+  border-radius:16px;
+  padding:25px;
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+}
+
+/* 🎉 CONFETTI */
+.confetti{
+  position:fixed;
+  width:8px;
+  height:8px;
+  top:-10px;
+  animation:fall linear forwards;
+  z-index:9999;
+}
+@keyframes fall{
+  to{transform:translateY(110vh) rotate(360deg); opacity:0}
+}
+</style>
+</head>
+
+<body>
+<div class="container my-4">
+
+<!-- ASSIGNMENT SELECT -->
+<div id="select" class="page active">
+  <h3 class="mb-3">📘 Assignments</h3>
+  <div class="row g-3">
+    <div class="col-md-4"><div class="card p-4 text-center">
+      <h5>Assignment 1</h5>
+      <button class="btn btn-primary" onclick="startAssignment(0)">Start</button>
+    </div></div>
+    <div class="col-md-4"><div class="card p-4 text-center">
+      <h5>Assignment 2</h5>
+      <button class="btn btn-primary" onclick="startAssignment(1)">Start</button>
+    </div></div>
+    <div class="col-md-4"><div class="card p-4 text-center">
+      <h5>Assignment 3</h5>
+      <button class="btn btn-primary" onclick="startAssignment(2)">Start</button>
+    </div></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div id="quiz" class="page">
+  <div class="card p-4">
+    <h5 id="assignTitle"></h5>
+    <p>Question <span id="qIndex"></span> / 10</p>
+    <h6 id="questionText"></h6>
+    <div id="options" class="mt-3"></div>
+    <button id="nextBtn" class="btn btn-secondary mt-3" onclick="nextQuestion()">Next</button>
+    <button id="submitBtn" class="btn btn-success mt-3 d-none" onclick="submitAssignment()">Submit</button>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="page">
+  <div class="result-box text-center">
+    <h4>🎉 Assignment Submitted</h4>
+    <p><strong>Score:</strong> <span id="finalScore"></span> / 20</p>
+    <p>Status: Submitted</p>
+    <button class="btn btn-primary" onclick="goSelect()">Back</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ================= APTITUDE QUESTIONS ================= */
+const assignments = [
+
+/* ASSIGNMENT 1 – QUANTITATIVE */
+[
+ {q:"If 3x + 7 = 25, find x.", o:["4","6","8","12"], a:1},
+ {q:"A train covers 180 km in 3 hours. Speed?", o:["40","50","60","70"], a:2},
+ {q:"Simple interest on ₹1000 at 10% for 2 years?", o:["100","200","300","400"], a:1},
+ {q:"LCM of 12 and 18?", o:["36","24","18","72"], a:0},
+ {q:"20% of 250 = ?", o:["40","45","50","60"], a:2},
+ {q:"If x:y = 2:3 and y=15, x=?", o:["5","10","12","20"], a:1},
+ {q:"√144 + √16 = ?", o:["16","14","18","20"], a:2},
+ {q:"Profit % if CP=100, SP=120?", o:["10%","15%","20%","25%"], a:2},
+ {q:"Average of 10,20,30?", o:["15","20","25","30"], a:1},
+ {q:"2³ + 3² = ?", o:["13","17","19","25"], a:1}
+],
+
+/* ASSIGNMENT 2 – LOGICAL & VERBAL */
+[
+ {q:"Odd one out?", o:["Dog","Cat","Lion","Car"], a:3},
+ {q:"Synonym of ‘Rapid’?", o:["Slow","Fast","Late","Weak"], a:1},
+ {q:"Antonym of ‘Expand’?", o:["Grow","Increase","Shrink","Rise"], a:2},
+ {q:"If A=1, B=2, then Z=?", o:["24","25","26","27"], a:2},
+ {q:"Find next: 2, 6, 12, 20, ?", o:["28","30","32","36"], a:1},
+ {q:"Which is a palindrome?", o:["Level","World","Open","Close"], a:0},
+ {q:"Day after Friday?", o:["Saturday","Sunday","Monday","Thursday"], a:0},
+ {q:"Book : Read :: Food : ?", o:["Cook","Eat","Taste","Serve"], a:1},
+ {q:"If today is Monday, after 9 days?", o:["Tuesday","Wednesday","Thursday","Friday"], a:2},
+ {q:"Odd word?", o:["Pen","Pencil","Eraser","Laptop"], a:3}
+],
+
+/* ASSIGNMENT 3 – PROGRAMMING APTITUDE */
+[
+ {q:"Output of typeof [] ?", o:["array","object","list","null"], a:1},
+ {q:"Which is not a JS datatype?", o:["string","number","float","boolean"], a:2},
+ {q:"Keyword to declare constant?", o:["let","var","const","static"], a:2},
+ {q:"Index of first element?", o:["0","1","-1","2"], a:0},
+ {q:"JSON stands for?", o:["Java Script Object Notation","Java Source","Script Note","None"], a:0},
+ {q:"=== checks?", o:["Value","Type","Both","None"], a:2},
+ {q:"Which loop runs at least once?", o:["for","while","do-while","foreach"], a:2},
+ {q:"NaN means?", o:["Not a Number","Null","Name","New"], a:0},
+ {q:"JS runs mainly in?", o:["Server","Browser","Compiler","OS"], a:1},
+ {q:"Which is framework?", o:["HTML","CSS","React","JSON"], a:2}
+]
+];
+
+let aIndex=0,qIndex=0,score=0,selected=null;
+
+/* ================= LOGIC ================= */
+function show(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startAssignment(i){
+  aIndex=i; qIndex=0; score=0; selected=null;
+  show('quiz'); loadQuestion();
+}
+
+function loadQuestion(){
+  const q=assignments[aIndex][qIndex];
+  document.getElementById('assignTitle').innerText=`Assignment ${aIndex+1}`;
+  document.getElementById('qIndex').innerText=qIndex+1;
+  document.getElementById('questionText').innerText=q.q;
+
+  const opt=document.getElementById('options');
+  opt.innerHTML="";
+  q.o.forEach((op,i)=>{
+    const d=document.createElement("div");
+    d.className="option border rounded p-2 mb-2";
+    d.innerText=op;
+    d.onclick=()=>selectOption(i,d);
+    opt.appendChild(d);
+  });
+
+  document.getElementById('nextBtn').classList.remove('d-none');
+  document.getElementById('submitBtn').classList.add('d-none');
+}
+
+function selectOption(i,el){
+  selected=i;
+  document.querySelectorAll('.option').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function nextQuestion(){
+  if(selected===null){alert("Select an option");return;}
+  if(selected===assignments[aIndex][qIndex].a) score+=2;
+  selected=null; qIndex++;
+
+  if(qIndex<9) loadQuestion();
+  else{
+    loadQuestion();
+    document.getElementById('nextBtn').classList.add('d-none');
+    document.getElementById('submitBtn').classList.remove('d-none');
+  }
+}
+
+function submitAssignment(){
+  if(selected!==null && selected===assignments[aIndex][qIndex].a) score+=2;
+  document.getElementById('finalScore').innerText=score;
+  launchConfetti();
+  show('result');
+}
+
+function goSelect(){show('select')}
+
+/* 🎉 CONFETTI */
+function launchConfetti(){
+  const colors=["#22c55e","#6366f1","#f59e0b","#ec4899","#8b5cf6"];
+  for(let i=0;i<80;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration=2+Math.random()*3+"s";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),5000);
+  }
+}
+</script>
+
+</body>
+</html>
