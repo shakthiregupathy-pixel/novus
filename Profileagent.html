@@ -352,7 +352,7 @@ window.addCertification = async function () {
   try {
 
     const storageRef = ref(storage, 
-      `certifications/${currentUser.uid}/${file.name}`
+      `certifications/${currentUser.uid}/${Date.now()}_${file.name}`
     );
 
     await uploadBytes(storageRef, file);
@@ -371,8 +371,8 @@ window.addCertification = async function () {
     alert("File uploaded successfully ✅");
 
   } catch (error) {
-    console.error(error);
-    alert("Upload failed.");
+    console.error("UPLOAD ERROR:", error);
+    alert(error.message);
   }
 };
 
