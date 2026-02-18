@@ -315,10 +315,12 @@ function calculateProfile() {
     document.getElementById("profileCompletionBar").style.width = completion + "%";
     document.getElementById("profileCompletionBar").innerText = completion + "%";
 }
-<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
 
 </script>
 <!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+
 <script>
   const firebaseConfig = {
     apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
@@ -330,27 +332,12 @@ function calculateProfile() {
   firebase.initializeApp(firebaseConfig);
 
   const auth = firebase.auth();
-  const db = firebase.firestore();
 
   auth.onAuthStateChanged(user => {
     if (user) {
-
-      db.collection("users")
-        .doc(user.uid)
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            document.getElementById("userName").innerText = doc.data().name;
-          } else {
-            document.getElementById("userName").innerText = "Name not found";
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
+      document.getElementById("userName").innerText = user.displayName;
     } else {
-      window.location.href = "login.html";
+      window.location.href = "login.html"; // redirect if not logged in
     }
   });
 </script>
