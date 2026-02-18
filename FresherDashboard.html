@@ -51,7 +51,8 @@ body{
     padding-top:20px;
 }
 
-.sidebar-item{
+
+    .sidebar-item{
     padding:15px 20px;
     border-radius:10px;
     margin:5px 10px;
@@ -60,6 +61,8 @@ body{
     color:white;
     font-weight:bold;
 }
+
+
 
 .main{
     flex:1;
@@ -133,26 +136,35 @@ body{
 
 <div class="sidebar">
 
-<a href="FresherDashboard.html" style="text-decoration: none; color: inherit;">
-    <div class="sidebar-item">Dashboard</div>
+   <a href="FresherDashboard.html" style="text-decoration: none; color: inherit;">
+    <div class="sidebar-item">
+        Dashboard
+    </div>
 </a>
 
 <a href="onboarding agent.html" style="text-decoration: none; color: inherit;">
-    <div class="sidebar-item">Onboarding Agent</div>
+    <div class="sidebar-item">
+        Onboarding Agent
+    </div>
 </a>
 
 <a href="assessment agent.html" style="text-decoration: none; color: inherit;">
-    <div class="sidebar-item">Assessment Agent</div>
+    <div class="sidebar-item">
+        Assessment Agent
+    </div>
 </a>
 
 <a href="Profileagent.html" style="text-decoration: none; color: inherit;">
-    <div class="sidebar-item">Profile Agent</div>
+    <div class="sidebar-item">
+        Profile Agent
+    </div>
 </a>
 
 <a href="Reportagent.html" style="text-decoration: none; color: inherit;">
-    <div class="sidebar-item">Report Agent</div>
+    <div class="sidebar-item">
+        Report Agent
+    </div>
 </a>
-
 </div>
 
 <div class="main">
@@ -168,7 +180,6 @@ body{
 
 <div class="info-box">
     <p><b>Email:</b> <span id="displayEmail">Loading...</span></p>
-    <p><b>Employee ID:</b> <span id="empId">Generating...</span></p>
 </div>
 
 <div class="info-box">
@@ -204,19 +215,41 @@ body{
 </div>
 </div>
 
-<script type="module">
+<!-- NAVIGATION SCRIPT (CORRECT PLACE) -->
+<script>
+function navigate(page){
 
+    if(page === "dashboard"){
+        window.location.href = "FresherDashboard.html";
+    }
+    else if(page === "onboarding"){
+        window.location.href = "OnboardingAgent.html";
+    }
+    else if(page === "assessment"){
+        window.location.href = "AssessmentAgent.html";
+    }
+    else if(page === "profile"){
+        window.location.href = "ProfileAgent.html";
+    }
+    else if(page === "report"){
+        window.location.href = "ReportAgent.html";
+    }
+}
+</script>
+
+<!-- FIREBASE SCRIPT -->
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, getDocs, collection, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MSG_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  authDomain: "novus-9dfb8.firebaseapp.com",
+  projectId: "novus-9dfb8",
+  storageBucket: "novus-9dfb8.firebasestorage.app",
+  messagingSenderId: "641276518161",
+  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -227,31 +260,12 @@ onAuthStateChanged(auth, async (user) => {
 
 if(user){
 
-    const userRef = doc(db,"users",user.uid);
-    const userDoc = await getDoc(userRef);
+    const userDoc = await getDoc(doc(db,"users",user.uid));
 
     if(userDoc.exists()){
 
         const data = userDoc.data();
 
-        // 🔥 EMPLOYEE ID LOGIC
-        let employeeId = data.employeeId;
-
-        if (!employeeId) {
-
-            const snapshot = await getDocs(collection(db, "users"));
-            const count = snapshot.size;
-
-            employeeId = "FR" + String(count).padStart(3, '0');
-
-            await updateDoc(userRef, {
-                employeeId: employeeId
-            });
-        }
-
-        document.getElementById("empId").innerText = employeeId;
-
-        // Existing Data
         document.getElementById("displayName").innerText = data.name || "No Name";
         document.getElementById("displayEmail").innerText = user.email;
         document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
@@ -272,8 +286,15 @@ if(user){
 }
 
 });
-
 </script>
 
 </body>
 </html>
+
+
+
+
+
+
+
+fresher dash
