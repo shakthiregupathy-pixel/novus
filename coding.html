@@ -61,7 +61,12 @@ textarea{
 
     <div class="d-flex gap-2">
       <button class="btn btn-primary" onclick="runCode()">▶ Run Code</button>
-      <button class="btn btn-success" onclick="nextQuestion()">Next</button>
+      <button id="nextBtn" class="btn btn-success" onclick="nextQuestion()">Next</button>
+
+      <!-- 🔥 ADDED -->
+      <button id="submitBtn" class="btn btn-dark d-none" onclick="submitCoding()">
+        Submit & Go to Dashboard
+      </button>
     </div>
 
     <div id="output" class="alert alert-secondary mt-3 d-none"></div>
@@ -178,6 +183,17 @@ function showResult(){
   `;
 
   result.classList.remove("d-none");
+
+  // 🔥 ADDED: show submit, hide next
+  document.getElementById("nextBtn").classList.add("d-none");
+  document.getElementById("submitBtn").classList.remove("d-none");
+}
+
+/* ================= SUBMIT (NEW) ================= */
+function submitCoding(){
+  // redirect to assessment dashboard
+  window.location.href = "assessment.html"; 
+  // or: window.location.href = "dashboard.html";
 }
 </script>
 
