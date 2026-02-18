@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+  background: linear-gradient(135deg,#8ec5fc,#e0c3fc);
+  font-family: Inter, sans-serif;
+}
+
+.quiz-card{
+  max-width:700px;
+  margin:auto;
+  margin-top:60px;
+  padding:30px;
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+  animation: pop .5s ease;
+}
+
+@keyframes pop{
+  from{transform:scale(.9);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+.option{
+  border:1px solid #ddd;
+  padding:12px;
+  border-radius:10px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:.3s;
+}
+.option:hover{
+  background:#f1f5ff;
+  transform:translateX(6px);
+}
+
+.option.selected{
+  background:#4f46e5;
+  color:#fff;
+}
+
+.progress{
+  height:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="quiz-card">
+  <h4 class="text-center mb-3">🧠 Daily Quiz</h4>
+
+  <div class="progress mb-3">
+    <div id="progressBar" class="progress-bar bg-success" style="width:0%"></div>
+  </div>
+
+  <p class="text-muted">
+    Question <span id="qNo">1</span> / 10
+  </p>
+
+  <h5 id="questionText"></h5>
+
+  <div id="options"></div>
+
+  <button id="nextBtn" class="btn btn-primary w-100 mt-3">Next</button>
+</div>
+
+<script>
+/* ================= QUESTIONS ================= */
+const quizData = [
+  {
+    q:"What does HTML stand for?",
+    o:["Hyper Text Markup Language","High Text Machine Language","Hyper Tool Markup","Home Tool Markup"],
+    a:0
+  },
+  {
+    q:"Which language styles web pages?",
+    o:["HTML","CSS","Java","Python"],
+    a:1
+  },
+  {
+    q:"Which is not a JS framework?",
+    o:["React","Angular","Vue","Django"],
+    a:3
+  },
+  {
+    q:"Which tag runs JavaScript?",
+    o:["<js>","<javascript>","<script>","<code>"],
+    a:2
+  },
+  {
+    q:"Which keyword creates constant?",
+    o:["var","let","const","static"],
+    a:2
+  },
+  {
+    q:"Output of typeof [] ?",
+    o:["array","object","list","undefined"],
+    a:1
+  },
+  {
+    q:"Which method parses JSON?",
+    o:["JSON.parse()","JSON.stringify()","JSON.convert()","JSON.object()"],
+    a:0
+  },
+  {
+    q:"Which symbol is used for comments?",
+    o:["//","##","<!-- -->","**"],
+    a:0
+  },
+  {
+    q:"Which company developed JavaScript?",
+    o:["Microsoft","Netscape","Google","Oracle"],
+    a:1
+  },
+  {
+    q:"Which keyword defines function?",
+    o:["func","function","define","method"],
+    a:1
+  }
+];
+
+let index = 0;
+let score = 0;
+let selected = null;
+
+/* ================= LOAD QUESTION ================= */
+function loadQuestion(){
+  const q = quizData[index];
+  document.getElementById("qNo").innerText = index + 1;
+  document.getElementById("questionText").innerText = q.q;
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  q.o.forEach((opt,i)=>{
+    const div = document.createElement("div");
+    div.className = "option";
+    div.innerText = opt;
+    div.onclick = () => selectOption(div,i);
+    optionsDiv.appendChild(div);
+  });
+
+  document.getElementById("progressBar").style.width =
+    ((index+1)/quizData.length)*100 + "%";
+}
+
+function selectOption(el,i){
+  document.querySelectorAll(".option").forEach(o=>o.classList.remove("selected"));
+  el.classList.add("selected");
+  selected = i;
+}
+
+/* ================= NEXT ================= */
+document.getElementById("nextBtn").onclick = ()=>{
+  if(selected === null){
+    alert("Select an option 😅");
+    return;
+  }
+
+  if(selected === quizData[index].a) score++;
+
+  selected = null;
+  index++;
+
+  if(index < quizData.length){
+    loadQuestion();
+  }else{
+    document.querySelector(".quiz-card").innerHTML = `
+      <h3 class="text-center">🎉 Quiz Completed</h3>
+      <h4 class="text-center text-success">Score: ${score} / 10</h4>
+      <p class="text-center">Great job 👏</p>
+    `;
+  }
+};
+
+/* INIT */
+loadQuestion();
+</script>
+
+</body>
+</html>
