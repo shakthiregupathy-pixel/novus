@@ -157,7 +157,8 @@ body{
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs } from 
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
@@ -176,13 +177,15 @@ onAuthStateChanged(auth, async (user) => {
 
 if(user){
 
+    // USER DATA
     const userDoc = await getDoc(doc(db,"users",user.uid));
-
     if(userDoc.exists()){
         const data = userDoc.data();
+
         document.getElementById("displayName").innerText = data.name || "No Name";
         document.getElementById("displayEmail").innerText = user.email;
         document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
+
         document.getElementById("onboardingPercent").innerText = (data.onboardingPercentage || 0) + "%";
         document.getElementById("assessmentPercent").innerText = (data.assessmentPercentage || 0) + "%";
         document.getElementById("certPercent").innerText = (data.certificationPercentage || 0) + "%";
@@ -193,14 +196,16 @@ if(user){
         document.getElementById("topInitial").innerText = firstLetter;
     }
 
-    // 🔥 EMPLOYEE ID FIXED LOGIC
-    const emailKey = user.email.trim();
-    const agentDoc = await getDoc(doc(db,"agents",emailKey));
+    // 🔥 SAFE EMPLOYEE FETCH
+    const agentsRef = collection(db, "agents");
+    const q = query(agentsRef, where("__name__", "==", user.email));
 
-    if(agentDoc.exists()){
-        const agentData = agentDoc.data();
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty) {
+        const agentData = snapshot.docs[0].data();
         document.getElementById("displayEmpId").innerText =
-            agentData.EMPID || "Not Assigned";
+            agentData.EMPID?.toString() || "Not Assigned";
     } else {
         document.getElementById("displayEmpId").innerText = "Not Assigned";
     }
