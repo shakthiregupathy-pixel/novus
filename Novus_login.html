@@ -14,58 +14,48 @@ display:flex;
 justify-content:center;
 align-items:center;
 overflow:hidden;
-background:radial-gradient(circle at 30% 30%,#0f2027,#050510 70%);
+background:radial-gradient(circle at 30% 30%,#0b0f1f,#03050d 70%);
 position:relative;
 color:white;
 }
 
-/* ⭐ Stars */
+/* 🌌 Stars */
 .stars{
 position:absolute;
-width:100%;
-height:100%;
-background:url("https://www.transparenttextures.com/patterns/stardust.png");
-animation:twinkle 4s infinite alternate;
-opacity:0.6;
+width:200%;
+height:200%;
+background:
+radial-gradient(1px 1px at 20px 30px, white, transparent),
+radial-gradient(1px 1px at 60px 90px, white, transparent),
+radial-gradient(1px 1px at 140px 150px, white, transparent),
+radial-gradient(1px 1px at 250px 200px, white, transparent),
+radial-gradient(1px 1px at 350px 300px, white, transparent),
+radial-gradient(1px 1px at 450px 120px, white, transparent),
+radial-gradient(1px 1px at 550px 260px, white, transparent),
+radial-gradient(1px 1px at 650px 180px, white, transparent),
+radial-gradient(1px 1px at 750px 350px, white, transparent),
+radial-gradient(1px 1px at 900px 400px, white, transparent);
+background-repeat:repeat;
+background-size:1000px 1000px;
+opacity:0.8;
+animation:twinkle 3s infinite alternate;
 }
-@keyframes twinkle{from{opacity:0.4;}to{opacity:0.8;}}
+@keyframes twinkle{
+0%{opacity:0.5;}
+100%{opacity:1;}
+}
 
-/* 🌠 Shooting Star */
+/* Shooting star */
 .shooting-star{
 position:absolute;
-top:15%;
-left:-100px;
 width:3px;height:3px;
 background:white;
 box-shadow:0 0 10px white;
-animation:shoot 6s linear infinite;
+animation:shoot 8s linear infinite;
 }
 @keyframes shoot{
-0%{transform:translateX(0) translateY(0);}
-100%{transform:translateX(1200px) translateY(300px);}
-}
-
-/* 🌌 Nebula */
-.nebula{
-position:absolute;
-width:400px;height:400px;
-background:radial-gradient(circle,#4cc9f0,#3a0ca3,#000);
-border-radius:50%;
-filter:blur(120px);
-opacity:0.5;
-animation:float 8s ease-in-out infinite alternate;
-}
-@keyframes float{from{transform:translateY(-20px);}to{transform:translateY(20px);}}
-
-/* Parallax */
-.parallax{
-position:absolute;
-width:100%;
-height:100%;
-display:flex;
-justify-content:center;
-align-items:center;
-transition:transform 0.1s;
+0%{top:10%;left:-50px;opacity:1;}
+100%{top:60%;left:120%;opacity:0;}
 }
 
 /* Card */
@@ -75,7 +65,8 @@ display:flex;
 border-radius:25px;
 backdrop-filter:blur(20px);
 background:rgba(255,255,255,0.08);
-box-shadow:0 0 40px rgba(0,0,0,0.6);
+box-shadow:0 0 40px rgba(0,0,0,0.6),
+0 0 80px rgba(0,198,255,0.15);
 overflow:hidden;
 z-index:5;
 }
@@ -89,7 +80,6 @@ align-items:center;
 padding:40px;
 background:linear-gradient(135deg,#4361ee,#7209b7);
 }
-
 .left h1{font-size:42px;letter-spacing:3px;}
 
 .right{flex:1;padding:40px;}
@@ -117,7 +107,6 @@ font-weight:600;
 cursor:pointer;
 transition:0.3s;
 }
-
 button:hover{
 transform:scale(1.05);
 box-shadow:0 0 20px #00c6ff;
@@ -137,10 +126,6 @@ box-shadow:0 0 20px #00c6ff;
 
 <div class="stars"></div>
 <div class="shooting-star"></div>
-<div class="nebula" style="top:10%;left:60%;"></div>
-<div class="nebula" style="bottom:5%;left:10%;"></div>
-
-<div class="parallax" id="parallax">
 
 <div class="card">
 
@@ -168,7 +153,7 @@ box-shadow:0 0 20px #00c6ff;
 <button onclick="login()">Sign In</button>
 
 <div class="links">
-<button onclick="showCreate()">Create Account</button>
+<span onclick="showCreate()">Create Account</span>
 <span onclick="showForgot()">Forgot Password?</span>
 </div>
 </div>
@@ -214,17 +199,8 @@ box-shadow:0 0 20px #00c6ff;
 
 </div>
 </div>
-</div>
 
 <script>
-/* Parallax */
-document.addEventListener("mousemove", function(e){
-const x=(window.innerWidth/2-e.pageX)/40;
-const y=(window.innerHeight/2-e.pageY)/40;
-document.getElementById("parallax").style.transform=`translate(${x}px,${y}px)`;
-});
-
-/* Form Switch */
 function showCreate(){
 loginForm.classList.add("hidden");
 createForm.classList.remove("hidden");
@@ -242,9 +218,8 @@ forgotForm.classList.add("hidden");
 }
 </script>
 
-<!-- 🔥 FIREBASE START 🔥 -->
+<!-- 🔥 FIREBASE 🔥 -->
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -321,13 +296,11 @@ window.location.href="FresherDashboard.html";
 
 /* RESET */
 window.resetPassword=function(){
-sendPasswordResetEmail(auth,resetEmail.value)
+sendPasswordResetEmail(auth, resetEmail.value)
 .then(()=>alert("Reset link sent!"))
 .catch(error=>alert(error.message));
 }
-
 </script>
-<!-- 🔥 FIREBASE END 🔥 -->
 
 </body>
 </html>
