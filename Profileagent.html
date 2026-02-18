@@ -158,8 +158,7 @@ ul {
 <h5 class="mb-3 pastel-title">Candidate Details</h5>
 <div class="row">
     <div class="col-md-4"><strong>Name:</strong> <span id="userName">Loading...</span></div>
-    <div class="col-md-4"><strong>ID:</strong> <span id="employeeId">Loading...</span></div>
-
+    <div class="col-md-4"><strong>ID:</strong> MX2026</div>
     <div class="col-md-4"><strong>Department:</strong> Engineering</div>
 </div>
 <div class="row mt-2">
@@ -245,197 +244,103 @@ ul {
 
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getAuth, 
-  onAuthStateChanged 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+<script>
+let certifications = [];
 
-import { 
-  getFirestore, 
-  doc, 
-  getDoc, 
-  setDoc 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+function addCertification() {
+    const fileInput = document.getElementById("certFile");
+    const file = fileInput.files[0];
 
- const firebaseConfig = {
+    if (file) {
+        const fileURL = URL.createObjectURL(file);
+        certifications.push({
+            name: file.name,
+            url: fileURL
+        });
+
+        displayCertifications();
+        fileInput.value = "";
+    }
+}
+
+function displayCertifications() {
+    const list = document.getElementById("certList");
+    list.innerHTML = "";
+
+    certifications.forEach(cert => {
+        list.innerHTML += `
+            <li>
+                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
+            </li>
+        `;
+    });
+}
+
+function updateProgress(value) {
+    document.getElementById("progressValue").innerText = value;
+}
+
+function calculateProfile() {
+    const quiz = parseFloat(document.getElementById("quiz").value) || 0;
+    const coding = parseFloat(document.getElementById("coding").value) || 0;
+    const assignment = parseFloat(document.getElementById("assignment").value) || 0;
+    const progress = document.getElementById("progressSlider").value;
+
+    const average = ((quiz + coding + assignment) / 3).toFixed(2);
+    document.getElementById("averageScore").innerText = average;
+
+    let skill = "Beginner";
+    let badgeHTML = "";
+    let feedback = "";
+
+    if(average >= 85) {
+        skill = "Advanced";
+        badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
+        feedback = "Outstanding progress! Keep shining.";
+    } 
+    else if(average >= 60) {
+        skill = "Intermediate";
+        badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
+        feedback = "Great improvement. Stay consistent.";
+    } 
+    else {
+        feedback = "Keep practicing. You are improving steadily.";
+    }
+
+    document.getElementById("skillLevel").innerText = skill;
+    document.getElementById("badgeArea").innerHTML = badgeHTML;
+    document.getElementById("aiFeedback").innerText = feedback;
+
+    let completion = Math.min((Number(progress) + certifications.length * 10), 100);
+    document.getElementById("profileCompletionBar").style.width = completion + "%";
+    document.getElementById("profileCompletionBar").innerText = completion + "%";
+}
+
+</script>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+
+<script>
+  const firebaseConfig = {
     apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
     authDomain: "novus-9dfb8.firebaseapp.com",
     projectId: "novus-9dfb8",
-    storageBucket: "novus-9dfb8.firebasestorage.app",
-    messagingSenderId: "641276518161",
     appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
   };
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
-let certifications = [];
-let currentUser = null;
+  firebase.initializeApp(firebaseConfig);
 
-/* ================================
-   AUTH STATE
-================================ */
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    window.location.href = "login.html";
-    return;
-  }
+  const auth = firebase.auth();
 
-  currentUser = user;
-
-  try {
-    const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
-
-    if (snap.exists()) {
-      const data = snap.data();
-
-      document.getElementById("userName").innerText =
-          data.name || user.email;
-
-      document.getElementById("employeeId").innerText =
-          data.employeeId || "Not Assigned";
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      document.getElementById("userName").innerText = user.displayName;
     } else {
-      console.log("No user document found!");
+      window.location.href = "login.html"; // redirect if not logged in
     }
-
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-
-
-/* ================================
-   CERTIFICATIONS
-================================ */
-
-window.addCertification = function () {
-  const fileInput = document.getElementById("certFile");
-  const file = fileInput.files[0];
-
-  if (!file) {
-    alert("Please select a file.");
-    return;
-  }
-
-  const fileURL = URL.createObjectURL(file);
-
-  certifications.push({
-    name: file.name,
-    url: fileURL
   });
-
-  displayCertifications();
-  fileInput.value = "";
-};
-
-function displayCertifications() {
-  const list = document.getElementById("certList");
-  list.innerHTML = "";
-
-  certifications.forEach(cert => {
-    const li = document.createElement("li");
-    li.innerHTML = 📄 <a href="${cert.url}" target="_blank">${cert.name}</a>;
-    list.appendChild(li);
-  });
-}
-
-/* ================================
-   PROGRESS
-================================ */
-
-window.updateProgress = function (value) {
-  document.getElementById("progressValue").innerText = value;
-};
-
-/* ================================
-   CALCULATE PROFILE
-================================ */
-
-window.calculateProfile = async function () {
-
-  const quiz = Number(document.getElementById("quiz").value) || 0;
-  const coding = Number(document.getElementById("coding").value) || 0;
-  const assignment = Number(document.getElementById("assignment").value) || 0;
-  const progress = Number(document.getElementById("progressSlider").value);
-
-  // Proper numeric average
-  const average = (quiz + coding + assignment) / 3;
-  document.getElementById("averageScore").innerText = average.toFixed(2);
-
-  let skill = "";
-  let badgeHTML = "";
-  let feedback = "";
-
-  /* =========================
-     SMART AI FEEDBACK LOGIC
-  ========================== */
-
-  if (average >= 85) {
-    skill = "Advanced";
-    badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
-    feedback = "Excellent performance! Your consistency in quiz, coding, and assignments shows strong mastery. Focus on advanced system design and real-world projects.";
-  }
-  else if (average >= 70) {
-    skill = "Upper Intermediate";
-    badgeHTML = '<span class="badge badge-silver mt-2">High Potential 🚀</span>';
-    feedback = "You are performing well. Improve coding problem-solving speed and participate in mock interviews to move to the advanced level.";
-  }
-  else if (average >= 50) {
-    skill = "Intermediate";
-    feedback = "Your fundamentals are building up. Focus more on coding practice and debugging skills. Revise weak topics regularly.";
-  }
-  else {
-    skill = "Beginner";
-    feedback = "You need structured practice. Start with fundamentals, solve 2 coding problems daily, and review mistakes carefully.";
-  }
-
-  document.getElementById("skillLevel").innerText = skill;
-  document.getElementById("badgeArea").innerHTML = badgeHTML;
-  document.getElementById("aiFeedback").innerText = feedback;
-
-  /* =========================
-     PROFILE COMPLETION LOGIC
-  ========================== */
-
-  let completion = Math.min(progress + (certifications.length * 10), 100);
-
-  const bar = document.getElementById("profileCompletionBar");
-  bar.style.width = completion + "%";
-  bar.innerText = completion + "%";
-
-  /* =========================
-     SAVE TO FIRESTORE
-  ========================== */
-
-  if (currentUser) {
-    try {
-      await setDoc(doc(db, "users", currentUser.uid), {
-        performance: {
-          quiz,
-          coding,
-          assignment,
-          average,
-          progress,
-          completion,
-          skill,
-          certifications: certifications.length
-        }
-      }, { merge: true });
-
-      alert("Profile Updated Successfully ✅");
-    } catch (error) {
-      console.error("Error saving data:", error);
-      alert("Error updating profile.");
-    }
-  }
-};
-
 </script>
-
 
 </body>
 </html>
