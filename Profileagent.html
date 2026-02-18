@@ -340,6 +340,16 @@ function calculateProfile() {
       window.location.href = "login.html"; // redirect if not logged in
     }
   });
+
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const db = getFirestore(app);
+
+await setDoc(doc(db, "users", user.uid), {
+  name: nameFromInputField,
+  email: user.email
+});
+
 </script>
 
 </body>
