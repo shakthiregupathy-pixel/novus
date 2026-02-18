@@ -11,7 +11,6 @@ body{
     font-family:Arial, Helvetica, sans-serif;
     background:linear-gradient(90deg,#f4f6fb,#8ec5fc);
 }
-
 .top-nav{
     height:60px;
     background:white;
@@ -21,13 +20,11 @@ body{
     padding:0 20px;
     box-shadow:0 2px 10px rgba(0,0,0,0.1);
 }
-
 .logo{
     font-size:20px;
     font-weight:bold;
     color:#6a5acd;
 }
-
 .profile-circle{
     width:40px;
     height:40px;
@@ -38,18 +35,13 @@ body{
     align-items:center;
     justify-content:center;
 }
-
-.container{
-    display:flex;
-}
-
+.container{ display:flex; }
 .sidebar{
     width:220px;
     background:#f1f2f6;
     height:calc(100vh - 60px);
     padding-top:20px;
 }
-
 .sidebar-item{
     padding:15px 20px;
     border-radius:10px;
@@ -59,51 +51,32 @@ body{
     color:white;
     font-weight:bold;
 }
-
-.main{
-    flex:1;
-    padding:30px;
-}
-
+.main{ flex:1; padding:30px; }
 .profile-card{
     background:white;
     padding:30px;
     border-radius:20px;
     box-shadow:0 20px 40px rgba(0,0,0,0.1);
 }
-
-.profile-header{
-    display:flex;
-    align-items:center;
-    gap:20px;
-}
-
+.profile-header{ display:flex; align-items:center; gap:20px; }
 .profile-avatar{
-    width:80px;
-    height:80px;
-    border-radius:50%;
+    width:80px; height:80px; border-radius:50%;
     background:linear-gradient(135deg,#6a5acd,#8ec5fc);
-    color:white;
-    font-size:28px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    color:white; font-size:28px;
+    display:flex; align-items:center; justify-content:center;
 }
-
 .info-box{
     background:#f1f2f6;
     padding:20px;
     border-radius:15px;
     margin-top:20px;
 }
-
 .stats-grid{
     margin-top:25px;
     display:grid;
     grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
     gap:20px;
 }
-
 .stat-box{
     padding:25px;
     border-radius:18px;
@@ -112,11 +85,7 @@ body{
     font-weight:600;
     background:linear-gradient(135deg,#6a5acd,#8ec5fc);
 }
-
-.stat-box h3{
-    margin:0;
-    font-size:30px;
-}
+.stat-box h3{ margin:0; font-size:30px; }
 </style>
 </head>
 
@@ -128,28 +97,13 @@ body{
 </div>
 
 <div class="container">
-
 <div class="sidebar">
 
-<a href="FresherDashboard.html" style="text-decoration:none;color:inherit;">
-    <div class="sidebar-item">Dashboard</div>
-</a>
-
-<a href="onboarding agent.html" style="text-decoration:none;color:inherit;">
-    <div class="sidebar-item">Onboarding Agent</div>
-</a>
-
-<a href="assessment agent.html" style="text-decoration:none;color:inherit;">
-    <div class="sidebar-item">Assessment Agent</div>
-</a>
-
-<a href="Profileagent.html" style="text-decoration:none;color:inherit;">
-    <div class="sidebar-item">Profile Agent</div>
-</a>
-
-<a href="FresherReport.html" style="text-decoration:none;color:inherit;">
-    <div class="sidebar-item">Report Agent</div>
-</a>
+<a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
+<a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
+<a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
+<a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
+<a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
 
 </div>
 
@@ -168,7 +122,6 @@ body{
     <p><b>Email:</b> <span id="displayEmail">Loading...</span></p>
 </div>
 
-<!-- 🔥 EMPLOYEE ID ADDED -->
 <div class="info-box">
     <p><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></p>
 </div>
@@ -179,27 +132,22 @@ body{
 </div>
 
 <div class="stats-grid">
-
 <div class="stat-box">
     <h3 id="onboardingPercent">0%</h3>
     <p>Onboarding Completion</p>
 </div>
-
 <div class="stat-box">
     <h3 id="assessmentPercent">0%</h3>
     <p>Assessments Completed</p>
 </div>
-
 <div class="stat-box">
     <h3 id="certPercent">0%</h3>
     <p>Certifications Achieved</p>
 </div>
-
 <div class="stat-box">
     <h3 id="overallPercent">0%</h3>
     <p>Overall Training Score</p>
 </div>
-
 </div>
 
 </div>
@@ -229,14 +177,11 @@ onAuthStateChanged(auth, async (user) => {
 if(user){
 
     const userDoc = await getDoc(doc(db,"users",user.uid));
-
     if(userDoc.exists()){
         const data = userDoc.data();
-
         document.getElementById("displayName").innerText = data.name || "No Name";
         document.getElementById("displayEmail").innerText = user.email;
         document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
-
         document.getElementById("onboardingPercent").innerText = (data.onboardingPercentage || 0) + "%";
         document.getElementById("assessmentPercent").innerText = (data.assessmentPercentage || 0) + "%";
         document.getElementById("certPercent").innerText = (data.certificationPercentage || 0) + "%";
@@ -247,21 +192,12 @@ if(user){
         document.getElementById("topInitial").innerText = firstLetter;
     }
 
-    // 🔥 EMPLOYEE ID FETCH
     const agentDoc = await getDoc(doc(db,"agents",user.email.toLowerCase()));
 
     if(agentDoc.exists()){
         const agentData = agentDoc.data();
-
-const empId =
-    agentData.EMPID ||
-    agentData.employeeId ||
-    agentData.EmpId ||
-    agentData.empid ||
-    "Not Assigned";
-
-document.getElementById("displayEmpId").innerText = empId;
-
+        document.getElementById("displayEmpId").innerText =
+            agentData.EMPID || "Not Assigned";
     } else {
         document.getElementById("displayEmpId").innerText = "Not Assigned";
     }
@@ -275,4 +211,3 @@ document.getElementById("displayEmpId").innerText = empId;
 
 </body>
 </html>
-
