@@ -218,13 +218,9 @@ window.login = async function() {
 
     const docSnap = await getDoc(doc(db,"users",user.uid));
 
-    if(!docSnap.exists()){
-    await setDoc(doc(db,"users",user.uid),{
-        email: user.email,
-        role: selectedRole,
-        name: user.email.split("@")[0],
-        employeeId: "EMP001"
-    });
+   if(!docSnap.exists()){
+    alert("User data not found!");
+    return;
 }
 
     const actualRole = docSnap.data().role;
@@ -256,5 +252,6 @@ window.resetPassword = function(){
 
 </body>
 </html>
+
 
 
