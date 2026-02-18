@@ -158,7 +158,8 @@ ul {
 <h5 class="mb-3 pastel-title">Candidate Details</h5>
 <div class="row">
     <div class="col-md-4"><strong>Name:</strong> <span id="userName">Loading...</span></div>
-    <div class="col-md-4"><strong>ID:</strong> MX2026</div>
+    <div class="col-md-4"><strong>ID:</strong> <span id="employeeId">Loading...</span></div>
+
     <div class="col-md-4"><strong>Department:</strong> Engineering</div>
 </div>
 <div class="row mt-2">
@@ -292,6 +293,7 @@ onAuthStateChanged(auth, async (user) => {
     if (snap.exists()) {
       const data = snap.data();
       document.getElementById("userName").innerText = data.name || "User";
+      document.getElementById("employeeId").innerText = data.employeeId || "Not Assigned";
 
       // Load saved performance if exists
       if (data.performance) {
