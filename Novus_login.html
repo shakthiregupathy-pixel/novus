@@ -4,42 +4,174 @@
 <title>NOVUS</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
 <style>
-body{
+*{
     margin:0;
-    font-family:Segoe UI, sans-serif;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', sans-serif;
+}
+
+body{
     height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+    overflow:hidden;
+    background:#0f2027;
 }
+
+/* Floating particles */
+body::before{
+    content:"";
+    position:absolute;
+    width:200%;
+    height:200%;
+    background-image: radial-gradient(white 1px, transparent 1px);
+    background-size:50px 50px;
+    animation: moveParticles 40s linear infinite;
+    opacity:0.15;
+}
+
+@keyframes moveParticles{
+    from{transform:translate(0,0);}
+    to{transform:translate(-500px,-500px);}
+}
+
+/* Main Card */
 .card{
-    width:440px;
-    background:white;
-    padding:35px;
-    border-radius:20px;
-    box-shadow:0 15px 40px rgba(0,0,0,0.12);
+    width:900px;
+    min-height:520px;
+    display:flex;
+    border-radius:25px;
+    overflow:hidden;
+    position:relative;
+    animation: slideIn 0.8s ease;
 }
-h1{text-align:center;margin-bottom:5px;color:#6a5acd;}
-.sub{text-align:center;font-size:13px;color:#6b7280;margin-bottom:20px;}
-label{font-size:13px;font-weight:500;}
-input, select{
-    width:100%;padding:10px;margin:8px 0 14px 0;
-    border-radius:10px;border:1px solid #e5e7eb;
-    font-size:14px;background:#f9fafb;box-sizing:border-box;
+
+/* Slide animation */
+@keyframes slideIn{
+    from{transform:translateY(40px); opacity:0;}
+    to{transform:translateY(0); opacity:1;}
 }
-button{
-    width:100%;padding:11px;border:none;border-radius:10px;
-    font-weight:500;cursor:pointer;
+
+/* Animated glowing border */
+.card::before{
+    content:"";
+    position:absolute;
+    inset:-3px;
+    border-radius:25px;
+    background:linear-gradient(45deg,#ff00cc,#3333ff,#00ffee,#ff00cc);
+    background-size:300%;
+    animation: glow 8s linear infinite;
+    z-index:-1;
 }
-.primary-btn{
-    background: linear-gradient(270deg, #6a5acd, #8a2be2);
+
+@keyframes glow{
+    0%{background-position:0%;}
+    100%{background-position:300%;}
+}
+
+/* Left Panel */
+.left{
+    flex:1;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    color:white;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:40px;
+}
+
+.left h1{
+    font-size:42px;
+    letter-spacing:3px;
+}
+
+.left p{
+    margin-top:15px;
+    text-align:center;
+    font-size:14px;
+    opacity:0.9;
+}
+
+/* Right Panel */
+.right{
+    flex:1;
+    background:rgba(255,255,255,0.1);
+    backdrop-filter:blur(15px);
+    padding:45px;
     color:white;
 }
-.links{text-align:center;margin-top:12px;font-size:13px;}
-.links span{display:block;margin-top:6px;color:#6a5acd;cursor:pointer;}
+
+.sub{
+    font-size:13px;
+    margin-bottom:20px;
+    opacity:0.8;
+}
+
+label{
+    font-size:13px;
+}
+
+input, select{
+    width:100%;
+    padding:11px;
+    margin:8px 0 15px 0;
+    border-radius:10px;
+    border:none;
+    background:rgba(255,255,255,0.2);
+    color:white;
+}
+
+button{
+    width:100%;
+    padding:11px;
+    border:none;
+    border-radius:25px;
+    cursor:pointer;
+    font-weight:600;
+    margin-top:5px;
+    transition:0.3s;
+}
+
+.primary-btn{
+    background:linear-gradient(90deg,#ff6a00,#ee0979);
+    color:white;
+}
+
+.primary-btn:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 15px #ff00cc;
+}
+
+.links{
+    text-align:center;
+    margin-top:12px;
+    font-size:13px;
+}
+
+.links span{
+    display:block;
+    margin-top:6px;
+    cursor:pointer;
+}
+
+.links span:hover{
+    text-decoration:underline;
+}
+
 .hidden{display:none;}
+
+@media(max-width:900px){
+    .card{
+        flex-direction:column;
+        width:90%;
+    }
+}
 </style>
 </head>
 
@@ -47,10 +179,16 @@ button{
 
 <div class="card">
 
+<div class="left">
+    <h1>NOVUS</h1>
+    <p>Maverick Onboarding System<br>Empowering Smart Digital Entry 🚀</p>
+</div>
+
+<div class="right">
+
 <!-- LOGIN -->
 <div id="loginForm">
-<h1>NOVUS</h1>
-<div class="sub">Maverick Onboarding System</div>
+<div class="sub">Welcome Back 👋</div>
 
 <label>Login As</label>
 <select id="loginRole">
@@ -64,22 +202,16 @@ button{
 <label>Password</label>
 <input type="password" id="loginPassword">
 
-<a href="FresherDashboard.html">
-    <button class="primary-btn">Sign In</button>
-</a>
-
+<button class="primary-btn" onclick="login()">Sign In</button>
 
 <div class="links">
-   <button class="primary-btn" onclick="showCreate()">Create Account</button>
-
-
+<button class="primary-btn" onclick="showCreate()">Create Account</button>
 <span onclick="showForgot()">Forgot Password?</span>
 </div>
 </div>
 
 <!-- SIGNUP -->
 <div id="createForm" class="hidden">
-<h1>NOVUS</h1>
 <div class="sub">Create Account</div>
 
 <label>Full Name</label>
@@ -109,7 +241,6 @@ button{
 
 <!-- FORGOT -->
 <div id="forgotForm" class="hidden">
-<h1>NOVUS</h1>
 <div class="sub">Reset Password</div>
 
 <label>Email</label>
@@ -123,135 +254,4 @@ button{
 </div>
 
 </div>
-
-<script>
-function showCreate(){
-loginForm.classList.add("hidden");
-createForm.classList.remove("hidden");
-forgotForm.classList.add("hidden");
-}
-function showForgot(){
-loginForm.classList.add("hidden");
-createForm.classList.add("hidden");
-forgotForm.classList.remove("hidden");
-}
-function showLogin(){
-loginForm.classList.remove("hidden");
-createForm.classList.add("hidden");
-forgotForm.classList.add("hidden");
-}
-</script>
-
-<!-- FIREBASE -->
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-import { getFirestore, doc, setDoc, getDoc } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-  authDomain: "novus-9dfb8.firebaseapp.com",
-  projectId: "novus-9dfb8",
-  storageBucket: "novus-9dfb8.firebasestorage.app",
-  messagingSenderId: "641276518161",
-  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-// SIGNUP
-window.signup = async function() {
-
-  const name = fullName.value;
-  const email = signupEmail.value;
-  const password = signupPassword.value;
-  const confirm = confirmPassword.value;
-  const role = signupRole.value;
-
-  if(password !== confirm){
-    alert("Passwords do not match!");
-    return;
-  }
-
-  try{
-
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    // SAVE USING UID
-    await setDoc(doc(db, "users", user.uid), {
-      name: name,
-      role: role,
-      onboardingPercentage: 0,
-      assessmentPercentage: 0,
-      certificationPercentage: 0,
-      overallScore: 0,
-      professionalSummary: ""
-    });
-
-    alert("Account Created Successfully!");
-    showLogin();
-
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-// LOGIN
-window.login = async function() {
-
-  const email = loginEmail.value;
-  const password = loginPassword.value;
-  const selectedRole = loginRole.value;
-
-  try{
-
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-
-    const docSnap = await getDoc(doc(db,"users",user.uid));
-
-   if(!docSnap.exists()){
-    alert("User data not found!");
-    return;
-}
-
-    const actualRole = docSnap.data().role;
-
-    if(actualRole !== selectedRole){
-      alert("Wrong role selected!");
-      return;
-    }
-
-    if(actualRole === "admin"){
-      window.location.href = "AdminDashboard.html";
-    } else {
-      window.location.href = "FresherDashboard.html";
-    }
-
-  }catch(error){
-    alert(error.message);
-  }
-}
-
-// RESET
-window.resetPassword = function(){
-  sendPasswordResetEmail(auth, resetEmail.value)
-    .then(()=> alert("Reset link sent!"))
-    .catch(error=> alert(error.message));
-}
-
-</script>
-
-</body>
-</html>
-
-
-
-
+</div>
