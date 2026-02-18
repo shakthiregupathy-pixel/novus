@@ -325,62 +325,75 @@ onAuthStateChanged(auth, async (user) => {
    CERTIFICATIONS
 ================================ */
 
-    import { 
-  getStorage, 
-  ref, 
-  uploadBytes, 
-  getDownloadURL 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
-const storage = getStorage(app);
+ let certifications = [];
 
+function addCertification() {
+    const fileInput = document.getElementById("certFile");
+    const file = fileInput.files[0];
 
-window.addCertification = async function () {
+    if (file) {
+        const fileURL = URL.createObjectURL(file);
+        certifications.push({
+            name: file.name,
+            url: fileURL
+        });
 
-  const fileInput = document.getElementById("certFile");
-  const file = fileInput.files[0];
+        displayCertifications();
+        fileInput.value = "";
+    }
+}
 
-  if (!file) {
-    alert("Please select a file.");
-    return;
-  }
+function displayCertifications() {
+    const list = document.getElementById("certList");
+    list.innerHTML = "";
 
-  if (!currentUser) {
-    alert("User not authenticated.");
-    return;
-  }
-
-  try {
-
-    const storageRef = ref(storage, 
-      `certifications/${currentUser.uid}/${Date.now()}_${file.name}`
-    );
-
-    await uploadBytes(storageRef, file);
-
-    const downloadURL = await getDownloadURL(storageRef);
-
-    certifications.push({
-      name: file.name,
-      url: downloadURL
+    certifications.forEach(cert => {
+        list.innerHTML += `
+            <li>
+                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
+            </li>
+        `;
     });
+}
 
-    function displayCertifications() {
+function updateProgress(value) {
+    document.getElementById("progressValue").innerText = value;
+}
 
-  const container = document.getElementById("certificateContainer");
-  container.innerHTML = "";
+function calculateProfile() {
+    const quiz = parseFloat(document.getElementById("quiz").value) || 0;
+    const coding = parseFloat(document.getElementById("coding").value) || 0;
+    const assignment = parseFloat(document.getElementById("assignment").value) || 0;
+    const progress = document.getElementById("progressSlider").value;
 
-  certifications.forEach(cert => {
+    const average = ((quiz + coding + assignment) / 3).toFixed(2);
+    document.getElementById("averageScore").innerText = average;
 
-    const certDiv = document.createElement("div");
-    certDiv.classList.add("certificate-item");
+    let skill = "Beginner";
+    let badgeHTML = "";
+    let feedback = "";
 
-    certDiv.innerHTML = `
-      <p>${cert.name}</p>
-      <a href="${cert.url}" target="_blank">View Certificate</a>
-    `;
+    if(average >= 85) {
+        skill = "Advanced";
+        badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
+        feedback = "Outstanding progress! Keep shining.";
+    } 
+    else if(average >= 60) {
+        skill = "Intermediate";
+        badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
+        feedback = "Great improvement. Stay consistent.";
+    } 
+    else {
+        feedback = "Keep practicing. You are improving steadily.";
+    }
 
-    container.appendChild(certDiv);
-  });
+    document.getElementById("skillLevel").innerText = skill;
+    document.getElementById("badgeArea").innerHTML = badgeHTML;
+    document.getElementById("aiFeedback").innerText = feedback;
+
+    let completion = Math.min((Number(progress) + certifications.length * 10), 100);
+    document.getElementById("profileCompletionBar").style.width = completion + "%";
+    document.getElementById("profileCompletionBar").innerText = completion + "%";
 }
 
 
