@@ -309,6 +309,16 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+await setDoc(doc(db, "users", user.uid), {
+  name: name,
+  employeeId: "MX" + Math.floor(1000 + Math.random() * 9000),
+  department: "Engineering",
+  role: "Software Developer",
+  phase: "Foundation",
+  batch: "2026"
+});
+
+
 /* ================================
    CERTIFICATIONS
 ================================ */
