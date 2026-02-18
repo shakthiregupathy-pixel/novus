@@ -297,33 +297,45 @@ onAuthStateChanged(auth, async (user) => {
 
       // Load saved performance if exists
       if (data.performance) {
-        document.getElementById("quiz").value = data.performance.quiz || 0;
-        document.getElementById("coding").value = data.performance.coding || 0;
-        document.getElementById("assignment").value = data.performance.assignment || 0;
-        document.getElementById("progressSlider").value = data.performance.progress || 0;
-        document.getElementById("progressValue").innerText = data.performance.progress || 0;
-      }
+
+  document.getElementById("aiFeedback").innerText = 
+    data.performance.feedback || "No feedback generated yet.";
+
+  certifications = data.performance.certifications || [];
+  displayCertifications();
+
+  document.getElementById("averageScore").innerText = 
+    data.performance.average || 0;
+
+  document.getElementById("skillLevel").innerText = 
+    data.performance.skill || "Beginner";
+
+}
+
     }
   } catch (error) {
     console.error("Error:", error);
   }
 });
 
-await setDoc(doc(db, "users", user.uid), {
-  name: name,
-  employeeId: "MX" + Math.floor(1000 + Math.random() * 9000),
-  department: "Engineering",
-  role: "Software Developer",
-  phase: "Foundation",
-  batch: "2026"
-});
+
 
 
 /* ================================
    CERTIFICATIONS
 ================================ */
 
-window.addCertification = function () {
+    import { 
+  getStorage, 
+  ref, 
+  uploadBytes, 
+  getDownloadURL 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+const storage = getStorage(app);
+
+
+window.addCertification = async function () {
+
   const fileInput = document.getElementById("certFile");
   const file = fileInput.files[0];
 
@@ -332,27 +344,38 @@ window.addCertification = function () {
     return;
   }
 
-  const fileURL = URL.createObjectURL(file);
+  if (!currentUser) {
+    alert("User not authenticated.");
+    return;
+  }
 
-  certifications.push({
-    name: file.name,
-    url: fileURL
-  });
+  try {
 
-  displayCertifications();
-  fileInput.value = "";
+    const storageRef = ref(storage, 
+      `certifications/${currentUser.uid}/${file.name}`
+    );
+
+    await uploadBytes(storageRef, file);
+
+    const downloadURL = await getDownloadURL(storageRef);
+
+    certifications.push({
+      name: file.name,
+      url: downloadURL
+    });
+
+    displayCertifications();
+
+    fileInput.value = "";
+
+    alert("File uploaded successfully ✅");
+
+  } catch (error) {
+    console.error(error);
+    alert("Upload failed.");
+  }
 };
 
-function displayCertifications() {
-  const list = document.getElementById("certList");
-  list.innerHTML = "";
-
-  certifications.forEach(cert => {
-    const li = document.createElement("li");
-    li.innerHTML = `📄 <a href="${cert.url}" target="_blank">${cert.name}</a>`;
-    list.appendChild(li);
-  });
-}
 
 /* ================================
    PROGRESS
