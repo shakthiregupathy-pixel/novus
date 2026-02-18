@@ -246,7 +246,13 @@ ul {
 </div>
 
 <script type="module">
+
+/* ================================
+   FIREBASE IMPORTS
+================================ */
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
 import { 
   getAuth, 
   onAuthStateChanged 
@@ -259,26 +265,45 @@ import {
   setDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
- const firebaseConfig = {
-    apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-    authDomain: "novus-9dfb8.firebaseapp.com",
-    projectId: "novus-9dfb8",
-    storageBucket: "novus-9dfb8.firebasestorage.app",
-    messagingSenderId: "641276518161",
-    appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-  };
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
+
+
+/* ================================
+   FIREBASE CONFIG
+================================ */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  authDomain: "novus-9dfb8.firebaseapp.com",
+  projectId: "novus-9dfb8",
+  storageBucket: "novus-9dfb8.firebasestorage.app",
+  messagingSenderId: "641276518161",
+  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+};
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
-let certifications = [];
-let currentUser = null;
+const storage = getStorage(app);
 
 /* ================================
-   AUTH STATE
+   GLOBAL VARIABLES
+================================ */
+
+let currentUser = null;
+let certifications = [];
+
+/* ================================
+   AUTH STATE CHECK
 ================================ */
 
 onAuthStateChanged(auth, async (user) => {
+
   if (!user) {
     window.location.href = "login.html";
     return;
@@ -287,128 +312,123 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
 
   try {
+
     const userRef = doc(db, "users", user.uid);
     const snap = await getDoc(userRef);
 
     if (snap.exists()) {
-      const data = snap.data();
-      document.getElementById("userName").innerText = data.name || "User";
-      document.getElementById("employeeId").innerText = data.employeeId || "Not Assigned";
 
-      // Load saved performance if exists
+      const data = snap.data();
+
+      document.getElementById("userName").innerText =
+        data.name || "User";
+
+      document.getElementById("employeeId").innerText =
+        data.employeeId || "Not Assigned";
+
+      /* LOAD PERFORMANCE DATA */
+
       if (data.performance) {
 
-  document.getElementById("aiFeedback").innerText = 
-    data.performance.feedback || "No feedback generated yet.";
+        const perf = data.performance;
 
-  certifications = data.performance.certifications || [];
-  displayCertifications();
+        document.getElementById("averageScore").innerText =
+          perf.average?.toFixed(2) || 0;
 
-  document.getElementById("averageScore").innerText = 
-    data.performance.average || 0;
+        document.getElementById("skillLevel").innerText =
+          perf.skill || "Beginner";
 
-  document.getElementById("skillLevel").innerText = 
-    data.performance.skill || "Beginner";
+        document.getElementById("aiFeedback").innerText =
+          perf.feedback || "No feedback generated yet.";
 
-}
+        certifications = perf.certifications || [];
+        displayCertifications();
 
+        const bar = document.getElementById("profileCompletionBar");
+        bar.style.width = (perf.completion || 0) + "%";
+        bar.innerText = (perf.completion || 0) + "%";
+      }
     }
+
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error loading user data:", error);
   }
 });
 
 
-
-
 /* ================================
-   CERTIFICATIONS
+   CERTIFICATE UPLOAD
 ================================ */
 
- let certifications = [];
+window.addCertification = async function () {
 
-function addCertification() {
-    const fileInput = document.getElementById("certFile");
-    const file = fileInput.files[0];
+  const fileInput = document.getElementById("certFile");
+  const file = fileInput.files[0];
 
-    if (file) {
-        const fileURL = URL.createObjectURL(file);
-        certifications.push({
-            name: file.name,
-            url: fileURL
-        });
+  if (!file || !currentUser) {
+    alert("Please select a file first.");
+    return;
+  }
 
-        displayCertifications();
-        fileInput.value = "";
-    }
-}
+  try {
 
-function displayCertifications() {
-    const list = document.getElementById("certList");
-    list.innerHTML = "";
+    const storageRef = ref(
+      storage,
+      `certificates/${currentUser.uid}/${Date.now()}_${file.name}`
+    );
 
-    certifications.forEach(cert => {
-        list.innerHTML += `
-            <li>
-                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
-            </li>
-        `;
+    await uploadBytes(storageRef, file);
+
+    const downloadURL = await getDownloadURL(storageRef);
+
+    certifications.push({
+      name: file.name,
+      url: downloadURL
     });
-}
 
-function updateProgress(value) {
-    document.getElementById("progressValue").innerText = value;
-}
+    displayCertifications();
 
-function calculateProfile() {
-    const quiz = parseFloat(document.getElementById("quiz").value) || 0;
-    const coding = parseFloat(document.getElementById("coding").value) || 0;
-    const assignment = parseFloat(document.getElementById("assignment").value) || 0;
-    const progress = document.getElementById("progressSlider").value;
+    fileInput.value = "";
 
-    const average = ((quiz + coding + assignment) / 3).toFixed(2);
-    document.getElementById("averageScore").innerText = average;
+    alert("Certificate uploaded successfully ✅");
 
-    let skill = "Beginner";
-    let badgeHTML = "";
-    let feedback = "";
-
-    if(average >= 85) {
-        skill = "Advanced";
-        badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
-        feedback = "Outstanding progress! Keep shining.";
-    } 
-    else if(average >= 60) {
-        skill = "Intermediate";
-        badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
-        feedback = "Great improvement. Stay consistent.";
-    } 
-    else {
-        feedback = "Keep practicing. You are improving steadily.";
-    }
-
-    document.getElementById("skillLevel").innerText = skill;
-    document.getElementById("badgeArea").innerHTML = badgeHTML;
-    document.getElementById("aiFeedback").innerText = feedback;
-
-    let completion = Math.min((Number(progress) + certifications.length * 10), 100);
-    document.getElementById("profileCompletionBar").style.width = completion + "%";
-    document.getElementById("profileCompletionBar").innerText = completion + "%";
-}
-
-
+  } catch (error) {
+    console.error("Upload failed:", error);
+    alert("Certificate upload failed.");
+  }
+};
 
 
 /* ================================
-   PROGRESS
+   DISPLAY CERTIFICATES
+================================ */
+
+function displayCertifications() {
+
+  const list = document.getElementById("certList");
+  list.innerHTML = "";
+
+  certifications.forEach(cert => {
+
+    const li = document.createElement("li");
+    li.innerHTML = `📄 <a href="${cert.url}" target="_blank">${cert.name}</a>`;
+    list.appendChild(li);
+
+  });
+}
+
+
+/* ================================
+   PROGRESS SLIDER
 ================================ */
 
 window.updateProgress = function (value) {
   document.getElementById("progressValue").innerText = value;
 };
 
+
 /* ================================
-   CALCULATE PROFILE
+   CALCULATE PROFILE + SAVE
 ================================ */
 
 window.calculateProfile = async function () {
@@ -418,74 +438,79 @@ window.calculateProfile = async function () {
   const assignment = Number(document.getElementById("assignment").value) || 0;
   const progress = Number(document.getElementById("progressSlider").value);
 
-  // Proper numeric average
   const average = (quiz + coding + assignment) / 3;
-  document.getElementById("averageScore").innerText = average.toFixed(2);
+
+  document.getElementById("averageScore").innerText =
+    average.toFixed(2);
 
   let skill = "";
   let badgeHTML = "";
   let feedback = "";
 
-  /* =========================
-     SMART AI FEEDBACK LOGIC
-  ========================== */
+  /* SMART AI FEEDBACK */
 
   if (average >= 85) {
     skill = "Advanced";
-    badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
-    feedback = "Excellent performance! Your consistency in quiz, coding, and assignments shows strong mastery. Focus on advanced system design and real-world projects.";
+    badgeHTML =
+      '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
+    feedback =
+      "Excellent performance! You show strong mastery. Focus on advanced real-world projects.";
   }
   else if (average >= 70) {
     skill = "Upper Intermediate";
-    badgeHTML = '<span class="badge badge-silver mt-2">High Potential 🚀</span>';
-    feedback = "You are performing well. Improve coding problem-solving speed and participate in mock interviews to move to the advanced level.";
+    badgeHTML =
+      '<span class="badge badge-silver mt-2">High Potential 🚀</span>';
+    feedback =
+      "You are performing well. Improve coding speed and interview skills.";
   }
   else if (average >= 50) {
     skill = "Intermediate";
-    feedback = "Your fundamentals are building up. Focus more on coding practice and debugging skills. Revise weak topics regularly.";
+    feedback =
+      "Good foundation. Practice debugging and advanced coding problems.";
   }
   else {
     skill = "Beginner";
-    feedback = "You need structured practice. Start with fundamentals, solve 2 coding problems daily, and review mistakes carefully.";
+    feedback =
+      "Focus on fundamentals. Solve 2 coding problems daily.";
   }
 
   document.getElementById("skillLevel").innerText = skill;
   document.getElementById("badgeArea").innerHTML = badgeHTML;
   document.getElementById("aiFeedback").innerText = feedback;
 
-  /* =========================
-     PROFILE COMPLETION LOGIC
-  ========================== */
+  /* PROFILE COMPLETION */
 
-  let completion = Math.min(progress + (certifications.length * 10), 100);
+  const completion =
+    Math.min(progress + (certifications.length * 10), 100);
 
   const bar = document.getElementById("profileCompletionBar");
   bar.style.width = completion + "%";
   bar.innerText = completion + "%";
 
-  /* =========================
-     SAVE TO FIRESTORE
-  ========================== */
+  /* SAVE TO FIRESTORE */
 
   if (currentUser) {
+
     try {
+
       await setDoc(doc(db, "users", currentUser.uid), {
         performance: {
-                  quiz,
-                  coding,
-                  assignment,
-                   average,
-                 progress,
-                 completion,
-                 skill,
-                 feedback,
-                 certifications: certifications
-}
+          quiz,
+          coding,
+          assignment,
+          average,
+          progress,
+          completion,
+          skill,
+          feedback,
+          certifications
+        }
       }, { merge: true });
 
       alert("Profile Updated Successfully ✅");
+
     } catch (error) {
-      console.error("Error saving data:", error);
+      console.error("Save error:", error);
       alert("Error updating profile.");
     }
   }
