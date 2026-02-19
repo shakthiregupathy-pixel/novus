@@ -104,6 +104,7 @@ display:grid;
 grid-template-columns:repeat(4,1fr);
 gap:40px;
 margin-top:45px;
+padding:10px 5px;
 }
 
 .stat{
@@ -140,11 +141,11 @@ margin-bottom:8px;
 <div class="container">
 
 <div class="sidebar">
-<a href="#"><div class="sidebar-item">Dashboard</div></a>
-<a href="#"><div class="sidebar-item">Onboarding Agent</div></a>
-<a href="#"><div class="sidebar-item">Assessment Agent</div></a>
-<a href="#"><div class="sidebar-item">Profile Agent</div></a>
-<a href="#"><div class="sidebar-item">Report Agent</div></a>
+<a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
+<a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
+<a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
+<a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
+<a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
 </div>
 
 <div class="main">
@@ -156,12 +157,11 @@ margin-bottom:8px;
 <div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
 <div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">EMP101</span></div>
 
+<!-- ✅ PERMANENT PROFESSIONAL SUMMARY ADDED -->
 <div class="info-box">
 <b>Professional Summary:</b>
 <span id="displaySummary">
-Highly motivated Software Developer at NOVUS specializing in Frontend Development,
-UI/UX design, and AI-driven web applications. Passionate about building modern,
-scalable, and performance-optimized solutions.
+Highly motivated Software Developer at NOVUS specializing in Frontend Development, UI/UX design, and AI-driven web applications. Passionate about building scalable and performance-optimized solutions.
 </span>
 </div>
 
@@ -182,9 +182,9 @@ import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/1
 import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
-apiKey:"YOUR_API_KEY",
-authDomain:"YOUR_AUTH_DOMAIN",
-projectId:"YOUR_PROJECT_ID"
+apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+authDomain:"novus-9dfb8.firebaseapp.com",
+projectId:"novus-9dfb8"
 };
 
 const app=initializeApp(firebaseConfig);
@@ -192,10 +192,13 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 onAuthStateChanged(auth,async user=>{
-if(!user){
-window.location.href="Novus_login.html";
+if(!user){ 
+window.location.href="Novus_login.html"; 
 return;
 }
+
+/* ✅ HARDCODED EMPLOYEE ID */
+document.getElementById("displayEmpId").innerText="EMP101";
 
 const userDoc=await getDoc(doc(db,"users",user.uid));
 if(userDoc.exists()){
@@ -203,6 +206,7 @@ const d=userDoc.data();
 
 document.getElementById("displayName").innerText=d.name||"No Name";
 document.getElementById("displayEmail").innerText=user.email;
+document.getElementById("displaySummary").innerText=d.professionalSummary||document.getElementById("displaySummary").innerText;
 document.getElementById("onboardingPercent").innerText=(d.onboardingPercentage||0)+"%";
 document.getElementById("assessmentPercent").innerText=(d.assessmentPercentage||0)+"%";
 document.getElementById("certPercent").innerText=(d.certificationPercentage||0)+"%";
@@ -217,3 +221,4 @@ document.getElementById("topInitial").innerText=letter;
 
 </body>
 </html>
+
