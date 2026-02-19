@@ -323,24 +323,46 @@ function calculateProfile() {
 
 
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-    authDomain: "novus-9dfb8.firebaseapp.com",
-    projectId: "novus-9dfb8",
-    appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-  };
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs } from 
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  firebase.initializeApp(firebaseConfig);
+const firebaseConfig = {
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  authDomain: "novus-9dfb8.firebaseapp.com",
+  projectId: "novus-9dfb8",
+  storageBucket: "novus-9dfb8.firebasestorage.app",
+  messagingSenderId: "641276518161",
+  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+};
 
-  const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      document.getElementById("userName").innerText = user.displayName;
-    } else {
-      window.location.href = "login.html"; // redirect if not logged in
+onAuthStateChanged(auth, async (user) => {
+
+if(user){
+
+    // USER DATA
+    const userDoc = await getDoc(doc(db,"users",user.uid));
+    if(userDoc.exists()){
+        const data = userDoc.data();
+
+        document.getElementById("displayName").innerText = data.name || "No Name";
+        document.getElementById("displayEmail").innerText = user.email;
+        document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
+
+        document.getElementById("onboardingPercent").innerText = (data.onboardingPercentage || 0) + "%";
+        document.getElementById("assessmentPercent").innerText = (data.assessmentPercentage || 0) + "%";
+        document.getElementById("certPercent").innerText = (data.certificationPercentage || 0) + "%";
+        document.getElementById("overallPercent").innerText = (data.overallScore || 0) + "%";
+
+        const firstLetter = data.name ? data.name.charAt(0).toUpperCase() : "U";
+        document.getElementById("avatarInitial").innerText = firstLetter;
+        document.getElementById("topInitial").innerText = firstLetter;
     }
-  });
 </script>
 
 </body>
