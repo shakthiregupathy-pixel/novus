@@ -63,9 +63,16 @@ transform:translateX(4px);
 background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 }
 
-.main{ flex:1; padding:40px; }
+.main{ 
+flex:1; 
+padding:40px; 
+display:flex;
+justify-content:center;
+}
 
 .profile-card{
+width:100%;
+max-width:900px;
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
 padding:35px;
@@ -76,15 +83,15 @@ box-shadow:
 0 0 24px rgba(168,85,247,0.22);
 }
 
-/* 🔥 NEW TITLE STYLE */
+/* 🔥 TRAINING TITLE */
 .dashboard-title{
 text-align:center;
-margin-bottom:25px;
+margin-bottom:10px;
 }
 
 .dashboard-title h1{
 margin:0;
-font-size:30px;
+font-size:32px;
 background:linear-gradient(90deg,#00d4ff,#a855f7);
 -webkit-background-clip:text;
 color:transparent;
@@ -98,6 +105,7 @@ opacity:0.85;
 letter-spacing:2px;
 }
 
+/* 🔥 CENTERED AVATAR */
 .profile-avatar{
 width:90px;
 height:90px;
@@ -107,9 +115,10 @@ display:flex;
 align-items:center;
 justify-content:center;
 font-size:30px;
-margin-bottom:15px;
+margin:20px auto;   /* Perfect Center */
 }
 
+/* Info Boxes */
 .info-box{
 margin-top:22px;
 padding:20px;
@@ -121,6 +130,7 @@ box-shadow:
 0 0 20px rgba(168,85,247,0.15);
 }
 
+/* Stats Section */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -173,12 +183,13 @@ margin-bottom:8px;
 <div class="main">
 <div class="profile-card">
 
-<!-- 🔥 TRAINING DASHBOARD TITLE ADDED -->
+<!-- 🔥 TRAINING DASHBOARD TITLE -->
 <div class="dashboard-title">
 <h1>Training Dashboard</h1>
 <p>Mavericks Onboarding</p>
 </div>
 
+<!-- 🔥 CENTERED AVATAR -->
 <div class="profile-avatar" id="avatarInitial">U</div>
 
 <div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
