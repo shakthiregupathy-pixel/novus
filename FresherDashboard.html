@@ -34,7 +34,7 @@ color:transparent;
 
 .container{ display:flex; }
 
-/* ⭐ sidebar glowing frame */
+/* ⭐ SIDEBAR */
 .sidebar{
 width:220px;
 margin:20px;
@@ -42,12 +42,42 @@ border-radius:20px;
 padding-top:10px;
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
+position:relative;
+height:calc(100vh - 100px);
+}
 
-border:1px solid rgba(255,255,255,0.12);
+/* ⭐ tube light glow */
+.sidebar::after{
+content:"";
+position:absolute;
+top:0;
+right:-3px;
+width:4px;
+height:100%;
+border-radius:10px;
+
+background:linear-gradient(
+to bottom,
+transparent,
+#00d4ff,
+#a855f7,
+#00d4ff,
+transparent
+);
+
+background-size:100% 300px;
+
 box-shadow:
-0 0 14px rgba(0,212,255,0.35),
-0 0 24px rgba(168,85,247,0.25),
-inset 0 0 12px rgba(0,212,255,0.15);
+0 0 12px #00d4ff,
+0 0 22px #a855f7,
+0 0 35px #00d4ff;
+
+animation:tubeMove 3.5s linear infinite;
+}
+
+@keyframes tubeMove{
+0%{ background-position:0 -300px; }
+100%{ background-position:0 300px; }
 }
 
 .sidebar a{ text-decoration:none;color:white; }
@@ -68,16 +98,11 @@ background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 /* main */
 .main{ flex:1; padding:30px; }
 
-/* ⭐ glowing profile card */
 .profile-card{
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
 padding:30px;
 border-radius:20px;
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:
-0 0 14px rgba(0,212,255,0.3),
-0 0 24px rgba(168,85,247,0.22);
 }
 
 .profile-avatar{
@@ -87,19 +112,14 @@ display:flex;align-items:center;justify-content:center;
 font-size:28px;
 }
 
-/* ⭐ glowing info box */
 .info-box{
 margin-top:20px;
 padding:18px;
 border-radius:15px;
 background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.08);
-box-shadow:
-0 0 10px rgba(0,212,255,0.2),
-0 0 18px rgba(168,85,247,0.15);
 }
 
-/* ⭐ glowing stats */
+/* stats */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -112,17 +132,6 @@ padding:25px;
 border-radius:18px;
 background:linear-gradient(135deg,#00d4ff33,#a855f733);
 text-align:center;
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:
-0 0 12px rgba(0,212,255,0.25),
-0 0 22px rgba(168,85,247,0.18);
-transition:.3s;
-}
-.stat:hover{
-transform:translateY(-6px);
-box-shadow:
-0 0 18px rgba(0,212,255,0.35),
-0 0 32px rgba(168,85,247,0.28);
 }
 .stat h2{ margin:0;font-size:28px; }
 </style>
@@ -167,7 +176,7 @@ box-shadow:
 
 </div>
 
-<!-- FIREBASE -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
