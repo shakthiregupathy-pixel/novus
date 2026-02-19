@@ -100,6 +100,10 @@ h2 {
 </div>
 
 <button class="btn btn-generate mt-3" onclick="generateReport()">Generate Performance</button>
+    <button class="btn btn-success mt-3" onclick="generateCertificate()">
+Generate Certificate
+</button>
+
 </div>
 
 <!-- Output -->
@@ -252,6 +256,34 @@ doc.text(splitCerts, 70, y);
 doc.save(name + "_Training_Report.pdf");
 
 }
+window.generateCertificate = function() {
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("landscape");
+
+    const name = document.getElementById("name").value || "Candidate";
+
+    // Load Canva image
+    const img = new Image();
+    img.src = "certificate-template.png"; // your Canva file
+
+    img.onload = function () {
+
+        // Add full background image
+        doc.addImage(img, "PNG", 0, 0, 297, 210);
+
+        // 🔥 Add dynamic name
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(28);
+
+        // Center name
+        doc.text(name, 148, 110, null, null, "center");
+
+        // Download certificate
+        doc.save(name + "_Certificate.pdf");
+    };
+};
+
 
 </script>
 
