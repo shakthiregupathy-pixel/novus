@@ -9,33 +9,12 @@
 body{
 margin:0;
 font-family:Segoe UI;
-background: radial-gradient(circle at 20% 20%, #020617, #090a1a 60%);
-overflow-x:hidden;
+background:
+radial-gradient(circle at 15% 40%, rgba(0,212,255,0.25), transparent 40%),
+radial-gradient(circle at 80% 70%, rgba(168,85,247,0.35), transparent 40%),
+#070b1a;
 color:white;
-}
-
-/* floating glow planets */
-body::before, body::after{
-content:"";
-position:absolute;
-border-radius:50%;
-filter:blur(70px);
-animation:float 15s infinite alternate ease-in-out;
-}
-body::before{
-width:350px;height:350px;
-background: radial-gradient(circle,#5f2cff,#00d4ff);
-top:20%; left:8%;
-}
-body::after{
-width:260px;height:260px;
-background: radial-gradient(circle,#ff00cc,#3333ff);
-bottom:10%; right:10%;
-animation-delay:4s;
-}
-@keyframes float{
-from{ transform:translateY(-40px);}
-to{ transform:translateY(40px);}
+overflow-x:hidden;
 }
 
 /* navbar */
@@ -48,6 +27,7 @@ align-items:center;
 justify-content:space-between;
 padding:0 20px;
 }
+
 .logo{
 font-weight:bold;
 font-size:20px;
@@ -55,33 +35,61 @@ background:linear-gradient(90deg,#00d4ff,#a855f7);
 -webkit-background-clip:text;
 color:transparent;
 }
+
 .profile-circle{
 width:40px;height:40px;border-radius:50%;
 background:linear-gradient(135deg,#00d4ff,#a855f7);
 display:flex;align-items:center;justify-content:center;
 }
 
-/* sidebar */
+/* layout */
 .container{ display:flex; }
 
+/* 🔥 sidebar neon glow */
 .sidebar{
 width:220px;
 backdrop-filter: blur(18px);
-background: rgba(255,255,255,0.04);
-height:calc(100vh - 60px);
-padding-top:20px;
+background: linear-gradient(
+180deg,
+rgba(0,212,255,0.12),
+rgba(168,85,247,0.12)
+);
+border-right:2px solid transparent;
+box-shadow:
+0 0 15px rgba(0,212,255,0.4),
+0 0 30px rgba(168,85,247,0.35);
+position:relative;
+overflow:hidden;
 }
+
+.sidebar::after{
+content:"";
+position:absolute;
+top:0;
+right:0;
+width:2px;
+height:100%;
+background:linear-gradient(#00d4ff,#a855f7,#00d4ff);
+animation:neonMove 4s linear infinite;
+}
+
+@keyframes neonMove{
+0%{ transform:translateY(-100%); }
+100%{ transform:translateY(100%); }
+}
+
 .sidebar-item{
 padding:15px 20px;
 margin:6px 12px;
 border-radius:12px;
 cursor:pointer;
-background:linear-gradient(135deg,#00d4ff55,#a855f755);
+background:linear-gradient(135deg,#00d4ff33,#a855f733);
 transition:.3s;
 }
 .sidebar-item:hover{
 transform:translateX(6px);
 background:linear-gradient(135deg,#00d4ff,#a855f7);
+box-shadow:0 0 20px #00d4ff,0 0 25px #a855f7;
 }
 
 /* card */
@@ -226,4 +234,3 @@ displayEmpId.innerText=!snap.empty?snap.docs[0].data().EMPID:"Not Assigned";
 
 </body>
 </html>
-
