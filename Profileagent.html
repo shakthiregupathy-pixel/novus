@@ -349,12 +349,13 @@ onAuthStateChanged(auth, async (user) => {
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
 
-      if (userSnap.exists()) {
-        const data = userSnap.data();
+     if (userSnap.exists()) {
+  const data = userSnap.data();
 
-        // ✅ THIS is your correct ID
-        document.getElementById("name").innerText = data.name || "No Name";
-      } else {
+  const nameEl = document.getElementById("name");
+  nameEl.innerText = data.name || "No Name";
+}
+ else {
         document.getElementById("name").innerText = "No Data Found";
       }
 
