@@ -1,61 +1,46 @@
-import { auth, db } from "./firebase.js";
-import { doc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-auth.onAuthStateChanged((user) => {
+import { auth } from "./firebase.js";
+import { db } from "./firebase.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+onAuthStateChanged(auth, async (user) => {
   if (!user) return;
 
   const userId = user.uid;
+  const userRef = doc(db, "users", userId);
+  const snap = await getDoc(userRef);
+
+  if (!snap.exists()) return;
+
+  const data = snap.data();
+
+  // 🔹 UPDATE QUIZ SCORE
+  document.getElementById("quizScore").innerText =
+    `${data.assessment.quizScore} / 100`;
+
+  // 🔹 UPDATE CODING PROGRESS
+  document.getElementById("codingProgressText").innerText =
+    `${data.assessment.codingProgress}%`;
+
+  document.getElementById("codingProgressBar").style.width =
+    `${data.assessment.codingProgress}%`;
+
+  // 🔹 UPDATE OVERALL PROGRESS
+  document.getElementById("overallProgress").innerText =
+    `${data.assessment.overallScore}%`;
+
 });
-async function saveQuizScore(score) {
+import { db, auth } from "./firebase.js";
+import { doc, updateDoc } from
+"https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+async function submitQuiz(score){
   const user = auth.currentUser;
   if (!user) return;
 
-  const userRef = doc(db, "users", user.uid);
-
-  await updateDoc(userRef, {
+  await updateDoc(doc(db, "users", user.uid), {
     "assessment.quizScore": score,
-    "assessment.updatedAt": serverTimestamp()
+    "assessment.updatedAt": new Date()
   });
 }
-async function saveCodingProgress(progress) {
-  const user = auth.currentUser;
-  if (!user) return;
 
-  await updateDoc(doc(db, "users", user.uid), {
-    "assessment.codingProgress": progress,
-    "assessment.updatedAt": serverTimestamp()
-  });
-}
-async function submitAssignment() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  await updateDoc(doc(db, "users", user.uid), {
-    "assessment.assignmentSubmitted": true,
-    "assessment.updatedAt": serverTimestamp()
-  });
-}
-async function updateOverallScore() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const quiz = 85;     // from UI
-  const coding = 60;   // from UI
-
-  const overall = Math.round((quiz + coding) / 2);
-
-  await updateDoc(doc(db, "users", user.uid), {
-    "assessment.overallScore": overall
-  });
-}
-async function checkCertificationEligibility() {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  const eligible = true; // based on rules
-
-  await updateDoc(doc(db, "users", user.uid), {
-    "certification.eligible": eligible
-  });
-}
-saveQuizScore(85);
-saveCodingProgress(60);
