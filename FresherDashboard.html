@@ -34,7 +34,7 @@ color:transparent;
 
 .container{ display:flex; }
 
-/* ⭐ SIDEBAR WITH LIVE TUBE BORDER */
+/* ⭐ SIDEBAR */
 .sidebar{
 width:220px;
 margin:20px;
@@ -46,7 +46,7 @@ position:relative;
 overflow:hidden;
 }
 
-/* ⭐ thick moving tube border */
+/* ⭐ thick live tube border */
 .sidebar::after{
 content:"";
 position:absolute;
@@ -77,6 +77,9 @@ box-shadow:
 0 0 60px #a855f7;
 
 animation:liveTube 6s linear infinite;
+
+/* ⭐ VERY IMPORTANT */
+pointer-events:none;
 }
 
 @keyframes liveTube{
@@ -84,7 +87,11 @@ animation:liveTube 6s linear infinite;
 100%{ background-position:200% 50%; }
 }
 
-.sidebar a{ text-decoration:none;color:white; }
+.sidebar a{
+text-decoration:none;
+color:white;
+display:block;
+}
 
 .sidebar-item{
 padding:16px 20px;
@@ -180,7 +187,7 @@ text-align:center;
 
 </div>
 
-<!-- FIREBASE -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
