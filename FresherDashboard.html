@@ -14,7 +14,6 @@ radial-gradient(circle at 15% 40%, rgba(0,212,255,0.25), transparent 40%),
 radial-gradient(circle at 80% 70%, rgba(168,85,247,0.35), transparent 40%),
 #070b1a;
 color:white;
-overflow-x:hidden;
 }
 
 /* navbar */
@@ -42,57 +41,47 @@ background:linear-gradient(135deg,#00d4ff,#a855f7);
 display:flex;align-items:center;justify-content:center;
 }
 
-/* layout */
 .container{ display:flex; }
 
-/* 🔥 sidebar neon glow */
+/* 🔥 SIDEBAR PANEL */
 .sidebar{
 width:220px;
-backdrop-filter: blur(18px);
+margin:20px;
+padding-top:15px;
+border-radius:20px;
+backdrop-filter: blur(20px);
 background: linear-gradient(
 180deg,
-rgba(0,212,255,0.12),
-rgba(168,85,247,0.12)
+rgba(0,212,255,0.18),
+rgba(168,85,247,0.18)
 );
-border-right:2px solid transparent;
 box-shadow:
-0 0 15px rgba(0,212,255,0.4),
-0 0 30px rgba(168,85,247,0.35);
-position:relative;
-overflow:hidden;
+0 10px 30px rgba(0,0,0,0.45),
+0 0 20px rgba(0,212,255,0.25);
+border:1px solid rgba(255,255,255,0.12);
+height:calc(100vh - 100px);
 }
 
-.sidebar::after{
-content:"";
-position:absolute;
-top:0;
-right:0;
-width:2px;
-height:100%;
-background:linear-gradient(#00d4ff,#a855f7,#00d4ff);
-animation:neonMove 4s linear infinite;
-}
-
-@keyframes neonMove{
-0%{ transform:translateY(-100%); }
-100%{ transform:translateY(100%); }
-}
-
+/* sidebar buttons */
 .sidebar-item{
-padding:15px 20px;
-margin:6px 12px;
-border-radius:12px;
+padding:16px 20px;
+margin:10px 12px;
+border-radius:14px;
 cursor:pointer;
-background:linear-gradient(135deg,#00d4ff33,#a855f733);
-transition:.3s;
-}
-.sidebar-item:hover{
-transform:translateX(6px);
-background:linear-gradient(135deg,#00d4ff,#a855f7);
-box-shadow:0 0 20px #00d4ff,0 0 25px #a855f7;
+font-weight:600;
+color:white;
+text-decoration:none;
+background:linear-gradient(135deg,#00d4ff55,#a855f755);
+transition:.25s;
 }
 
-/* card */
+.sidebar-item:hover{
+transform:translateX(6px) scale(1.02);
+background:linear-gradient(135deg,#00d4ff,#a855f7);
+box-shadow:0 0 18px #00d4ff,0 0 25px #a855f7;
+}
+
+/* main card */
 .main{ flex:1; padding:30px; }
 
 .profile-card{
@@ -119,17 +108,16 @@ border-radius:15px;
 background: rgba(255,255,255,0.05);
 }
 
-/* stats */
 .stats-grid{
 margin-top:25px;
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
 gap:20px;
 }
+
 .stat-box{
 padding:25px;
 border-radius:18px;
-backdrop-filter: blur(16px);
 background:linear-gradient(135deg,#00d4ff33,#a855f733);
 text-align:center;
 transition:.3s;
@@ -138,7 +126,7 @@ transition:.3s;
 transform:translateY(-6px);
 box-shadow:0 0 25px #a855f7;
 }
-.stat-box h3{ font-size:30px;margin:0; }
+.stat-box h3{ margin:0;font-size:30px; }
 </style>
 </head>
 
@@ -150,6 +138,7 @@ box-shadow:0 0 25px #a855f7;
 </div>
 
 <div class="container">
+
 <div class="sidebar">
 <a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
 <a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
@@ -186,9 +175,10 @@ box-shadow:0 0 25px #a855f7;
 
 </div>
 </div>
+
 </div>
 
-<!-- FIREBASE -->
+<!-- FIREBASE SAME -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -234,3 +224,4 @@ displayEmpId.innerText=!snap.empty?snap.docs[0].data().EMPID:"Not Assigned";
 
 </body>
 </html>
+
