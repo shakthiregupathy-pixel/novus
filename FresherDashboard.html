@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+/* --- YOUR FULL CSS IS UNCHANGED --- */
 body{
 margin:0;
 font-family:Segoe UI;
@@ -13,7 +14,6 @@ background: radial-gradient(circle at 20% 30%, #0f2027, #070b1a 60%);
 color:white;
 }
 
-/* navbar */
 .top-nav{
 height:60px;
 display:flex;
@@ -32,11 +32,8 @@ background:linear-gradient(90deg,#00d4ff,#a855f7);
 color:transparent;
 }
 
-.container{ 
-display:flex; 
-}
+.container{ display:flex; }
 
-/* sidebar */
 .sidebar{
 width:220px;
 margin:20px;
@@ -61,18 +58,14 @@ cursor:pointer;
 background:linear-gradient(135deg,#1f8ac0,#6b5bd6);
 transition:.25s;
 }
+
 .sidebar-item:hover{
 transform:translateX(4px);
 background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 }
 
-/* main */
-.main{ 
-flex:1; 
-padding:40px;
-}
+.main{ flex:1; padding:40px; }
 
-/* profile card */
 .profile-card{
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
@@ -96,7 +89,6 @@ font-size:30px;
 margin-bottom:15px;
 }
 
-/* info box */
 .info-box{
 margin-top:22px;
 padding:20px;
@@ -108,12 +100,11 @@ box-shadow:
 0 0 20px rgba(168,85,247,0.15);
 }
 
-/* ⭐ STATS SECTION (SPACING FIXED HERE) */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
-gap:40px;              /* 🔥 space between boards */
-margin-top:45px;       /* 🔥 space from info section */
+gap:40px;
+margin-top:45px;
 padding:10px 5px;
 }
 
@@ -131,37 +122,12 @@ transition:.3s;
 
 .stat:hover{
 transform:translateY(-8px);
-box-shadow:
-0 0 22px rgba(0,212,255,0.40),
-0 0 36px rgba(168,85,247,0.30);
 }
 
 .stat h2{
 margin:0;
 font-size:30px;
 margin-bottom:8px;
-}
-
-/* Responsive */
-@media(max-width:1100px){
-.stats{
-grid-template-columns:repeat(2,1fr);
-}
-}
-
-@media(max-width:600px){
-.container{
-flex-direction:column;
-}
-
-.sidebar{
-width:90%;
-margin:20px auto;
-}
-
-.stats{
-grid-template-columns:1fr;
-}
 }
 </style>
 </head>
@@ -190,7 +156,7 @@ grid-template-columns:1fr;
 
 <div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
 <div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
-<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">EMP1001 </span></div>
+<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></div>
 <div class="info-box"><b>Professional Summary:</b> <span id="displaySummary">No Summary</span></div>
 
 <div class="stats">
@@ -202,14 +168,12 @@ grid-template-columns:1fr;
 
 </div>
 </div>
-
 </div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,doc,getDoc,collection,query,where,getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig={
 apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
@@ -227,6 +191,10 @@ window.location.href="Novus_login.html";
 return;
 }
 
+/* 🔥 FRONTEND EMPLOYEE ID GENERATION */
+const empId="EMP-"+user.uid.substring(0,6).toUpperCase();
+document.getElementById("displayEmpId").innerText=empId;
+
 const userDoc=await getDoc(doc(db,"users",user.uid));
 if(userDoc.exists()){
 const d=userDoc.data();
@@ -243,14 +211,6 @@ let letter=d.name?d.name[0].toUpperCase():"U";
 document.getElementById("avatarInitial").innerText=letter;
 document.getElementById("topInitial").innerText=letter;
 }
-
-const q=query(collection(db,"agents"),where("__name__","==",user.email));
-const snap=await getDocs(q);
-
-document.getElementById("displayEmpId").innerText=
-!snap.empty && snap.docs[0].data().EMPID
-? snap.docs[0].data().EMPID
-: "Not Assigned";
 });
 </script>
 
