@@ -339,27 +339,29 @@ const db = getFirestore(app);
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    const docRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(docRef);
+    try {
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
+      if (docSnap.exists()) {
+        const data = docSnap.data();
 
-      // 🔥 AUTO FILL INPUTS
-      document.getElementById("name").value = data.name || "";
-      document.getElementById("employeeId").value = data.employeeId || "";
-      document.getElementById("role").value = data.role || "";
-      document.getElementById("startDate").value = data.startDate || "";
-      document.getElementById("mentor").value = data.mentor || "";
-      document.getElementById("mode").value = data.mode || "Online";
+        document.getElementById("name").innerText = data.name || "No Name";
 
-    } else {
-      console.log("No user data found in Firestore");
+      } else {
+        document.getElementById("name").innerText = "No Data Found";
+      }
+
+    } catch (error) {
+      console.error(error);
+      document.getElementById("name").innerText = "Error loading";
     }
+
   } else {
-    window.location.href = "login.html";
+    document.getElementById("name").innerText = "Not Logged In";
   }
 });
+
 </script>
 
 
