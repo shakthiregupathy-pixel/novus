@@ -353,18 +353,18 @@ onAuthStateChanged(auth, async (user) => {
         const data = userSnap.data();
 
         // ✅ THIS is your correct ID
-        document.getElementById("userName").innerText = data.name || "No Name";
+        document.getElementById("name").innerText = data.name || "No Name";
       } else {
-        document.getElementById("userName").innerText = "No Data Found";
+        document.getElementById("name").innerText = "No Data Found";
       }
 
     } catch (error) {
       console.error("Error fetching user:", error);
-      document.getElementById("userName").innerText = "Error loading";
+      document.getElementById("name").innerText = "Error loading";
     }
 
   } else {
-    document.getElementById("userName").innerText = "Not Logged In";
+    document.getElementById("name").innerText = "Not Logged In";
   }
 
 });
