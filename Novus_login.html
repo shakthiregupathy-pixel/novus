@@ -6,12 +6,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Poppins',sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
 body{
 height:100vh;
@@ -23,7 +18,7 @@ overflow:hidden;
 color:white;
 }
 
-/* ⭐ Stars */
+/* ⭐ Galaxy stars */
 body::before{
 content:"";
 position:absolute;
@@ -50,6 +45,33 @@ animation:twinkle 3s infinite alternate;
 100%{opacity:1;}
 }
 
+/* 🌠 Shooting star */
+.shooting-star{
+position:absolute;
+top:15%;
+left:-120px;
+width:3px;
+height:3px;
+background:white;
+border-radius:50%;
+box-shadow:
+0 0 6px white,
+0 0 12px #00c6ff,
+0 0 20px #00c6ff;
+animation:shoot 6s linear infinite;
+}
+
+@keyframes shoot{
+0%{
+transform:translateX(0) translateY(0);
+opacity:1;
+}
+100%{
+transform:translateX(1400px) translateY(350px);
+opacity:0;
+}
+}
+
 /* Card */
 .card{
 width:420px;
@@ -62,7 +84,7 @@ z-index:2;
 text-align:center;
 }
 
-/* NOVUS Gradient */
+/* NOVUS gradient */
 .novus{
 font-size:40px;
 font-weight:800;
@@ -76,10 +98,9 @@ margin-bottom:5px;
 .subtitle{
 font-size:14px;
 opacity:0.7;
-margin-bottom:30px;
+margin-bottom:25px;
 }
 
-/* Labels */
 label{
 font-size:13px;
 display:block;
@@ -88,7 +109,6 @@ margin-top:10px;
 margin-bottom:5px;
 }
 
-/* Inputs */
 input, select{
 width:100%;
 padding:12px;
@@ -101,15 +121,13 @@ font-size:14px;
 outline:none;
 }
 
-/* 🔥 MAKE DROPDOWN TEXT VISIBLE */
-select{
-color:white;
-}
+/* dropdown visible */
 select option{
+background:white;
 color:black;
+font-weight:600;
 }
 
-/* Button */
 button{
 width:100%;
 padding:13px;
@@ -144,13 +162,13 @@ opacity:0.8;
 text-decoration:underline;
 }
 
-.hidden{
-display:none;
-}
+.hidden{display:none;}
 </style>
 </head>
 
 <body>
+
+<div class="shooting-star"></div>
 
 <div class="card">
 
@@ -244,7 +262,7 @@ forgotForm.classList.add("hidden");
 }
 </script>
 
-<!-- 🔥 FIREBASE 🔥 -->
+<!-- 🔥 FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } 
@@ -265,39 +283,28 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* SIGNUP */
 window.signup = async function(){
 if(signupPassword.value !== confirmPassword.value){
 alert("Passwords do not match!");
 return;
 }
-
 try{
 const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
 await setDoc(doc(db,"users",userCredential.user.uid),{
 name:fullName.value,
-role:signupRole.value,
-onboardingPercentage:0,
-assessmentPercentage:0,
-certificationPercentage:0,
-overallScore:0,
-professionalSummary:""
+role:signupRole.value
 });
 alert("Account Created!");
 showLogin();
 }catch(error){alert(error.message);}
 }
 
-/* LOGIN */
 window.login = async function(){
 try{
 const userCredential = await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
 const docSnap = await getDoc(doc(db,"users",userCredential.user.uid));
 if(!docSnap.exists()){alert("User not found!");return;}
-if(docSnap.data().role !== loginRole.value){
-alert("Wrong role selected!");
-return;
-}
+if(docSnap.data().role !== loginRole.value){alert("Wrong role selected!");return;}
 if(loginRole.value==="admin"){
 window.location.href="AdminDashboard.html";
 }else{
@@ -306,8 +313,7 @@ window.location.href="FresherDashboard.html";
 }catch(error){alert(error.message);}
 }
 
-/* RESET */
-window.resetPassword = function(){
+window.resetPassword=function(){
 sendPasswordResetEmail(auth, resetEmail.value)
 .then(()=>alert("Reset link sent!"))
 .catch(error=>alert(error.message));
@@ -316,3 +322,4 @@ sendPasswordResetEmail(auth, resetEmail.value)
 
 </body>
 </html>
+
