@@ -34,50 +34,53 @@ color:transparent;
 
 .container{ display:flex; }
 
-/* ⭐ SIDEBAR */
+/* ⭐ SIDEBAR PANEL */
 .sidebar{
 width:220px;
 margin:20px;
-border-radius:20px;
+border-radius:22px;
 padding-top:10px;
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
 position:relative;
-height:calc(100vh - 100px);
+overflow:hidden;
 }
 
-/* ⭐ tube light glow */
+/* ⭐ tube border animation */
 .sidebar::after{
 content:"";
 position:absolute;
-top:0;
-right:-3px;
-width:4px;
-height:100%;
-border-radius:10px;
+inset:0;
+border-radius:22px;
+padding:2px;
 
 background:linear-gradient(
-to bottom,
-transparent,
+120deg,
 #00d4ff,
 #a855f7,
 #00d4ff,
-transparent
+#a855f7,
+#00d4ff
 );
+background-size:300% 300%;
 
-background-size:100% 300px;
+-webkit-mask:
+linear-gradient(#000 0 0) content-box,
+linear-gradient(#000 0 0);
+-webkit-mask-composite:xor;
+mask-composite:exclude;
 
 box-shadow:
 0 0 12px #00d4ff,
 0 0 22px #a855f7,
 0 0 35px #00d4ff;
 
-animation:tubeMove 3.5s linear infinite;
+animation:borderMove 5s linear infinite;
 }
 
-@keyframes tubeMove{
-0%{ background-position:0 -300px; }
-100%{ background-position:0 300px; }
+@keyframes borderMove{
+0%{ background-position:0% 50%; }
+100%{ background-position:100% 50%; }
 }
 
 .sidebar a{ text-decoration:none;color:white; }
@@ -176,7 +179,7 @@ text-align:center;
 
 </div>
 
-<!-- 🔥 FIREBASE -->
+<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
