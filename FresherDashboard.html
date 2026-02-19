@@ -9,7 +9,7 @@
 body{
 margin:0;
 font-family:Segoe UI;
-background:#000;
+background: radial-gradient(circle at 20% 30%, #0f2027, #070b1a 60%);
 color:white;
 }
 
@@ -20,7 +20,8 @@ display:flex;
 align-items:center;
 justify-content:space-between;
 padding:0 20px;
-background:#000;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(12px);
 }
 
 .logo{
@@ -33,16 +34,19 @@ color:transparent;
 
 .container{ display:flex; }
 
-/* sidebar */
+/* ⭐ sidebar glowing frame */
 .sidebar{
 width:220px;
 margin:20px;
 border-radius:20px;
 padding-top:10px;
-background:rgba(255,255,255,0.05);
+background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
 border:1px solid rgba(255,255,255,0.12);
-box-shadow:0 0 18px rgba(0,212,255,0.25),0 0 30px rgba(168,85,247,0.18);
+box-shadow:
+0 0 14px rgba(0,212,255,0.35),
+0 0 24px rgba(168,85,247,0.25),
+inset 0 0 12px rgba(0,212,255,0.15);
 }
 
 .sidebar a{ text-decoration:none;color:white; }
@@ -53,58 +57,28 @@ margin:10px 12px;
 border-radius:14px;
 cursor:pointer;
 background:linear-gradient(135deg,#1f8ac0,#6b5bd6);
+transition:.25s;
+}
+.sidebar-item:hover{
+transform:translateX(4px);
+background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 }
 
 /* main */
 .main{ flex:1; padding:30px; }
 
-/* 🔥 BLACK MAIN CARD */
+/* ⭐ profile card BLACK inside */
 .profile-card{
-position:relative;
 background:#000;
+backdrop-filter:blur(18px);
 padding:30px;
 border-radius:20px;
-border:1px solid rgba(255,255,255,0.18);
-box-shadow:0 0 25px rgba(0,212,255,0.35),0 0 45px rgba(168,85,247,0.25);
-overflow:hidden;
+border:1px solid rgba(255,255,255,0.12);
+box-shadow:
+0 0 14px rgba(0,212,255,0.3),
+0 0 24px rgba(168,85,247,0.22);
 }
 
-/* neon animated border */
-.profile-card::before{
-content:"";
-position:absolute;
-inset:-2px;
-border-radius:22px;
-background:linear-gradient(90deg,#00d4ff,#a855f7,#00d4ff);
-background-size:300% 300%;
-animation:neonMove 6s linear infinite;
-z-index:-1;
-filter:blur(10px);
-}
-
-@keyframes neonMove{
-0%{background-position:0% 50%;}
-50%{background-position:100% 50%;}
-100%{background-position:0% 50%;}
-}
-
-/* reflection sweep */
-.light-sweep{
-position:absolute;
-top:0;
-left:-120%;
-width:60%;
-height:100%;
-background:linear-gradient(120deg,transparent,#ffffff22,transparent);
-transform:skewX(-25deg);
-animation:sweep 5s infinite;
-}
-@keyframes sweep{
-0%{left:-120%;}
-100%{left:130%;}
-}
-
-/* avatar */
 .profile-avatar{
 width:80px;height:80px;border-radius:50%;
 background:linear-gradient(135deg,#00d4ff,#a855f7);
@@ -112,16 +86,19 @@ display:flex;align-items:center;justify-content:center;
 font-size:28px;
 }
 
-/* 🔥 INSIDE INFO BOXES BLACK */
+/* ⭐ info box BLACK */
 .info-box{
 margin-top:20px;
 padding:18px;
 border-radius:15px;
 background:#000;
-border:1px solid rgba(255,255,255,0.18);
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:
+0 0 10px rgba(0,212,255,0.2),
+0 0 18px rgba(168,85,247,0.15);
 }
 
-/* stats layout */
+/* ⭐ stats */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -129,14 +106,23 @@ gap:20px;
 margin-top:25px;
 }
 
-/* 🔥 STAT BOXES BLACK */
+/* ⭐ stat BLACK */
 .stat{
 padding:25px;
 border-radius:18px;
 background:#000;
 text-align:center;
-border:1px solid rgba(255,255,255,0.18);
-box-shadow:0 0 12px rgba(0,212,255,0.25),0 0 22px rgba(168,85,247,0.18);
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:
+0 0 12px rgba(0,212,255,0.25),
+0 0 22px rgba(168,85,247,0.18);
+transition:.3s;
+}
+.stat:hover{
+transform:translateY(-6px);
+box-shadow:
+0 0 18px rgba(0,212,255,0.35),
+0 0 32px rgba(168,85,247,0.28);
 }
 .stat h2{ margin:0;font-size:28px; }
 </style>
@@ -153,16 +139,14 @@ box-shadow:0 0 12px rgba(0,212,255,0.25),0 0 22px rgba(168,85,247,0.18);
 
 <div class="sidebar">
 <a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
-<a href="onboarding-agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
-<a href="assessment-agent.html"><div class="sidebar-item">Assessment Agent</div></a>
+<a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
+<a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
 <a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
 <a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
 </div>
 
 <div class="main">
 <div class="profile-card">
-
-<div class="light-sweep"></div>
 
 <div class="profile-avatar" id="avatarInitial">U</div>
 
@@ -183,6 +167,7 @@ box-shadow:0 0 12px rgba(0,212,255,0.25),0 0 22px rgba(168,85,247,0.18);
 
 </div>
 
+<!-- FIREBASE (unchanged) -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
@@ -227,4 +212,3 @@ displayEmpId.innerText=!snap.empty && snap.docs[0].data().EMPID
 
 </body>
 </html>
-
