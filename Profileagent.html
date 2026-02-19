@@ -318,52 +318,59 @@ function calculateProfile() {
 
 </script>
 <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 
-<script>
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, query, where, getDocs } from 
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  apiKey: "AIzaSyD...",
   authDomain: "novus-9dfb8.firebaseapp.com",
   projectId: "novus-9dfb8",
-  storageBucket: "novus-9dfb8.firebasestorage.app",
+  storageBucket: "novus-9dfb8.appspot.com",
   messagingSenderId: "641276518161",
   appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Listen for logged-in user
 onAuthStateChanged(auth, async (user) => {
 
-if(user){
+  if (user) {
+    try {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
 
-    // USER DATA
-    const userDoc = await getDoc(doc(db,"users",user.uid));
-    if(userDoc.exists()){
-        const data = userDoc.data();
+      if (userSnap.exists()) {
+        const data = userSnap.data();
 
-        document.getElementById("displayName").innerText = data.name || "No Name";
-        document.getElementById("displayEmail").innerText = user.email;
-        document.getElementById("displaySummary").innerText = data.professionalSummary || "No Summary";
+        // ✅ THIS is your correct ID
+        document.getElementById("userName").innerText = data.name || "No Name";
+      } else {
+        document.getElementById("userName").innerText = "No Data Found";
+      }
 
-        document.getElementById("onboardingPercent").innerText = (data.onboardingPercentage || 0) + "%";
-        document.getElementById("assessmentPercent").innerText = (data.assessmentPercentage || 0) + "%";
-        document.getElementById("certPercent").innerText = (data.certificationPercentage || 0) + "%";
-        document.getElementById("overallPercent").innerText = (data.overallScore || 0) + "%";
-
-        const firstLetter = data.name ? data.name.charAt(0).toUpperCase() : "U";
-        document.getElementById("avatarInitial").innerText = firstLetter;
-        document.getElementById("topInitial").innerText = firstLetter;
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      document.getElementById("userName").innerText = "Error loading";
     }
+
+  } else {
+    document.getElementById("userName").innerText = "Not Logged In";
+  }
+
+});
+
 </script>
+
 
 </body>
 </html>
