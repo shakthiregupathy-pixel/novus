@@ -34,7 +34,7 @@ color:transparent;
 
 .container{ display:flex; }
 
-/* sidebar */
+/* ⭐ sidebar glowing frame */
 .sidebar{
 width:220px;
 margin:20px;
@@ -42,6 +42,7 @@ border-radius:20px;
 padding-top:10px;
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
+
 border:1px solid rgba(255,255,255,0.12);
 box-shadow:
 0 0 14px rgba(0,212,255,0.35),
@@ -49,11 +50,7 @@ box-shadow:
 inset 0 0 12px rgba(0,212,255,0.15);
 }
 
-.sidebar a{
-text-decoration:none;
-color:white;
-display:block;
-}
+.sidebar a{ text-decoration:none;color:white; }
 
 .sidebar-item{
 padding:16px 20px;
@@ -71,7 +68,7 @@ background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 /* main */
 .main{ flex:1; padding:30px; }
 
-/* profile card */
+/* ⭐ glowing profile card */
 .profile-card{
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
@@ -84,16 +81,13 @@ box-shadow:
 }
 
 .profile-avatar{
-width:80px;
-height:80px;
-border-radius:50%;
+width:80px;height:80px;border-radius:50%;
 background:linear-gradient(135deg,#00d4ff,#a855f7);
-display:flex;
-align-items:center;
-justify-content:center;
+display:flex;align-items:center;justify-content:center;
 font-size:28px;
 }
 
+/* ⭐ glowing info box */
 .info-box{
 margin-top:20px;
 padding:18px;
@@ -105,6 +99,7 @@ box-shadow:
 0 0 18px rgba(168,85,247,0.15);
 }
 
+/* ⭐ glowing stats */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -125,6 +120,9 @@ transition:.3s;
 }
 .stat:hover{
 transform:translateY(-6px);
+box-shadow:
+0 0 18px rgba(0,212,255,0.35),
+0 0 32px rgba(168,85,247,0.28);
 }
 .stat h2{ margin:0;font-size:28px; }
 </style>
@@ -141,8 +139,8 @@ transform:translateY(-6px);
 
 <div class="sidebar">
 <a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
-<a href="onboarding-agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
-<a href="assessment-agent.html"><div class="sidebar-item">Assessment Agent</div></a>
+<a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
+<a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
 <a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
 <a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
 </div>
@@ -166,51 +164,49 @@ transform:translateY(-6px);
 
 </div>
 </div>
+
 </div>
 
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore,doc,getDoc,collection,query,where,getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig = {
+const firebaseConfig={
 apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
 authDomain:"novus-9dfb8.firebaseapp.com",
 projectId:"novus-9dfb8"
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth,async user=>{
+if(!user){ location.href="Novus_login.html"; return;}
 
-if(!user){
-window.location.href = "Novus_login.html";
-return;
+const userDoc=await getDoc(doc(db,"users",user.uid));
+if(userDoc.exists()){
+const d=userDoc.data();
+displayName.innerText=d.name||"No Name";
+displayEmail.innerText=user.email;
+displaySummary.innerText=d.professionalSummary||"No Summary";
+onboardingPercent.innerText=(d.onboardingPercentage||0)+"%";
+assessmentPercent.innerText=(d.assessmentPercentage||0)+"%";
+certPercent.innerText=(d.certificationPercentage||0)+"%";
+overallPercent.innerText=(d.overallScore||0)+"%";
+
+let letter=d.name?d.name[0].toUpperCase():"U";
+avatarInitial.innerText=letter;
+topInitial.innerText=letter;
 }
 
-// GET USER DATA
-const userRef = doc(db,"users",user.uid);
-const userSnap = await getDoc(userRef);
-
-if(userSnap.exists()){
-const d = userSnap.data();
-
-document.getElementById("displayName").innerText = d.name || "No Name";
-document.getElementById("displayEmail").innerText = user.email;
-document.getElementById("displaySummary").innerText = d.professionalSummary || "No Summary";
-document.getElementById("onboardingPercent").innerText = (d.onboardingPercentage || 0) + "%";
-document.getElementById("assessmentPercent").innerText = (d.assessmentPercentage || 0) + "%";
-document.getElementById("certPercent").innerText = (d.certificationPercentage || 0) + "%";
-document.getElementById("overallPercent").innerText = (d.overallScore || 0) + "%";
-
-let letter = d.name ? d.name.charAt(0).toUpperCase() : "U";
-document.getElementById("avatarInitial").innerText = letter;
-document.getElementById("topInitial").innerText = letter;
-}
-
+const q=query(collection(db,"agents"),where("__name__","==",user.email));
+const snap=await getDocs(q);
+displayEmpId.innerText=!snap.empty && snap.docs[0].data().EMPID
+? snap.docs[0].data().EMPID
+: "Not Assigned";
 });
 </script>
 
