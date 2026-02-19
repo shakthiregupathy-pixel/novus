@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* --- YOUR FULL CSS IS UNCHANGED --- */
 body{
 margin:0;
 font-family:Segoe UI;
@@ -156,7 +155,7 @@ margin-bottom:8px;
 
 <div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
 <div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
-<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></div>
+<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">EMP101</span></div>
 <div class="info-box"><b>Professional Summary:</b> <span id="displaySummary">No Summary</span></div>
 
 <div class="stats">
@@ -191,9 +190,8 @@ window.location.href="Novus_login.html";
 return;
 }
 
-/* 🔥 FRONTEND EMPLOYEE ID GENERATION */
-const empId="EMP-"+user.uid.substring(0,6).toUpperCase();
-document.getElementById("displayEmpId").innerText=empId;
+/* ✅ HARDCODED EMPLOYEE ID */
+document.getElementById("displayEmpId").innerText="EMP101";
 
 const userDoc=await getDoc(doc(db,"users",user.uid));
 if(userDoc.exists()){
@@ -216,4 +214,3 @@ document.getElementById("topInitial").innerText=letter;
 
 </body>
 </html>
-
