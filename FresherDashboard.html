@@ -9,90 +9,139 @@
 body{
 margin:0;
 font-family:Segoe UI;
-background:
-radial-gradient(circle at 15% 40%, rgba(0,212,255,0.25), transparent 40%),
-radial-gradient(circle at 80% 70%, rgba(168,85,247,0.35), transparent 40%),
-#070b1a;
+background: radial-gradient(circle at 20% 30%, #0f2027, #070b1a 60%);
 color:white;
+overflow-x:hidden;
 }
 
 /* navbar */
 .top-nav{
 height:60px;
-backdrop-filter: blur(14px);
-background: rgba(255,255,255,0.05);
 display:flex;
 align-items:center;
 justify-content:space-between;
 padding:0 20px;
+background:rgba(255,255,255,0.05);
+backdrop-filter:blur(12px);
 }
 
 .logo{
-font-weight:bold;
 font-size:20px;
+font-weight:bold;
 background:linear-gradient(90deg,#00d4ff,#a855f7);
 -webkit-background-clip:text;
 color:transparent;
 }
 
-.profile-circle{
-width:40px;height:40px;border-radius:50%;
-background:linear-gradient(135deg,#00d4ff,#a855f7);
-display:flex;align-items:center;justify-content:center;
+.menu-btn{
+font-size:24px;
+cursor:pointer;
+display:none;
 }
 
+/* layout */
 .container{ display:flex; }
 
-/* 🔥 SIDEBAR PANEL */
+/* mobile sidebar */
+@media(max-width:900px){
+.menu-btn{ display:block; }
+
+.sidebar{
+position:fixed;
+left:-240px;
+top:60px;
+transition:.35s;
+z-index:999;
+}
+.sidebar.show{ left:10px; }
+}
+
+/* sidebar panel */
 .sidebar{
 width:220px;
 margin:20px;
-padding-top:15px;
 border-radius:20px;
-backdrop-filter: blur(20px);
-background: linear-gradient(
-180deg,
-rgba(0,212,255,0.18),
-rgba(168,85,247,0.18)
-);
-box-shadow:
-0 10px 30px rgba(0,0,0,0.45),
-0 0 20px rgba(0,212,255,0.25);
-border:1px solid rgba(255,255,255,0.12);
+padding-top:10px;
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(18px);
+box-shadow:0 10px 25px rgba(0,0,0,0.4);
 height:calc(100vh - 100px);
 }
 
-/* sidebar buttons */
+/* subtle glass shine */
+.sidebar::before{
+content:"";
+position:absolute;
+inset:0;
+border-radius:20px;
+background:linear-gradient(120deg,transparent,rgba(255,255,255,0.15),transparent);
+animation:shine 6s infinite;
+pointer-events:none;
+}
+@keyframes shine{
+0%{ transform:translateX(-100%);}
+100%{ transform:translateX(100%);}
+}
+
+/* sidebar item */
 .sidebar-item{
+position:relative;
 padding:16px 20px;
 margin:10px 12px;
 border-radius:14px;
 cursor:pointer;
-font-weight:600;
-color:white;
-text-decoration:none;
-background:linear-gradient(135deg,#00d4ff55,#a855f755);
+overflow:hidden;
+background:linear-gradient(135deg,#1f8ac0,#6b5bd6);
 transition:.25s;
 }
 
-.sidebar-item:hover{
-transform:translateX(6px) scale(1.02);
-background:linear-gradient(135deg,#00d4ff,#a855f7);
-box-shadow:0 0 18px #00d4ff,0 0 25px #a855f7;
+/* ripple */
+.sidebar-item::after{
+content:"";
+position:absolute;
+width:0;height:0;
+background:rgba(255,255,255,0.3);
+border-radius:50%;
+transform:translate(-50%,-50%);
+transition:.5s;
+}
+.sidebar-item:active::after{
+width:300px;height:300px;
+left:50%;top:50%;
 }
 
-/* main card */
+/* hover */
+.sidebar-item:hover{
+transform:translateX(4px);
+background:linear-gradient(135deg,#2aa9e0,#8b6cff);
+}
+
+/* active indicator */
+.active-menu{
+background:linear-gradient(135deg,#2aa9e0,#a855f7);
+}
+.active-menu::before{
+content:"";
+position:absolute;
+left:0;
+top:10px;
+bottom:10px;
+width:4px;
+border-radius:4px;
+background:#00d4ff;
+}
+
+/* main */
 .main{ flex:1; padding:30px; }
 
 .profile-card{
-backdrop-filter: blur(18px);
-background: rgba(255,255,255,0.06);
+background:rgba(255,255,255,0.06);
+backdrop-filter:blur(18px);
 padding:30px;
 border-radius:20px;
-box-shadow:0 0 40px rgba(0,255,255,0.15);
 }
 
-.profile-header{ display:flex;gap:20px;align-items:center; }
+.profile-header{ display:flex; gap:20px; align-items:center; }
 
 .profile-avatar{
 width:80px;height:80px;border-radius:50%;
@@ -105,7 +154,7 @@ font-size:28px;
 margin-top:20px;
 padding:18px;
 border-radius:15px;
-background: rgba(255,255,255,0.05);
+background:rgba(255,255,255,0.05);
 }
 
 .stats-grid{
@@ -120,11 +169,6 @@ padding:25px;
 border-radius:18px;
 background:linear-gradient(135deg,#00d4ff33,#a855f733);
 text-align:center;
-transition:.3s;
-}
-.stat-box:hover{
-transform:translateY(-6px);
-box-shadow:0 0 25px #a855f7;
 }
 .stat-box h3{ margin:0;font-size:30px; }
 </style>
@@ -133,17 +177,20 @@ box-shadow:0 0 25px #a855f7;
 <body>
 
 <div class="top-nav">
+<div style="display:flex;align-items:center;gap:15px;">
+<div class="menu-btn" onclick="toggleMenu()">☰</div>
 <div class="logo">NOVUS</div>
-<div class="profile-circle" id="topInitial">U</div>
+</div>
+<div id="topInitial">U</div>
 </div>
 
 <div class="container">
 
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
 <a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
 <a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
 <a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
-<a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
+<a href="Profileagent.html"><div class="sidebar-item active-menu">Profile Agent</div></a>
 <a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
 </div>
 
@@ -161,11 +208,6 @@ box-shadow:0 0 25px #a855f7;
 <div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
 <div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></div>
 
-<div class="info-box">
-<b>Professional Summary</b>
-<p id="displaySummary">Loading...</p>
-</div>
-
 <div class="stats-grid">
 <div class="stat-box"><h3 id="onboardingPercent">0%</h3><p>Onboarding</p></div>
 <div class="stat-box"><h3 id="assessmentPercent">0%</h3><p>Assessment</p></div>
@@ -175,51 +217,12 @@ box-shadow:0 0 25px #a855f7;
 
 </div>
 </div>
-
 </div>
 
-<!-- FIREBASE SAME -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,doc,getDoc,collection,query,where,getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-authDomain:"novus-9dfb8.firebaseapp.com",
-projectId:"novus-9dfb8",
-storageBucket:"novus-9dfb8.firebasestorage.app",
-messagingSenderId:"641276518161",
-appId:"1:641276518161:web:ee2c11e2662e86e59bb6b0"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-onAuthStateChanged(auth,async user=>{
-if(!user){ location.href="Novus_login.html"; return;}
-
-const userDoc=await getDoc(doc(db,"users",user.uid));
-if(userDoc.exists()){
-const d=userDoc.data();
-displayName.innerText=d.name||"No Name";
-displayEmail.innerText=user.email;
-displaySummary.innerText=d.professionalSummary||"No Summary";
-onboardingPercent.innerText=(d.onboardingPercentage||0)+"%";
-assessmentPercent.innerText=(d.assessmentPercentage||0)+"%";
-certPercent.innerText=(d.certificationPercentage||0)+"%";
-overallPercent.innerText=(d.overallScore||0)+"%";
-
-let letter=d.name?d.name[0].toUpperCase():"U";
-avatarInitial.innerText=letter;
-topInitial.innerText=letter;
+<script>
+function toggleMenu(){
+document.getElementById("sidebar").classList.toggle("show");
 }
-
-const q=query(collection(db,"agents"),where("__name__","==",user.email));
-const snap=await getDocs(q);
-displayEmpId.innerText=!snap.empty?snap.docs[0].data().EMPID:"Not Assigned";
-});
 </script>
 
 </body>
