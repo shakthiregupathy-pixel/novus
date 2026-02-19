@@ -63,11 +63,11 @@ transform:translateX(4px);
 background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 }
 
-.main{ 
-flex:1; 
-padding:40px; 
+.main{
+flex:1;
+padding:40px;
 display:flex;
-justify-content:center;
+justify-content:center;  /* centers card */
 }
 
 .profile-card{
@@ -83,10 +83,10 @@ box-shadow:
 0 0 24px rgba(168,85,247,0.22);
 }
 
-/* 🔥 TRAINING TITLE */
+/* ===== TRAINING TITLE ===== */
 .dashboard-title{
 text-align:center;
-margin-bottom:10px;
+margin-bottom:5px;  /* reduced gap */
 }
 
 .dashboard-title h1{
@@ -105,7 +105,7 @@ opacity:0.85;
 letter-spacing:2px;
 }
 
-/* 🔥 CENTERED AVATAR */
+/* ===== CENTERED AVATAR ===== */
 .profile-avatar{
 width:90px;
 height:90px;
@@ -115,7 +115,7 @@ display:flex;
 align-items:center;
 justify-content:center;
 font-size:30px;
-margin:20px auto;   /* Perfect Center */
+margin:10px auto 20px; /* tighter spacing + centered */
 }
 
 /* Info Boxes */
@@ -130,7 +130,7 @@ box-shadow:
 0 0 20px rgba(168,85,247,0.15);
 }
 
-/* Stats Section */
+/* Stats */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -183,13 +183,11 @@ margin-bottom:8px;
 <div class="main">
 <div class="profile-card">
 
-<!-- 🔥 TRAINING DASHBOARD TITLE -->
 <div class="dashboard-title">
 <h1>Training Dashboard</h1>
 <p>Mavericks Onboarding</p>
 </div>
 
-<!-- 🔥 CENTERED AVATAR -->
 <div class="profile-avatar" id="avatarInitial">U</div>
 
 <div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
@@ -230,8 +228,8 @@ const auth=getAuth(app);
 const db=getFirestore(app);
 
 onAuthStateChanged(auth,async user=>{
-if(!user){ 
-window.location.href="Novus_login.html"; 
+if(!user){
+window.location.href="Novus_login.html";
 return;
 }
 
@@ -258,3 +256,4 @@ document.getElementById("topInitial").innerText=letter;
 
 </body>
 </html>
+
