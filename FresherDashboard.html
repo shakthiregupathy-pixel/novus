@@ -34,7 +34,7 @@ color:transparent;
 
 .container{ display:flex; }
 
-/* sidebar */
+/* ⭐ sidebar glowing frame */
 .sidebar{
 width:220px;
 margin:20px;
@@ -42,13 +42,15 @@ border-radius:20px;
 padding-top:10px;
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
+
 border:1px solid rgba(255,255,255,0.12);
 box-shadow:
 0 0 14px rgba(0,212,255,0.35),
-0 0 24px rgba(168,85,247,0.25);
+0 0 24px rgba(168,85,247,0.25),
+inset 0 0 12px rgba(0,212,255,0.15);
 }
 
-.sidebar a{ text-decoration:none;color:white;display:block;}
+.sidebar a{ text-decoration:none;color:white; }
 
 .sidebar-item{
 padding:16px 20px;
@@ -56,48 +58,48 @@ margin:10px 12px;
 border-radius:14px;
 cursor:pointer;
 background:linear-gradient(135deg,#1f8ac0,#6b5bd6);
+transition:.25s;
+}
+.sidebar-item:hover{
+transform:translateX(4px);
+background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 }
 
 /* main */
 .main{ flex:1; padding:30px; }
 
-/* ⭐ BIG OUTER NEON FRAME */
+/* ⭐ glowing profile card */
 .profile-card{
-position:relative;
-padding:35px;
-border-radius:24px;
-background:rgba(255,255,255,0.05);
+background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
+padding:30px;
+border-radius:20px;
+border:1px solid rgba(255,255,255,0.12);
+box-shadow:
+0 0 14px rgba(0,212,255,0.3),
+0 0 24px rgba(168,85,247,0.22);
 }
 
-.profile-card::before{
-content:"";
-position:absolute;
-inset:-6px;
-border-radius:28px;
-background:linear-gradient(90deg,#00d4ff,#a855f7,#00d4ff);
-filter:blur(12px);
-opacity:.9;
-z-index:-1;
-}
-
-/* avatar */
 .profile-avatar{
 width:80px;height:80px;border-radius:50%;
 background:linear-gradient(135deg,#00d4ff,#a855f7);
 display:flex;align-items:center;justify-content:center;
-font-size:28px;margin-bottom:15px;
+font-size:28px;
 }
 
-/* info */
+/* ⭐ glowing info box */
 .info-box{
 margin-top:20px;
 padding:18px;
 border-radius:15px;
 background:rgba(255,255,255,0.05);
 border:1px solid rgba(255,255,255,0.08);
+box-shadow:
+0 0 10px rgba(0,212,255,0.2),
+0 0 18px rgba(168,85,247,0.15);
 }
 
+/* ⭐ glowing stats */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -111,8 +113,18 @@ border-radius:18px;
 background:linear-gradient(135deg,#00d4ff33,#a855f733);
 text-align:center;
 border:1px solid rgba(255,255,255,0.1);
+box-shadow:
+0 0 12px rgba(0,212,255,0.25),
+0 0 22px rgba(168,85,247,0.18);
+transition:.3s;
 }
-.stat h2{margin:0;font-size:28px;}
+.stat:hover{
+transform:translateY(-6px);
+box-shadow:
+0 0 18px rgba(0,212,255,0.35),
+0 0 32px rgba(168,85,247,0.28);
+}
+.stat h2{ margin:0;font-size:28px; }
 </style>
 </head>
 
@@ -140,8 +152,8 @@ border:1px solid rgba(255,255,255,0.1);
 
 <div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
 <div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
-<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></div>
-<div class="info-box"><b>Professional Summary:</b> <span id="displaySummary">Loading...</span></div>
+<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">Not Assigned</span></div>
+<div class="info-box"><b>Professional Summary:</b> <span id="displaySummary">No Summary</span></div>
 
 <div class="stats">
 <div class="stat"><h2 id="onboardingPercent">0%</h2>Onboarding</div>
@@ -152,6 +164,7 @@ border:1px solid rgba(255,255,255,0.1);
 
 </div>
 </div>
+
 </div>
 
 <!-- FIREBASE -->
@@ -163,10 +176,7 @@ import { getFirestore,doc,getDoc,collection,query,where,getDocs } from "https://
 const firebaseConfig={
 apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
 authDomain:"novus-9dfb8.firebaseapp.com",
-projectId:"novus-9dfb8",
-storageBucket:"novus-9dfb8.firebasestorage.app",
-messagingSenderId:"641276518161",
-appId:"1:641276518161:web:ee2c11e2662e86e59bb6b0"
+projectId:"novus-9dfb8"
 };
 
 const app=initializeApp(firebaseConfig);
@@ -182,211 +192,6 @@ const d=userDoc.data();
 displayName.innerText=d.name||"No Name";
 displayEmail.innerText=user.email;
 displaySummary.innerText=d.professionalSummary||"No Summary";
-
-onboardingPercent.innerText=(d.onboardingPercentage||0)+"%";
-assessmentPercent.innerText=(d.assessmentPercentage||0)+"%";
-certPercent.innerText=(d.certificationPercentage||0)+"%";
-overallPercent.innerText=(d.overallScore||0)+"%";
-
-let letter=d.name?d.name[0].toUpperCase():"U";
-avatarInitial.innerText=letter;
-topInitial.innerText=letter;
-}
-
-const q=query(collection(db,"agents"),where("__name__","==",user.email));
-const snap=await getDocs(q);
-displayEmpId.innerText=!snap.empty && snap.docs[0].data().EMPID
-? snap.docs[0].data().EMPID
-: "Not Assigned";
-});
-</script>
-
-</body>
-</html><!DOCTYPE html>
-<html>
-<head>
-<title>NOVUS Dashboard</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<style>
-body{
-margin:0;
-font-family:Segoe UI;
-background: radial-gradient(circle at 20% 30%, #0f2027, #070b1a 60%);
-color:white;
-}
-
-/* navbar */
-.top-nav{
-height:60px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 20px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(12px);
-}
-
-.logo{
-font-size:20px;
-font-weight:bold;
-background:linear-gradient(90deg,#00d4ff,#a855f7);
--webkit-background-clip:text;
-color:transparent;
-}
-
-.container{ display:flex; }
-
-/* sidebar */
-.sidebar{
-width:220px;
-margin:20px;
-border-radius:20px;
-padding-top:10px;
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:
-0 0 14px rgba(0,212,255,0.35),
-0 0 24px rgba(168,85,247,0.25);
-}
-
-.sidebar a{ text-decoration:none;color:white;display:block;}
-
-.sidebar-item{
-padding:16px 20px;
-margin:10px 12px;
-border-radius:14px;
-cursor:pointer;
-background:linear-gradient(135deg,#1f8ac0,#6b5bd6);
-}
-
-/* main */
-.main{ flex:1; padding:30px; }
-
-/* ⭐ BIG OUTER NEON FRAME */
-.profile-card{
-position:relative;
-padding:35px;
-border-radius:24px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(18px);
-}
-
-.profile-card::before{
-content:"";
-position:absolute;
-inset:-6px;
-border-radius:28px;
-background:linear-gradient(90deg,#00d4ff,#a855f7,#00d4ff);
-filter:blur(12px);
-opacity:.9;
-z-index:-1;
-}
-
-/* avatar */
-.profile-avatar{
-width:80px;height:80px;border-radius:50%;
-background:linear-gradient(135deg,#00d4ff,#a855f7);
-display:flex;align-items:center;justify-content:center;
-font-size:28px;margin-bottom:15px;
-}
-
-/* info */
-.info-box{
-margin-top:20px;
-padding:18px;
-border-radius:15px;
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.08);
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:20px;
-margin-top:25px;
-}
-
-.stat{
-padding:25px;
-border-radius:18px;
-background:linear-gradient(135deg,#00d4ff33,#a855f733);
-text-align:center;
-border:1px solid rgba(255,255,255,0.1);
-}
-.stat h2{margin:0;font-size:28px;}
-</style>
-</head>
-
-<body>
-
-<div class="top-nav">
-<div class="logo">NOVUS</div>
-<div id="topInitial">U</div>
-</div>
-
-<div class="container">
-
-<div class="sidebar">
-<a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
-<a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
-<a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
-<a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
-<a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
-</div>
-
-<div class="main">
-<div class="profile-card">
-
-<div class="profile-avatar" id="avatarInitial">U</div>
-
-<div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
-<div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
-<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></div>
-<div class="info-box"><b>Professional Summary:</b> <span id="displaySummary">Loading...</span></div>
-
-<div class="stats">
-<div class="stat"><h2 id="onboardingPercent">0%</h2>Onboarding</div>
-<div class="stat"><h2 id="assessmentPercent">0%</h2>Assessment</div>
-<div class="stat"><h2 id="certPercent">0%</h2>Certifications</div>
-<div class="stat"><h2 id="overallPercent">0%</h2>Overall</div>
-</div>
-
-</div>
-</div>
-</div>
-
-<!-- FIREBASE -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,doc,getDoc,collection,query,where,getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-authDomain:"novus-9dfb8.firebaseapp.com",
-projectId:"novus-9dfb8",
-storageBucket:"novus-9dfb8.firebasestorage.app",
-messagingSenderId:"641276518161",
-appId:"1:641276518161:web:ee2c11e2662e86e59bb6b0"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-onAuthStateChanged(auth,async user=>{
-if(!user){ location.href="Novus_login.html"; return;}
-
-const userDoc=await getDoc(doc(db,"users",user.uid));
-if(userDoc.exists()){
-const d=userDoc.data();
-displayName.innerText=d.name||"No Name";
-displayEmail.innerText=user.email;
-displaySummary.innerText=d.professionalSummary||"No Summary";
-
 onboardingPercent.innerText=(d.onboardingPercentage||0)+"%";
 assessmentPercent.innerText=(d.assessmentPercentage||0)+"%";
 certPercent.innerText=(d.certificationPercentage||0)+"%";
@@ -407,5 +212,3 @@ displayEmpId.innerText=!snap.empty && snap.docs[0].data().EMPID
 
 </body>
 </html>
-
-
