@@ -521,6 +521,8 @@ function submitQuiz() {
   /* UPDATE DASHBOARD */
   document.getElementById("quizScore").innerText = `${percentage} / 100`;
   document.getElementById("overallProgress").innerText = `${percentage}%`;
+  element.style.width = "80%"
+
 
   setTimeout(() => {
     go("dashboard");
