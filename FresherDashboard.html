@@ -34,7 +34,7 @@ color:transparent;
 
 .container{ display:flex; }
 
-/* ⭐ SIDEBAR PANEL */
+/* ⭐ SIDEBAR WITH LIVE TUBE BORDER */
 .sidebar{
 width:220px;
 margin:20px;
@@ -46,23 +46,23 @@ position:relative;
 overflow:hidden;
 }
 
-/* ⭐ tube border animation */
+/* ⭐ thick moving tube border */
 .sidebar::after{
 content:"";
 position:absolute;
 inset:0;
 border-radius:22px;
-padding:2px;
+padding:4px;
 
 background:linear-gradient(
-120deg,
+90deg,
 #00d4ff,
 #a855f7,
 #00d4ff,
 #a855f7,
 #00d4ff
 );
-background-size:300% 300%;
+background-size:400% 400%;
 
 -webkit-mask:
 linear-gradient(#000 0 0) content-box,
@@ -71,16 +71,17 @@ linear-gradient(#000 0 0);
 mask-composite:exclude;
 
 box-shadow:
-0 0 12px #00d4ff,
-0 0 22px #a855f7,
-0 0 35px #00d4ff;
+0 0 15px #00d4ff,
+0 0 30px #a855f7,
+0 0 45px #00d4ff,
+0 0 60px #a855f7;
 
-animation:borderMove 5s linear infinite;
+animation:liveTube 6s linear infinite;
 }
 
-@keyframes borderMove{
+@keyframes liveTube{
 0%{ background-position:0% 50%; }
-100%{ background-position:100% 50%; }
+100%{ background-position:200% 50%; }
 }
 
 .sidebar a{ text-decoration:none;color:white; }
