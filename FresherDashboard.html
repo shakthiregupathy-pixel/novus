@@ -75,11 +75,16 @@ background:linear-gradient(135deg,#2aa9e0,#8b6cff);
 /* main */
 .main{ flex:1; padding:30px; }
 
+/* ⭐ glowing profile card */
 .profile-card{
 background:rgba(255,255,255,0.06);
 backdrop-filter:blur(18px);
 padding:30px;
 border-radius:20px;
+border:1px solid rgba(255,255,255,0.12);
+box-shadow:
+0 0 12px rgba(0,212,255,0.25),
+0 0 22px rgba(168,85,247,0.18);
 }
 
 .profile-avatar{
@@ -89,14 +94,19 @@ display:flex;align-items:center;justify-content:center;
 font-size:28px;
 }
 
+/* ⭐ glowing info box */
 .info-box{
 margin-top:20px;
 padding:18px;
 border-radius:15px;
 background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:
+0 0 10px rgba(0,212,255,0.18),
+0 0 18px rgba(168,85,247,0.12);
 }
 
-/* stats */
+/* ⭐ glowing stats */
 .stats{
 display:grid;
 grid-template-columns:repeat(4,1fr);
@@ -109,6 +119,17 @@ padding:25px;
 border-radius:18px;
 background:linear-gradient(135deg,#00d4ff33,#a855f733);
 text-align:center;
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:
+0 0 12px rgba(0,212,255,0.25),
+0 0 22px rgba(168,85,247,0.18);
+transition:.3s;
+}
+.stat:hover{
+transform:translateY(-6px);
+box-shadow:
+0 0 18px rgba(0,212,255,0.35),
+0 0 32px rgba(168,85,247,0.28);
 }
 .stat h2{ margin:0;font-size:28px; }
 </style>
@@ -159,9 +180,11 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore,doc,getDoc,collection,query,where,getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-const firebaseConfig={apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+const firebaseConfig={
+apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
 authDomain:"novus-9dfb8.firebaseapp.com",
-projectId:"novus-9dfb8"};
+projectId:"novus-9dfb8"
+};
 
 const app=initializeApp(firebaseConfig);
 const auth=getAuth(app);
@@ -180,6 +203,7 @@ onboardingPercent.innerText=(d.onboardingPercentage||0)+"%";
 assessmentPercent.innerText=(d.assessmentPercentage||0)+"%";
 certPercent.innerText=(d.certificationPercentage||0)+"%";
 overallPercent.innerText=(d.overallScore||0)+"%";
+
 let letter=d.name?d.name[0].toUpperCase():"U";
 avatarInitial.innerText=letter;
 topInitial.innerText=letter;
@@ -195,4 +219,3 @@ displayEmpId.innerText=!snap.empty && snap.docs[0].data().EMPID
 
 </body>
 </html>
-
