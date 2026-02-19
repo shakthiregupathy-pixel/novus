@@ -322,54 +322,44 @@ function calculateProfile() {
 
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD...",
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
   authDomain: "novus-9dfb8.firebaseapp.com",
-  projectId: "novus-9dfb8",
-  storageBucket: "novus-9dfb8.appspot.com",
-  messagingSenderId: "641276518161",
-  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+  projectId: "novus-9dfb8"
 };
 
-// Initialize Firebase
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Listen for logged-in user
 onAuthStateChanged(auth, async (user) => {
-
   if (user) {
-    try {
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
 
-     if (userSnap.exists()) {
-  const data = userSnap.data();
+    if (docSnap.exists()) {
+      const data = docSnap.data();
 
-  const nameEl = document.getElementById("name");
-  nameEl.innerText = data.name || "No Name";
-}
- else {
-        document.getElementById("name").innerText = "No Data Found";
-      }
+      // 🔥 AUTO FILL INPUTS
+      document.getElementById("name").value = data.name || "";
+      document.getElementById("employeeId").value = data.employeeId || "";
+      document.getElementById("role").value = data.role || "";
+      document.getElementById("startDate").value = data.startDate || "";
+      document.getElementById("mentor").value = data.mentor || "";
+      document.getElementById("mode").value = data.mode || "Online";
 
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      document.getElementById("name").innerText = "Error loading";
+    } else {
+      console.log("No user data found in Firestore");
     }
-
   } else {
-    document.getElementById("name").innerText = "Not Logged In";
+    window.location.href = "login.html";
   }
-
 });
-
 </script>
 
 
