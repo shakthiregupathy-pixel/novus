@@ -126,8 +126,10 @@ body{
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
@@ -142,60 +144,81 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Check Login
+// 🔥 VERY IMPORTANT — Keep Login Persistent
+await setPersistence(auth, browserLocalPersistence);
+
+// Wait until auth fully loads
 onAuthStateChanged(auth, async (user) => {
 
-    if(user){
+    if (!user) {
+        console.log("No user found");
+        window.location.replace("login.html");
+        return;
+    }
 
-        // Fetch Fresher Data
-        const userRef = doc(db,"users",user.uid);
+    console.log("User logged in:", user.uid);
+
+    try {
+
+        // 🔹 Fetch Fresher Data
+        const userRef = doc(db, "users", user.uid);
         const userSnap = await getDoc(userRef);
 
-        if(userSnap.exists()){
+        if (userSnap.exists()) {
+
             const data = userSnap.data();
 
-            document.getElementById("userName").innerText = data.name;
-            document.getElementById("userEmail").innerText = data.email;
-            document.getElementById("trainingStart").innerText = data.trainingStart;
-            document.getElementById("trainingEnd").innerText = data.trainingEnd;
+            document.getElementById("userName").innerText = data.name || "Not Available";
+            document.getElementById("userEmail").innerText = data.email || user.email;
+            document.getElementById("trainingStart").innerText = data.trainingStart || "-";
+            document.getElementById("trainingEnd").innerText = data.trainingEnd || "-";
 
-            calculateDays(data.trainingStart, data.trainingEnd);
+            if (data.trainingStart && data.trainingEnd) {
+                calculateDays(data.trainingStart, data.trainingEnd);
+            }
+
+        } else {
+            console.log("User document not found in Firestore");
         }
 
-        // Fetch Admin (Assuming single admin doc named admin1)
-        const adminRef = doc(db,"admins","admin1");
+        // 🔹 Fetch Admin Data
+        const adminRef = doc(db, "admins", "admin1");
         const adminSnap = await getDoc(adminRef);
 
-        if(adminSnap.exists()){
+        if (adminSnap.exists()) {
+
             const admin = adminSnap.data();
-            document.getElementById("adminName").innerText = admin.name;
-            document.getElementById("adminEmail").innerText = admin.email;
-            document.getElementById("adminDept").innerText = admin.department;
+
+            document.getElementById("adminName").innerText = admin.name || "-";
+            document.getElementById("adminEmail").innerText = admin.email || "-";
+            document.getElementById("adminDept").innerText = admin.department || "-";
+
         }
 
-    }else{
-        alert("Please login first!");
-        window.location.href="login.html";
+    } catch (error) {
+        console.error("Error fetching data:", error);
     }
 
 });
 
 // Countdown Logic
-function calculateDays(startDate,endDate){
+function calculateDays(startDate, endDate) {
 
     const end = new Date(endDate);
     const today = new Date();
 
     const diffTime = end - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.max(Math.ceil(diffTime / (1000 * 60 * 60 * 24)), 0);
 
     document.getElementById("daysRemaining").innerText = diffDays;
 
-    const totalDuration = (new Date(endDate) - new Date(startDate)) / (1000*60*60*24);
+    const totalDuration = (new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24);
     const completed = totalDuration - diffDays;
 
-    const percent = (completed/totalDuration)*100;
-    document.getElementById("progressCircle").style.setProperty("--percent", percent + "%");
+    const percent = totalDuration > 0 ? (completed / totalDuration) * 100 : 0;
+
+    document.getElementById("progressCircle")
+        .style.setProperty("--percent", percent + "%");
 }
 
 </script>
@@ -203,3 +226,4 @@ function calculateDays(startDate,endDate){
 </body>
 
 </html>
+
