@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Employee Details</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+body{
+    font-family:'Inter',sans-serif;
+    background:linear-gradient(135deg,#e0c3fc,#8ec5fc);
+    min-height:100vh;
+    padding:40px;
+}
+
+.card-custom{
+    border-radius:20px;
+    animation: fadeIn 0.6s ease;
+}
+
+@keyframes fadeIn{
+    from{opacity:0; transform:translateY(20px);}
+    to{opacity:1; transform:translateY(0);}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="d-flex justify-content-between mb-4">
+        <div>
+            <h2 id="adminTitle"></h2>
+        </div>
+        <button class="btn btn-outline-dark" onclick="goBack()">Back</button>
+    </div>
+
+    <div class="card card-custom shadow-lg">
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Employee ID</th>
+                        <th>Name</th>
+                        <th>Skill</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTable"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+
+// Employees grouped by admin
+const employeeData = {
+
+admin1: [
+{id:101, name:"John Smith", skill:"React"},
+{id:102, name:"Sarah Johnson", skill:"UI/UX"},
+{id:103, name:"Michael Chen", skill:"Backend"},
+{id:104, name:"David Lee", skill:"NodeJS"},
+{id:105, name:"Sophia Clark", skill:"Angular"},
+{id:106, name:"James White", skill:"Java"},
+{id:107, name:"Emma Davis", skill:"Python"},
+{id:108, name:"Daniel Harris", skill:"MongoDB"},
+{id:109, name:"Olivia Brown", skill:"CSS"},
+{id:110, name:"Noah Wilson", skill:"HTML"}
+],
+
+admin2: [
+{id:201, name:"Liam Taylor", skill:"DevOps"},
+{id:202, name:"Mia Anderson", skill:"AWS"},
+{id:203, name:"Ethan Thomas", skill:"Docker"},
+{id:204, name:"Ava Moore", skill:"Kubernetes"},
+{id:205, name:"Lucas Martin", skill:"Azure"},
+{id:206, name:"Isabella Jackson", skill:"CI/CD"},
+{id:207, name:"Mason Thompson", skill:"Linux"},
+{id:208, name:"Charlotte Garcia", skill:"Terraform"},
+{id:209, name:"Logan Martinez", skill:"Cloud Security"},
+{id:210, name:"Amelia Robinson", skill:"Automation"}
+],
+
+admin3: [
+{id:301, name:"Henry Lewis", skill:"Data Analysis"},
+{id:302, name:"Evelyn Walker", skill:"Machine Learning"},
+{id:303, name:"Sebastian Hall", skill:"AI"},
+{id:304, name:"Harper Allen", skill:"Deep Learning"},
+{id:305, name:"Jack Young", skill:"Power BI"},
+{id:306, name:"Lily Hernandez", skill:"SQL"},
+{id:307, name:"Alexander King", skill:"Big Data"},
+{id:308, name:"Grace Wright", skill:"Tableau"},
+{id:309, name:"Benjamin Scott", skill:"Statistics"},
+{id:310, name:"Chloe Green", skill:"NLP"}
+]
+
+};
+
+const selectedAdmin = localStorage.getItem("selectedAdmin");
+
+if(!selectedAdmin || !employeeData[selectedAdmin]){
+    alert("Invalid Admin Selected");
+    window.location.href="index.html";
+}
+
+document.getElementById("adminTitle").innerText =
+    "Employees Managed by " + selectedAdmin.toUpperCase();
+
+const employees = employeeData[selectedAdmin];
+const table = document.getElementById("employeeTable");
+
+employees.forEach(emp=>{
+    table.innerHTML += `
+        <tr>
+            <td>${emp.id}</td>
+            <td>${emp.name}</td>
+            <td>${emp.skill}</td>
+        </tr>
+    `;
+});
+
+function goBack(){
+    window.location.href="index.html";
+}
+
+</script>
+
+</body>
+</html>
