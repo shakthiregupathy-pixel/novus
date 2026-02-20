@@ -147,142 +147,180 @@ let skillLevel = "";
 
 // 🔐 AUTO LOAD LOGGED-IN FRESHER
 onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+      window.location.href = "index.html";
+      return;
+  }
 
-if (!user) {
-    window.location.href = "index.html";
-    return;
-}
+  const docSnap = await getDoc(doc(db, "users", user.uid));
 
-const docSnap = await getDoc(doc(db, "users", user.uid));
-
-if (docSnap.exists()) {
-
-    const data = docSnap.data();
-
-    document.getElementById("name").value = data.name || "";
-    document.getElementById("empid").value = data.employeeId || "";
-    document.getElementById("dept").value = data.department || "";
-    document.getElementById("role").value = data.role || "";
-    document.getElementById("phase").value = data.phase || "";
-    document.getElementById("certs").value = data.certs || "";
-
-} else {
-    alert("User data not found in database.");
-}
-
+  if (docSnap.exists()) {
+      const data = docSnap.data();
+      document.getElementById("name").value = data.name || "";
+      document.getElementById("empid").value = data.employeeId || "";
+      document.getElementById("dept").value = data.department || "";
+      document.getElementById("role").value = data.role || "";
+      document.getElementById("phase").value = data.phase || "";
+      document.getElementById("certs").value = data.certs || "";
+  } else {
+      alert("User data not found in database.");
+  }
 });
 
 // PERFORMANCE CALCULATION
 window.generateReport = function() {
+  let quiz = parseFloat(document.getElementById("quiz").value) || 0;
+  let coding = parseFloat(document.getElementById("coding").value) || 0;
+  let assignment = parseFloat(document.getElementById("assignment").value) || 0;
 
-let quiz = parseFloat(document.getElementById("quiz").value) || 0;
-let coding = parseFloat(document.getElementById("coding").value) || 0;
-let assignment = parseFloat(document.getElementById("assignment").value) || 0;
+  overallScore = ((quiz + coding + assignment) / 3).toFixed(2);
 
-overallScore = ((quiz + coding + assignment) / 3).toFixed(2);
+  if (overallScore >= 85) {
+      skillLevel = "Advanced";
+      feedbackText = "Highly recommended for recruitment. Demonstrates excellent technical and problem-solving skills.";
+  }
+  else if (overallScore >= 60) {
+      skillLevel = "Intermediate";
+      feedbackText = "Recommended with minor improvement areas. Strong foundation and good learning capability.";
+  }
+  else {
+      skillLevel = "Beginner";
+      feedbackText = "Requires additional training before recruitment consideration.";
+  }
 
-document.getElementById("overall").innerText = overallScore + " %";
-
-if (overallScore >= 85) {
-    skillLevel = "Advanced";
-    feedbackText = "Highly recommended for recruitment. Demonstrates excellent technical and problem-solving skills.";
-}
-else if (overallScore >= 60) {
-    skillLevel = "Intermediate";
-    feedbackText = "Recommended with minor improvement areas. Strong foundation and good learning capability.";
-}
-else {
-    skillLevel = "Beginner";
-    feedbackText = "Requires additional training before recruitment consideration.";
-}
-
-document.getElementById("skill").innerText = skillLevel;
-document.getElementById("feedback").innerText = feedbackText;
+  document.getElementById("overall").innerText = overallScore + " %";
+  document.getElementById("skill").innerText = skillLevel;
+  document.getElementById("feedback").innerText = feedbackText;
 }
 
-// PDF DOWNLOAD (UNCHANGED)
+// FULL PROFESSIONAL REPORT PDF
 window.downloadPDF = function() {
+  if(overallScore == 0){
+      alert("Please generate performance first.");
+      return;
+  }
 
-const { jsPDF } = window.jspdf;
-const doc = new jsPDF();
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  let name = document.getElementById("name").value || "-";
+  let empid = document.getElementById("empid").value || "-";
+  let dept = document.getElementById("dept").value || "-";
+  let role = document.getElementById("role").value || "-";
+  let phase = document.getElementById("phase").value || "-";
+  let certs = document.getElementById("certs").value || "-";
+  let quiz = document.getElementById("quiz").value || "0";
+  let coding = document.getElementById("coding").value || "0";
+  let assignment = document.getElementById("assignment").value || "0";
 
-let name = document.getElementById("name").value || "-";
-let empid = document.getElementById("empid").value || "-";
-let dept = document.getElementById("dept").value || "-";
-let role = document.getElementById("role").value || "-";
-let phase = document.getElementById("phase").value || "-";
-let certs = document.getElementById("certs").value || "-";
-let quiz = document.getElementById("quiz").value || "0";
-let coding = document.getElementById("coding").value || "0";
-let assignment = document.getElementById("assignment").value || "0";
+  let y = 20;
 
-let y = 20;
+  doc.setLineWidth(1.2);
+  doc.rect(10, 10, 190, 277);
 
-doc.setFont("helvetica", "bold");
-doc.setFontSize(20);
-doc.text("MAVERICKS TRAINING REPORT", 105, y, null, null, "center");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(18);
+  doc.text("MAVERICKS TRAINING REPORT", 105, y, null, null, "center");
+  y += 10;
 
-y += 10;
-doc.setFontSize(11);
-doc.setFont("helvetica", "normal");
-doc.text("Generated on: " + new Date().toLocaleString(), 105, y, null, null, "center");
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(11);
+  doc.text("Generated on: " + new Date().toLocaleString(), 105, y, null, null, "center");
+  y += 10;
+  doc.line(20, y, 190, y);
+  y += 12;
 
-y += 10;
-doc.line(20, y, 190, y);
-y += 10;
+  // Candidate Details
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(14);
+  doc.text("Candidate Details", 20, y);
+  y += 8;
 
-doc.setFont("helvetica", "bold");
-doc.setFontSize(14);
-doc.text("Candidate Details", 20, y);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(12);
+  doc.text("Name: " + name, 25, y); y += 7;
+  doc.text("Employee ID: " + empid, 25, y); y += 7;
+  doc.text("Department: " + dept, 25, y); y += 7;
+  doc.text("Role: " + role, 25, y); y += 7;
+  doc.text("Training Phase: " + phase, 25, y); y += 7;
+  let splitCerts = doc.splitTextToSize("Certifications: " + certs, 160);
+  doc.text(splitCerts, 25, y); y += splitCerts.length * 7 + 5;
+  doc.line(20, y, 190, y); y += 12;
 
-y += 8;
-doc.setFont("helvetica", "normal");
-doc.setFontSize(12);
+  // Assessment
+  doc.setFont("helvetica", "bold");
+  doc.text("Assessment Scores", 20, y); y += 8;
+  doc.setFont("helvetica", "normal");
+  doc.text("Quiz Score: " + quiz + " %", 25, y); y += 7;
+  doc.text("Coding Score: " + coding + " %", 25, y); y += 7;
+  doc.text("Assignment Score: " + assignment + " %", 25, y); y += 7;
+  doc.text("Overall Score: " + overallScore + " %", 25, y); y += 7;
+  doc.text("Skill Level: " + skillLevel, 25, y); y += 10;
 
-doc.text("Name:", 20, y); doc.text(name, 70, y);
-y += 8;
-doc.text("Employee ID:", 20, y); doc.text(empid, 70, y);
-y += 8;
-doc.text("Department:", 20, y); doc.text(dept, 70, y);
-y += 8;
-doc.text("Role:", 20, y); doc.text(role, 70, y);
-y += 8;
-doc.text("Training Phase:", 20, y); doc.text(phase, 70, y);
-y += 8;
-doc.text("Certifications:", 20, y);
-let splitCerts = doc.splitTextToSize(certs, 120);
-doc.text(splitCerts, 70, y);
+  // Feedback & Professional Summary
+  doc.setFont("helvetica", "bold");
+  doc.text("Recruitment Recommendation", 20, y); y += 8;
+  doc.setFont("helvetica", "normal");
+  let summary = `
+${name} has completed the ${phase} under Mavericks Training Program in ${dept} department.
+Skill Level Achieved: ${skillLevel}
+Overall Score: ${overallScore}%
 
-doc.save(name + "_Training_Report.pdf");
+Feedback: ${feedbackText}
 
+Candidate demonstrates strong learning ability, technical proficiency, and adaptability.
+`;
+  let splitSummary = doc.splitTextToSize(summary, 170);
+  doc.text(splitSummary, 25, y); y += splitSummary.length * 7 + 15;
+
+  // Footer / Signatures
+  doc.line(30, 240, 90, 240);
+  doc.line(120, 240, 180, 240);
+  doc.setFontSize(11);
+  doc.text("HR Manager Signature", 35, 247);
+  doc.text("Training Head Signature", 125, 247);
+
+  doc.setFontSize(9);
+  doc.text("Confidential Internal HR Evaluation Document", 105, 285, null, null, "center");
+
+  doc.save(name + "_Complete_Training_Report.pdf");
 }
+
+// CERTIFICATE WITH CANVA BACKGROUND
 window.generateCertificate = function() {
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF("landscape");
+  if(overallScore == 0){
+      alert("Please generate performance first.");
+      return;
+  }
 
-    const name = document.getElementById("name").value || "Candidate";
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("landscape");
 
-    // Load Canva image
-    const img = new Image();
-    img.src = "certificate.jpeg"; // your Canva file
+  const name = document.getElementById("name").value || "Candidate";
 
-    img.onload = function () {
+  // Certificate background image
+  const img = new Image();
+  img.src = "certificate.jpeg"; // Replace with your Canva certificate image path
 
-        // Add full background image
-        doc.addImage(img, "PNG", 0, 0, 297, 210);
+  img.onload = function () {
+      // Fill entire page with image
+      doc.addImage(img, "JPEG", 0, 0, 297, 210);
 
-        // 🔥 Add dynamic name
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(28);
+      // Add candidate name dynamically
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(28);
+      doc.text(name, 148, 110, null, null, "center");
 
-        // Center name
-        doc.text(name, 148, 110, null, null, "center");
+      // Optional: Skill level
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(16);
+      doc.text("Skill Level: " + skillLevel, 148, 130, null, null, "center");
 
-        // Download certificate
-        doc.save(name + "_Certificate.pdf");
-    };
+      doc.save(name + "_Certificate.pdf");
+  };
 };
+
+</script>
 
 
 </script>
