@@ -1,233 +1,190 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>NOVUS Dashboard</title>
-<meta charset="UTF-8">
+<title>Maverik Fresher Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
-margin:0;
-font-family:Segoe UI;
-background: radial-gradient(circle at 20% 30%, #0f2027, #070b1a 60%);
-color:white;
+    margin:0;
+    font-family:Segoe UI, sans-serif;
+    display:flex;
+    height:100vh;
+    background:#0f2027;
+    color:white;
 }
 
-.top-nav{
-height:60px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 20px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(12px);
-}
-
-.logo{
-font-size:20px;
-font-weight:bold;
-background:linear-gradient(90deg,#00d4ff,#a855f7);
--webkit-background-clip:text;
-color:transparent;
-}
-
-.container{ display:flex; }
-
+/* SIDEBAR */
 .sidebar{
-width:220px;
-margin:20px;
-border-radius:20px;
-padding-top:10px;
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:
-0 0 14px rgba(0,212,255,0.35),
-0 0 24px rgba(168,85,247,0.25),
-inset 0 0 12px rgba(0,212,255,0.15);
+    width:230px;
+    background:#111;
+    padding-top:20px;
+    box-shadow:0 0 15px cyan;
+}
+.logo{
+    text-align:center;
+    font-size:22px;
+    color:#00ffff;
+    margin-bottom:20px;
+}
+.menu{
+    padding:15px 20px;
+    cursor:pointer;
+    transition:.3s;
+}
+.menu:hover{
+    background:#00ffff;
+    color:black;
 }
 
-.sidebar a{ text-decoration:none;color:white; }
-
-.sidebar-item{
-padding:16px 20px;
-margin:12px 15px;
-border-radius:14px;
-cursor:pointer;
-background:linear-gradient(135deg,#1f8ac0,#6b5bd6);
-transition:.25s;
+/* CONTENT */
+.content{
+    flex:1;
+    padding:30px;
 }
 
-.sidebar-item:hover{
-transform:translateX(4px);
-background:linear-gradient(135deg,#2aa9e0,#8b6cff);
+/* BOX */
+.box{
+    padding:25px;
+    border-radius:15px;
+    background:rgba(255,255,255,0.05);
+    box-shadow:0 0 15px rgba(0,255,255,0.3);
+    margin-bottom:20px;
 }
 
-.main{
-flex:1;
-padding:40px;
-display:flex;
-justify-content:center;
+/* PROGRESS */
+.progress-container{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin-bottom:25px;
 }
 
-.profile-card{
-width:100%;
-max-width:900px;
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(18px);
-padding:35px;
-border-radius:22px;
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:
-0 0 14px rgba(0,212,255,0.3),
-0 0 24px rgba(168,85,247,0.22);
+.step{
+    text-align:center;
 }
 
-.dashboard-title{
-text-align:center;
-margin-bottom:5px;
+.circle{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#444;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
 }
 
-.dashboard-title h1{
-margin:0;
-font-size:32px;
-background:linear-gradient(90deg,#00d4ff,#a855f7);
--webkit-background-clip:text;
-color:transparent;
-letter-spacing:1px;
+.active .circle{
+    background:#00ffff;
+    color:black;
+    box-shadow:0 0 10px cyan;
 }
 
-.dashboard-title p{
-margin:6px 0 0;
-font-size:16px;
-opacity:0.85;
-letter-spacing:2px;
+.line{
+    width:80px;
+    height:4px;
+    background:#444;
+    margin:0 8px;
 }
-
-.profile-avatar{
-width:90px;
-height:90px;
-border-radius:50%;
-background:linear-gradient(135deg,#00d4ff,#a855f7);
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:30px;
-margin:10px auto 20px;
+.line.active{
+    background:#00ffff;
 }
-
-.info-box{
-margin-top:22px;
-padding:20px;
-border-radius:16px;
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.08);
-box-shadow:
-0 0 12px rgba(0,212,255,0.22),
-0 0 20px rgba(168,85,247,0.15);
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:40px;
-margin-top:45px;
-padding:10px 5px;
-}
-
-.stat{
-padding:35px;
-border-radius:20px;
-background:linear-gradient(135deg,#00d4ff33,#a855f733);
-text-align:center;
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:
-0 0 15px rgba(0,212,255,0.28),
-0 0 28px rgba(168,85,247,0.20);
-transition:.3s;
-}
-
-.stat:hover{ transform:translateY(-8px); }
-
-.stat h2{ margin:0;font-size:30px;margin-bottom:8px; }
 </style>
 </head>
 
 <body>
 
-<div class="top-nav">
-<div class="logo">NOVUS</div>
-<div id="topInitial">U</div>
-</div>
-
-<div class="container">
-
+<!-- SIDEBAR -->
 <div class="sidebar">
-<a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
-<a href="onboarding agent.html"><div class="sidebar-item">Onboarding Agent</div></a>
-<a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
-<a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
-<a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
+    <div class="logo">Maverik</div>
 
-<!-- NEW INTERVIEW AGENT -->
-<a href="#"><div class="sidebar-item">Interview Agent</div></a>
+    <div class="menu" onclick="showPage('agent')">Agent</div>
+    <div class="menu" onclick="showPage('interview')">Interview</div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+<!-- AGENT PAGE -->
+<div id="agent" class="page">
+    <div class="box">
+        <h2>Welcome <span id="name">...</span></h2>
+        <p>Your assigned agent details will appear here.</p>
+    </div>
+</div>
+
+<!-- INTERVIEW PAGE -->
+<div id="interview" class="page" style="display:none">
+
+<div class="progress-container">
+    <div class="step active">
+        <div class="circle">1</div>
+        <small>Training</small>
+    </div>
+
+    <div class="line active"></div>
+
+    <div class="step active">
+        <div class="circle">2</div>
+        <small>Interview</small>
+    </div>
+
+    <div class="line"></div>
+
+    <div class="step">
+        <div class="circle">3</div>
+        <small>Deployment</small>
+    </div>
+</div>
+
+<div class="box">
+    <h3>Interview Details</h3>
+    <p>Admin : Arun Kumar</p>
+    <p>Email : arun@maverik.com</p>
+    <p>Contact : +91 9876543210</p>
+    <p>Date : 20 May 2026</p>
+    <br>
+    <button onclick="window.open('https://meet.google.com/abc-defg-hij')">
+        Join Interview
+    </button>
+</div>
 
 </div>
 
-<div class="main">
-<div class="profile-card">
-
-<div class="dashboard-title">
-<h1>Training Dashboard</h1>
-<p>Mavericks Onboarding</p>
 </div>
 
-<div class="profile-avatar" id="avatarInitial">U</div>
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-<div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
-<div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
-<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">EMP101</span></div>
+/* 🔴 PASTE YOUR FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "YOUR_API",
+  authDomain: "YOUR_DOMAIN",
+  projectId: "YOUR_PROJECT"
+};
 
-<div class="info-box">
-<b>Professional Summary:</b>
-<span id="displaySummary">
-Highly motivated Software Developer at NOVUS specializing in Frontend Development, UI/UX design, and AI-driven web applications.
-</span>
-</div>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-<!-- INTERVIEW BOX -->
-<div class="info-box">
-<b>Interview Details</b><br><br>
-Admin : Arun Kumar <br>
-Email : arun@maverik.com <br>
-Contact : +91 9876543210 <br>
-Interview Date : <span id="interviewDate">2026-05-20</span><br><br>
-<span id="daysLeft" style="color:#00d4ff;font-weight:bold;"></span><br><br>
+/* FETCH NAME */
+const empId = localStorage.getItem("empId");
 
-<button onclick="window.open('https://meet.google.com/abc-defg-hij')"
-style="padding:10px 25px;border-radius:12px;border:none;background:#00d4ff;color:black;font-weight:bold;cursor:pointer;">
-Join Interview
-</button>
-</div>
-
-<div class="stats">
-<div class="stat"><h2 id="onboardingPercent">0%</h2>Onboarding</div>
-<div class="stat"><h2 id="assessmentPercent">0%</h2>Assessment</div>
-<div class="stat"><h2 id="certPercent">0%</h2>Certifications</div>
-<div class="stat"><h2 id="overallPercent">0%</h2>Overall</div>
-</div>
-
-</div>
-</div>
-</div>
+if(empId){
+    const snap = await getDoc(doc(db,"freshers",empId));
+    if(snap.exists()){
+        document.getElementById("name").innerText = snap.data().name;
+    }
+}
+</script>
 
 <script>
-const iDate=new Date(document.getElementById("interviewDate").innerText);
-const today=new Date();
-const diff=iDate-today;
-const days=Math.ceil(diff/(1000*60*60*24));
-document.getElementById("daysLeft").innerText=
-days>0?days+" days left for interview":(days===0?"Interview is Today 🔥":"Interview Completed");
+function showPage(page){
+    document.querySelectorAll(".page").forEach(p => p.style.display="none");
+    document.getElementById(page).style.display="block";
+}
 </script>
 
 </body>
