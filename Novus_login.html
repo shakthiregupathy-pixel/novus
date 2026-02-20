@@ -6,6 +6,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+  /* Hexaware Logo - Top Right */
+.hexaware-logo{
+  position: fixed;
+  top: 25px;
+  right: 30px;
+  width: 80px;      /* Small size */
+  height: auto;
+  z-index: 5;
+}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
 body{
@@ -138,7 +147,7 @@ box-shadow:0 0 20px #00c6ff;
 </head>
 
 <body>
-
+<img src="Hexaware.jpeg" class="hexaware-logo" alt="Hexaware Logo">
 <!-- 🌠 Shooting stars -->
 <div class="shooting-star"></div>
 <div class="shooting-star"></div>
@@ -300,6 +309,7 @@ sendPasswordResetEmail(auth, resetEmail.value)
 
 </body>
 </html>
+
 
 
 
