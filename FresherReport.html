@@ -195,94 +195,117 @@ window.generateReport = function() {
 
 // FULL PROFESSIONAL REPORT PDF
 window.downloadPDF = function() {
-  if(overallScore == 0){
-      alert("Please generate performance first.");
-      return;
-  }
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
-  let name = document.getElementById("name").value || "-";
-  let empid = document.getElementById("empid").value || "-";
-  let dept = document.getElementById("dept").value || "-";
-  let role = document.getElementById("role").value || "-";
-  let phase = document.getElementById("phase").value || "-";
-  let certs = document.getElementById("certs").value || "-";
-  let quiz = document.getElementById("quiz").value || "0";
-  let coding = document.getElementById("coding").value || "0";
-  let assignment = document.getElementById("assignment").value || "0";
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
 
-  let y = 20;
+let name = document.getElementById("name").value || "-";
+let empid = document.getElementById("empid").value || "-";
+let dept = document.getElementById("dept").value || "-";
+let role = document.getElementById("role").value || "-";
+let phase = document.getElementById("phase").value || "-";
+let certs = document.getElementById("certs").value || "-";
+let quiz = document.getElementById("quiz").value || "0";
+let coding = document.getElementById("coding").value || "0";
+let assignment = document.getElementById("assignment").value || "0";
 
-  doc.setLineWidth(1.2);
-  doc.rect(10, 10, 190, 277);
+let y = 20;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
-  doc.text("MAVERICKS TRAINING REPORT", 105, y, null, null, "center");
-  y += 10;
+// 🔷 BORDER
+doc.setLineWidth(1.5);
+doc.rect(10, 10, 190, 277);
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(11);
-  doc.text("Generated on: " + new Date().toLocaleString(), 105, y, null, null, "center");
-  y += 10;
-  doc.line(20, y, 190, y);
-  y += 12;
+// 🔷 HEADER
+doc.setFont("helvetica", "bold");
+doc.setFontSize(20);
+doc.text("MAVERICKS TRAINING PERFORMANCE REPORT", 105, y, null, null, "center");
 
-  // Candidate Details
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(14);
-  doc.text("Candidate Details", 20, y);
-  y += 8;
+y += 8;
+doc.setFontSize(11);
+doc.setFont("helvetica", "normal");
+doc.text("Generated on: " + new Date().toLocaleString(), 105, y, null, null, "center");
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(12);
-  doc.text("Name: " + name, 25, y); y += 7;
-  doc.text("Employee ID: " + empid, 25, y); y += 7;
-  doc.text("Department: " + dept, 25, y); y += 7;
-  doc.text("Role: " + role, 25, y); y += 7;
-  doc.text("Training Phase: " + phase, 25, y); y += 7;
-  let splitCerts = doc.splitTextToSize("Certifications: " + certs, 160);
-  doc.text(splitCerts, 25, y); y += splitCerts.length * 7 + 5;
-  doc.line(20, y, 190, y); y += 12;
+y += 10;
+doc.line(20, y, 190, y);
+y += 12;
 
-  // Assessment
-  doc.setFont("helvetica", "bold");
-  doc.text("Assessment Scores", 20, y); y += 8;
-  doc.setFont("helvetica", "normal");
-  doc.text("Quiz Score: " + quiz + " %", 25, y); y += 7;
-  doc.text("Coding Score: " + coding + " %", 25, y); y += 7;
-  doc.text("Assignment Score: " + assignment + " %", 25, y); y += 7;
-  doc.text("Overall Score: " + overallScore + " %", 25, y); y += 7;
-  doc.text("Skill Level: " + skillLevel, 25, y); y += 10;
+// 🔷 CANDIDATE DETAILS SECTION
+doc.setFont("helvetica", "bold");
+doc.setFontSize(14);
+doc.text("Candidate Information", 20, y);
 
-  // Feedback & Professional Summary
-  doc.setFont("helvetica", "bold");
-  doc.text("Recruitment Recommendation", 20, y); y += 8;
-  doc.setFont("helvetica", "normal");
-  let summary = `
-${name} has completed the ${phase} under Mavericks Training Program in ${dept} department.
-Skill Level Achieved: ${skillLevel}
-Overall Score: ${overallScore}%
+y += 10;
+doc.setFont("helvetica", "normal");
+doc.setFontSize(12);
 
-Feedback: ${feedbackText}
+doc.text("Name:", 20, y); doc.text(name, 70, y);
+y += 8;
+doc.text("Employee ID:", 20, y); doc.text(empid, 70, y);
+y += 8;
+doc.text("Department:", 20, y); doc.text(dept, 70, y);
+y += 8;
+doc.text("Role:", 20, y); doc.text(role, 70, y);
+y += 8;
+doc.text("Training Phase:", 20, y); doc.text(phase, 70, y);
+y += 8;
+doc.text("Certifications:", 20, y);
 
-Candidate demonstrates strong learning ability, technical proficiency, and adaptability.
+let splitCerts = doc.splitTextToSize(certs, 120);
+doc.text(splitCerts, 70, y);
+y += 15;
+
+// 🔷 ASSESSMENT SECTION
+doc.setFont("helvetica", "bold");
+doc.setFontSize(14);
+doc.text("Assessment Performance", 20, y);
+
+y += 10;
+doc.setFont("helvetica", "normal");
+doc.setFontSize(12);
+
+doc.text("Quiz Score:", 20, y); doc.text(quiz + " %", 70, y);
+y += 8;
+doc.text("Coding Score:", 20, y); doc.text(coding + " %", 70, y);
+y += 8;
+doc.text("Assignment Score:", 20, y); doc.text(assignment + " %", 70, y);
+y += 8;
+doc.text("Overall Performance:", 20, y); doc.text(overallScore + " %", 70, y);
+y += 8;
+doc.text("Skill Level:", 20, y); doc.text(skillLevel, 70, y);
+y += 15;
+
+// 🔷 PROFESSIONAL SUMMARY
+doc.setFont("helvetica", "bold");
+doc.setFontSize(14);
+doc.text("Professional Summary", 20, y);
+
+y += 10;
+doc.setFont("helvetica", "normal");
+doc.setFontSize(12);
+
+let summary = `
+${name} has successfully completed the ${phase} under the Mavericks Training Program in the ${dept} department. 
+The candidate has demonstrated ${skillLevel.toLowerCase()} level competency in technical assessments including quiz, coding, and assignments.
+
+Overall Performance: ${overallScore}%
+
+Recruitment Feedback:
+${feedbackText}
+
+The candidate exhibits strong learning ability, technical understanding, and adaptability to corporate standards.
 `;
-  let splitSummary = doc.splitTextToSize(summary, 170);
-  doc.text(splitSummary, 25, y); y += splitSummary.length * 7 + 15;
 
-  // Footer / Signatures
-  doc.line(30, 240, 90, 240);
-  doc.line(120, 240, 180, 240);
-  doc.setFontSize(11);
-  doc.text("HR Manager Signature", 35, 247);
-  doc.text("Training Head Signature", 125, 247);
+let splitSummary = doc.splitTextToSize(summary, 170);
+doc.text(splitSummary, 20, y);
 
-  doc.setFontSize(9);
-  doc.text("Confidential Internal HR Evaluation Document", 105, 285, null, null, "center");
+y += 40;
 
-  doc.save(name + "_Complete_Training_Report.pdf");
+// 🔷 FOOTER
+doc.setFontSize(10);
+doc.text("Mavericks Fresher Reporting System | Confidential Internal Document", 105, 285, null, null, "center");
+
+doc.save(name + "_Professional_Training_Report.pdf");
+
 }
 
 // CERTIFICATE WITH CANVA BACKGROUND
