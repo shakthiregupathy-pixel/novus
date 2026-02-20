@@ -124,83 +124,6 @@ Generate Certificate
 <!-- FIREBASE + SCRIPT -->
 <script type="module">
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-  authDomain: "novus-9dfb8.firebaseapp.com",
-  projectId: "novus-9dfb8",
-  storageBucket: "novus-9dfb8.firebasestorage.app",
-  messagingSenderId: "641276518161",
-  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-let overallScore = 0;
-let feedbackText = "";
-let skillLevel = "";
-
-// 🔐 AUTO LOAD LOGGED-IN FRESHER
-onAuthStateChanged(auth, async (user) => {
-
-if (!user) {
-    window.location.href = "index.html";
-    return;
-}
-
-const docSnap = await getDoc(doc(db, "users", user.uid));
-
-if (docSnap.exists()) {
-
-    const data = docSnap.data();
-
-    document.getElementById("name").value = data.name || "";
-    document.getElementById("empid").value = data.employeeId || "";
-    document.getElementById("dept").value = data.department || "";
-    document.getElementById("role").value = data.role || "";
-    document.getElementById("phase").value = data.phase || "";
-    document.getElementById("certs").value = data.certs || "";
-
-} else {
-    alert("User data not found in database.");
-}
-
-});
-
-// PERFORMANCE CALCULATION
-window.generateReport = function() {
-
-let quiz = parseFloat(document.getElementById("quiz").value) || 0;
-let coding = parseFloat(document.getElementById("coding").value) || 0;
-let assignment = parseFloat(document.getElementById("assignment").value) || 0;
-
-overallScore = ((quiz + coding + assignment) / 3).toFixed(2);
-
-document.getElementById("overall").innerText = overallScore + " %";
-
-if (overallScore >= 85) {
-    skillLevel = "Advanced";
-    feedbackText = "Highly recommended for recruitment. Demonstrates excellent technical and problem-solving skills.";
-}
-else if (overallScore >= 60) {
-    skillLevel = "Intermediate";
-    feedbackText = "Recommended with minor improvement areas. Strong foundation and good learning capability.";
-}
-else {
-    skillLevel = "Beginner";
-    feedbackText = "Requires additional training before recruitment consideration.";
-}
-
-document.getElementById("skill").innerText = skillLevel;
-document.getElementById("feedback").innerText = feedbackText;
-}
-
-// PDF DOWNLOAD (UNCHANGED)
 window.downloadPDF = function() {
 
 const { jsPDF } = window.jspdf;
@@ -218,24 +141,30 @@ let assignment = document.getElementById("assignment").value || "0";
 
 let y = 20;
 
+// 🔷 BORDER
+doc.setLineWidth(1.5);
+doc.rect(10, 10, 190, 277);
+
+// 🔷 HEADER
 doc.setFont("helvetica", "bold");
 doc.setFontSize(20);
-doc.text("MAVERICKS TRAINING REPORT", 105, y, null, null, "center");
+doc.text("MAVERICKS TRAINING PERFORMANCE REPORT", 105, y, null, null, "center");
 
-y += 10;
+y += 8;
 doc.setFontSize(11);
 doc.setFont("helvetica", "normal");
 doc.text("Generated on: " + new Date().toLocaleString(), 105, y, null, null, "center");
 
 y += 10;
 doc.line(20, y, 190, y);
-y += 10;
+y += 12;
 
+// 🔷 CANDIDATE DETAILS SECTION
 doc.setFont("helvetica", "bold");
 doc.setFontSize(14);
-doc.text("Candidate Details", 20, y);
+doc.text("Candidate Information", 20, y);
 
-y += 8;
+y += 10;
 doc.setFont("helvetica", "normal");
 doc.setFontSize(12);
 
@@ -250,40 +179,64 @@ y += 8;
 doc.text("Training Phase:", 20, y); doc.text(phase, 70, y);
 y += 8;
 doc.text("Certifications:", 20, y);
+
 let splitCerts = doc.splitTextToSize(certs, 120);
 doc.text(splitCerts, 70, y);
+y += 15;
 
-doc.save(name + "_Training_Report.pdf");
+// 🔷 ASSESSMENT SECTION
+doc.setFont("helvetica", "bold");
+doc.setFontSize(14);
+doc.text("Assessment Performance", 20, y);
+
+y += 10;
+doc.setFont("helvetica", "normal");
+doc.setFontSize(12);
+
+doc.text("Quiz Score:", 20, y); doc.text(quiz + " %", 70, y);
+y += 8;
+doc.text("Coding Score:", 20, y); doc.text(coding + " %", 70, y);
+y += 8;
+doc.text("Assignment Score:", 20, y); doc.text(assignment + " %", 70, y);
+y += 8;
+doc.text("Overall Performance:", 20, y); doc.text(overallScore + " %", 70, y);
+y += 8;
+doc.text("Skill Level:", 20, y); doc.text(skillLevel, 70, y);
+y += 15;
+
+// 🔷 PROFESSIONAL SUMMARY
+doc.setFont("helvetica", "bold");
+doc.setFontSize(14);
+doc.text("Professional Summary", 20, y);
+
+y += 10;
+doc.setFont("helvetica", "normal");
+doc.setFontSize(12);
+
+let summary = `
+${name} has successfully completed the ${phase} under the Mavericks Training Program in the ${dept} department. 
+The candidate has demonstrated ${skillLevel.toLowerCase()} level competency in technical assessments including quiz, coding, and assignments.
+
+Overall Performance: ${overallScore}%
+
+Recruitment Feedback:
+${feedbackText}
+
+The candidate exhibits strong learning ability, technical understanding, and adaptability to corporate standards.
+`;
+
+let splitSummary = doc.splitTextToSize(summary, 170);
+doc.text(splitSummary, 20, y);
+
+y += 40;
+
+// 🔷 FOOTER
+doc.setFontSize(10);
+doc.text("Mavericks Fresher Reporting System | Confidential Internal Document", 105, 285, null, null, "center");
+
+doc.save(name + "_Professional_Training_Report.pdf");
 
 }
-window.generateCertificate = function() {
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF("landscape");
-
-    const name = document.getElementById("name").value || "Candidate";
-
-    // Load Canva image
-    const img = new Image();
-    img.src = "certificate.jpeg"; // your Canva file
-
-    img.onload = function () {
-
-        // Add full background image
-        doc.addImage(img, "PNG", 0, 0, 297, 210);
-
-        // 🔥 Add dynamic name
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(28);
-
-        // Center name
-        doc.text(name, 148, 110, null, null, "center");
-
-        // Download certificate
-        doc.save(name + "_Certificate.pdf");
-    };
-};
-
 
 </script>
 
