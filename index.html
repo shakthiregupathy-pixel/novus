@@ -12,64 +12,17 @@
 
 <style>
 /* --- 1. NEW COLOR PALETTE & GLOBAL STYLES --- */
-/* ===== GALAXY BACKGROUND INTEGRATION ===== */
 body {
-font-family: 'Segoe UI', sans-serif;
-color: #2c3e50;
-min-height: 100vh;
-scroll-behavior: smooth;
-overflow-x: hidden;
-
-```
-/* Galaxy deep space base */
-background: #03131d;
-```
-
+    font-family: 'Segoe UI', sans-serif;
+    /* Updated to horizontal: Lavender on the left, Sky Blue on the right */
+    background: linear-gradient(to right, #b099e4 0%, #8ec5fc 100%);
+    color: #2c3e50; 
+    min-height: 100vh;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+    /* Keeps the gradient fixed so it doesn't stretch when you scroll */
+    background-attachment: fixed;
 }
-
-/* Canvas galaxy background */
-#galaxy{
-position: fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-z-index:-1;
-}
-
-/* ===== KEEP YOUR GLASS UI SOFT ON DARK BG ===== */
-.glass-card {
-background: rgba(255, 255, 255, 0.08);
-backdrop-filter: blur(14px);
--webkit-backdrop-filter: blur(14px);
-border-radius: 20px;
-padding: 30px;
-transition: 0.3s ease;
-border: 1px solid rgba(255, 255, 255, 0.15);
-box-shadow: 0 10px 30px rgba(0,255,255,0.15);
-color: #e6f7ff;
-}
-
-.glass-card:hover {
-transform: translateY(-8px);
-background: rgba(255,255,255,0.12);
-box-shadow: 0 15px 45px rgba(0,255,255,0.25);
-}
-
-/* CTA also glassy on galaxy */
-.cta {
-background: rgba(255,255,255,0.08);
-border: 1px solid rgba(255,255,255,0.15);
-backdrop-filter: blur(12px);
-color:#e6f7ff;
-}
-
-/* Footer softer on dark */
-footer {
-background: rgba(255,255,255,0.05);
-color:#b8f6ff;
-}
-
 section {
     padding: 80px 0;
 }
@@ -289,7 +242,7 @@ footer {
 </style>
 </head>
 <body>
-<canvas id="galaxy"></canvas>
+
 <section class="hero text-center text-lg-start">
 <div class="container">
 <div class="row align-items-center">
@@ -622,6 +575,3 @@ Multi-Phase Training Management
 </body>
 
 </html>
-
-
-
