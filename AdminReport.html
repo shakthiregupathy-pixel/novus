@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Report Agent</title>
+
+<!-- Bootstrap 5 -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+<style>
+
+/* --- 1. GLOBAL BACKGROUND & FONT --- */
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #b099e4 0%, #8ec5fc 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: #2c3e50;
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+/* --- 2. CUSTOM SCROLLBAR --- */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.3); }
+::-webkit-scrollbar-thumb { background: #6a5acd; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #5848c2; }
+
+/* --- 3. HEADER BOX (Glass Style) --- */
+.header-box {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    color: #6a5acd;
+}
+
+/* --- 4. EMPLOYEE CARD --- */
+.employee-card {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 20px;
+    padding: 25px;
+    transition: 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    color: #444;
+}
+
+.employee-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 15px 35px rgba(106, 90, 205, 0.15);
+}
+
+/* --- 5. SKILL BADGE (Blue → Purple Gradient) --- */
+.skill-badge {
+    background: linear-gradient(90deg, #4facfe, #6a5acd);
+    color: white;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* --- 6. RESULT CARD --- */
+.result-card {
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 25px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+/* --- 7. BUTTONS --- */
+
+/* Generate Button */
+.btn-generate {
+    background-color: #6a5acd !important;
+    color: white !important;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(106, 90, 205, 0.3);
+}
+
+.btn-generate:hover {
+    background-color: #5848c2 !important;
+    transform: translateY(-2px);
+}
+
+/* Download Button (Blue → Purple Gradient) */
+.btn-download {
+    background: linear-gradient(90deg, #4facfe, #6a5acd) !important;
+    color: white !important;
+    border: none;
+    padding: 10px 25px;
+    border-radius: 30px;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(106, 90, 205, 0.3);
+}
+
+.btn-download:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(106, 90, 205, 0.5);
+}
+
+/* --- 8. SMOOTH FADE ANIMATION --- */
+@keyframes fadeIn { 
+    from { opacity: 0; transform: translateY(10px); } 
+    to { opacity: 1; transform: translateY(0); } 
+}
+
+.animate-fade-in { 
+    animation: fadeIn 0.4s ease-out forwards; 
+}
+
+</style>
+
+
+
+</head>
+
+<body>
+
+<div class="container py-5">
+
+    <!-- Header -->
+    <div class="header-box text-white p-4 mb-5 shadow-lg animate__animated animate__fadeInDown">
+        <div class="d-flex align-items-center gap-3">
+            <i class="bi bi-file-earmark-text fs-1"></i>
+            <div>
+                <h2 class="fw-bold mb-0">Admin Report Agent</h2>
+                <small>Search and download employee reports</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Section -->
+    <div class="card p-4 shadow mb-4 animate__animated animate__fadeInUp">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Employee Name</label>
+                <input type="text" id="searchName" class="form-control" placeholder="Search by name">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Skill</label>
+                <input type="text" id="searchSkill" class="form-control" placeholder="Search by skill">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Employee ID</label>
+                <input type="text" id="searchId" class="form-control" placeholder="Search by ID">
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-3">
+            <button class="btn btn-primary" onclick="handleSearch()">
+                <i class="bi bi-search"></i> Search
+            </button>
+            <button class="btn btn-outline-secondary" onclick="handleClear()">
+                Clear
+            </button>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div class="card p-4 shadow result-card animate__animated animate__fadeIn">
+        <h5 id="resultTitle">All Employees</h5>
+        <p id="resultCount" class="text-muted small"></p>
+        <div class="row" id="employeeContainer"></div>
+    </div>
+
+</div>
+
+<script>
+
+// Employee Data
+const employees = [
+{ id:"EMP001", name:"Sarah Johnson", skills:["React","TypeScript","Node.js"], department:"Engineering", joinDate:"2023-01-15", email:"sarah.johnson@company.com" },
+{ id:"EMP002", name:"Michael Chen", skills:["Python","Django","PostgreSQL"], department:"Engineering", joinDate:"2023-03-22", email:"michael.chen@company.com" },
+{ id:"EMP003", name:"Emily Rodriguez", skills:["Java","Spring Boot","AWS"], department:"Engineering", joinDate:"2022-11-08", email:"emily.rodriguez@company.com" },
+{ id:"EMP004", name:"David Kim", skills:["UI/UX Design","Figma","Adobe XD"], department:"Design", joinDate:"2023-05-10", email:"david.kim@company.com" },
+{ id:"EMP005", name:"Jessica Taylor", skills:["Project Management","Agile","Scrum"], department:"Management", joinDate:"2022-08-17", email:"jessica.taylor@company.com" },
+{ id:"EMP006", name:"Robert Anderson", skills:["Machine Learning","Python","TensorFlow"], department:"Data Science", joinDate:"2023-02-28", email:"robert.anderson@company.com" }
+];
+
+let filteredEmployees = [...employees];
+
+// Display Employees
+function displayEmployees(list) {
+
+    const container = document.getElementById("employeeContainer");
+    container.innerHTML = "";
+
+    document.getElementById("resultCount").innerText =
+        `Showing ${list.length} employee(s)`;
+
+    if(list.length === 0){
+        container.innerHTML = `
+        <div class="text-center text-muted py-5">
+            No employees found.
+        </div>`;
+        return;
+    }
+
+    list.forEach(emp => {
+
+        const col = document.createElement("div");
+        col.className = "col-md-4 mb-4";
+
+        col.innerHTML = `
+            <div class="employee-card h-100">
+                <h5 class="fw-bold text-dark">${emp.name}</h5>
+                <p class="text-muted mb-2">ID: ${emp.id}</p>
+
+                <p><strong>Department:</strong> ${emp.department}</p>
+                <p><strong>Email:</strong> ${emp.email}</p>
+                <p><strong>Joined:</strong> ${emp.joinDate}</p>
+
+                <div class="mb-3">
+                    ${emp.skills.map(skill =>
+                        `<span class="badge skill-badge me-1">${skill}</span>`
+                    ).join("")}
+                </div>
+
+                <button class="btn btn-success w-100 download-btn">
+                    <i class="bi bi-download"></i> Download Report
+                </button>
+            </div>
+        `;
+
+        // Attach download event safely
+        col.querySelector(".download-btn").addEventListener("click", function(){
+            downloadReport(emp);
+        });
+
+        container.appendChild(col);
+    });
+}
+
+
+// SEARCH FUNCTION (FINAL FIXED VERSION)
+function handleSearch() {
+
+    const name = document.getElementById("searchName").value.trim().toLowerCase();
+    const skill = document.getElementById("searchSkill").value.trim().toLowerCase();
+    const id = document.getElementById("searchId").value.trim().toLowerCase();
+
+    filteredEmployees = employees.filter(emp => {
+
+        const empName = emp.name.toLowerCase();
+        const empId = emp.id.toLowerCase();
+        const empSkills = emp.skills.map(s => s.toLowerCase());
+
+        const matchName = !name || empName.includes(name);
+        const matchSkill = !skill || empSkills.some(s => s.includes(skill));
+        const matchId = !id || empId.includes(id);
+
+        return matchName && matchSkill && matchId;
+    });
+
+    document.getElementById("resultTitle").innerText =
+        filteredEmployees.length ? "Search Results" : "No Results Found";
+
+    displayEmployees(filteredEmployees);
+}
+
+
+// CLEAR FUNCTION
+function handleClear(){
+
+    document.getElementById("searchName").value="";
+    document.getElementById("searchSkill").value="";
+    document.getElementById("searchId").value="";
+
+    document.getElementById("resultTitle").innerText="All Employees";
+
+    filteredEmployees = [...employees];
+
+    displayEmployees(filteredEmployees);
+}
+
+
+// DOWNLOAD REPORT
+
+function downloadReport(emp){
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Title
+    doc.setFontSize(18);
+    doc.text("EMPLOYEE REPORT", 20, 20);
+
+    doc.setFontSize(12);
+    doc.text("====================================", 20, 25);
+
+    // Employee Details
+    doc.text(`Name: ${emp.name}`, 20, 40);
+    doc.text(`Employee ID: ${emp.id}`, 20, 50);
+    doc.text(`Department: ${emp.department}`, 20, 60);
+    doc.text(`Email: ${emp.email}`, 20, 70);
+    doc.text(`Join Date: ${emp.joinDate}`, 20, 80);
+
+    // Skills
+    doc.text("Skills:", 20, 95);
+
+    emp.skills.forEach((skill, index) => {
+        doc.text(`- ${skill}`, 25, 105 + (index * 10));
+    });
+
+    // Additional Info
+    doc.text(`Generated On: ${new Date().toLocaleDateString()}`, 20, 140);
+    doc.text("Overall Rating: Excellent", 20, 150);
+    doc.text("Projects Completed: 15", 20, 160);
+    doc.text("Team Score: 9.2/10", 20, 170);
+
+    // Save PDF
+    doc.save(`${emp.name.replace(/\s+/g,"_")}_Report.pdf`);
+}
+
+
+// LIVE SEARCH (Professional Feature)
+document.getElementById("searchName").addEventListener("keyup", handleSearch);
+document.getElementById("searchSkill").addEventListener("keyup", handleSearch);
+document.getElementById("searchId").addEventListener("keyup", handleSearch);
+
+
+// INITIAL LOAD
+displayEmployees(employees);
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
+</body>
+</html>
