@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 <head>
 <title>NOVUS Dashboard</title>
@@ -95,6 +94,14 @@ font-size:32px;
 background:linear-gradient(90deg,#00d4ff,#a855f7);
 -webkit-background-clip:text;
 color:transparent;
+letter-spacing:1px;
+}
+
+.dashboard-title p{
+margin:6px 0 0;
+font-size:16px;
+opacity:0.85;
+letter-spacing:2px;
 }
 
 .profile-avatar{
@@ -114,9 +121,36 @@ margin-top:22px;
 padding:20px;
 border-radius:16px;
 background:rgba(255,255,255,0.05);
+border:1px solid rgba(255,255,255,0.08);
+box-shadow:
+0 0 12px rgba(0,212,255,0.22),
+0 0 20px rgba(168,85,247,0.15);
 }
-</style>
 
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:40px;
+margin-top:45px;
+padding:10px 5px;
+}
+
+.stat{
+padding:35px;
+border-radius:20px;
+background:linear-gradient(135deg,#00d4ff33,#a855f733);
+text-align:center;
+border:1px solid rgba(255,255,255,0.1);
+box-shadow:
+0 0 15px rgba(0,212,255,0.28),
+0 0 28px rgba(168,85,247,0.20);
+transition:.3s;
+}
+
+.stat:hover{ transform:translateY(-8px); }
+
+.stat h2{ margin:0;font-size:30px;margin-bottom:8px; }
+</style>
 </head>
 
 <body>
@@ -134,7 +168,10 @@ background:rgba(255,255,255,0.05);
 <a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
 <a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
 <a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
-<a href="InterviewAgent.html"><div class="sidebar-item">Interview Agent</div></a>
+
+<!-- NEW INTERVIEW AGENT -->
+<a href="#"><div class="sidebar-item">Interview Agent</div></a>
+
 </div>
 
 <div class="main">
@@ -142,6 +179,7 @@ background:rgba(255,255,255,0.05);
 
 <div class="dashboard-title">
 <h1>Training Dashboard</h1>
+<p>Mavericks Onboarding</p>
 </div>
 
 <div class="profile-avatar" id="avatarInitial">U</div>
@@ -150,43 +188,46 @@ background:rgba(255,255,255,0.05);
 <div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
 <div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">EMP101</span></div>
 
+<div class="info-box">
+<b>Professional Summary:</b>
+<span id="displaySummary">
+Highly motivated Software Developer at NOVUS specializing in Frontend Development, UI/UX design, and AI-driven web applications.
+</span>
+</div>
+
+<!-- INTERVIEW BOX -->
+<div class="info-box">
+<b>Interview Details</b><br><br>
+Admin : Arun Kumar <br>
+Email : arun@maverik.com <br>
+Contact : +91 9876543210 <br>
+Interview Date : <span id="interviewDate">2026-05-20</span><br><br>
+<span id="daysLeft" style="color:#00d4ff;font-weight:bold;"></span><br><br>
+
+<button onclick="window.open('https://meet.google.com/abc-defg-hij')"
+style="padding:10px 25px;border-radius:12px;border:none;background:#00d4ff;color:black;font-weight:bold;cursor:pointer;">
+Join Interview
+</button>
+</div>
+
+<div class="stats">
+<div class="stat"><h2 id="onboardingPercent">0%</h2>Onboarding</div>
+<div class="stat"><h2 id="assessmentPercent">0%</h2>Assessment</div>
+<div class="stat"><h2 id="certPercent">0%</h2>Certifications</div>
+<div class="stat"><h2 id="overallPercent">0%</h2>Overall</div>
+</div>
+
 </div>
 </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-authDomain:"novus-9dfb8.firebaseapp.com",
-projectId:"novus-9dfb8"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-onAuthStateChanged(auth,async user=>{
-if(!user){
-window.location.href="Novus_login.html";
-return;
-}
-
-const userDoc=await getDoc(doc(db,"users",user.uid));
-if(userDoc.exists()){
-const d=userDoc.data();
-
-document.getElementById("displayName").innerText=d.name||"No Name";
-document.getElementById("displayEmail").innerText=user.email;
-
-let letter=d.name?d.name[0].toUpperCase():"U";
-document.getElementById("avatarInitial").innerText=letter;
-document.getElementById("topInitial").innerText=letter;
-}
-});
+<script>
+const iDate=new Date(document.getElementById("interviewDate").innerText);
+const today=new Date();
+const diff=iDate-today;
+const days=Math.ceil(diff/(1000*60*60*24));
+document.getElementById("daysLeft").innerText=
+days>0?days+" days left for interview":(days===0?"Interview is Today 🔥":"Interview Completed");
 </script>
 
 </body>
