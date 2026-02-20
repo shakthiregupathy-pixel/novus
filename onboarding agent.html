@@ -218,10 +218,50 @@ input,select{
   background:#fff7ed;
 }
 
-
+/* ---------- HIDE ---------- */
+.hidden{display:none}
 </style>
+</head>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    
+const firebaseConfig = {
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  authDomain: "novus-9dfb8.firebaseapp.com",
+  projectId: "novus-9dfb8"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    const docRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+
+      // 🔥 AUTO FILL INPUTS
+      document.getElementById("name").value = data.name || "";
+      document.getElementById("employeeId").value = data.employeeId || "";
+      document.getElementById("role").value = data.role || "";
+      document.getElementById("startDate").value = data.startDate || "";
+      document.getElementById("mentor").value = data.mentor || "";
+      document.getElementById("mode").value = data.mode || "Online";
+
+    } else {
+      console.log("No user data found in Firestore");
+    }
+  } else {
+    window.location.href = "login.html";
+  }
+});
+</script>
 
 <body>
 
@@ -383,7 +423,7 @@ function start(){
 </script>
 
 </script>
-
+<script type="module" src="onboarding.js"></script>
 
 </body>
 <script>
