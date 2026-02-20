@@ -3,111 +3,61 @@
 <head>
 <meta charset="UTF-8">
 <title>Mavericks Fresher Reporting</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-
-/* ================= BODY ================= */
 body {
-    margin: 0;
+    background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
     font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg,#E9B9F9,#75B5F9);
-    min-height: 100vh;
 }
 
-/* ================= HEADER ================= */
-.header-bar {
-    background: #312F45;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 22px;
-    letter-spacing: 1px;
-}
-
-/* ================= CARD DESIGN ================= */
 .card-custom {
     background: white;
     border-radius: 20px;
     padding: 25px;
-    box-shadow: 0 20px 40px rgba(49,47,69,0.2);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     margin-bottom: 25px;
 }
 
-/* ================= INPUT STYLE ================= */
-.form-control {
-    border-radius: 12px;
-    padding: 10px;
+h2 {
+    font-weight: 600;
 }
 
-label {
-    font-weight: 500;
-    margin-bottom: 5px;
-}
-
-/* ================= BUTTONS ================= */
 .btn-generate {
-    background: linear-gradient(135deg,#75B5F9,#C57DE7);
+    background: #6a5acd;
     color: white;
     border-radius: 25px;
-    padding: 8px 20px;
-    border: none;
 }
 
 .btn-download {
-    background: linear-gradient(135deg,#84fab0,#8fd3f4);
+    background: linear-gradient(90deg, #84fab0, #8fd3f4);
     border-radius: 25px;
-    padding: 8px 20px;
     font-weight: 600;
-    border: none;
 }
-
-.btn-success {
-    border-radius: 25px;
-    padding: 8px 20px;
-}
-
-/* ================= SUMMARY ================= */
-.summary-box p {
-    font-size: 16px;
-    margin-bottom: 8px;
-}
-
-.summary-box span {
-    font-weight: bold;
-    color: #312F45;
-}
-
 </style>
 </head>
 
 <body>
 
-<div class="header-bar">
-    Mavericks Freshers Reporting Dashboard
-</div>
-
 <div class="container mt-5">
+
+<h2 class="text-center mb-4">Mavericks Freshers Reporting Dashboard</h2>
 
 <!-- Candidate Details -->
 <div class="card-custom">
-<h5 class="mb-3">Candidate Details</h5>
+<h5>Candidate Details</h5>
 
 <div class="row">
 <div class="col-md-4">
 <label>Name</label>
 <input type="text" id="name" class="form-control" readonly>
 </div>
-
 <div class="col-md-4">
 <label>Employee ID</label>
 <input type="text" id="empid" class="form-control" readonly>
 </div>
-
 <div class="col-md-4">
 <label>Department</label>
 <input type="text" id="dept" class="form-control" readonly>
@@ -119,12 +69,10 @@ label {
 <label>Role</label>
 <input type="text" id="role" class="form-control" readonly>
 </div>
-
 <div class="col-md-4">
 <label>Training Phase</label>
 <input type="text" id="phase" class="form-control" readonly>
 </div>
-
 <div class="col-md-4">
 <label>Certifications</label>
 <input type="text" id="certs" class="form-control" readonly>
@@ -132,21 +80,19 @@ label {
 </div>
 </div>
 
-<!-- Assessment -->
+<!-- Assessment Section -->
 <div class="card-custom">
-<h5 class="mb-3">Assessment Scores</h5>
+<h5>Assessment Scores</h5>
 
 <div class="row">
 <div class="col-md-4">
 <label>Quiz Score (%)</label>
 <input type="number" id="quiz" class="form-control">
 </div>
-
 <div class="col-md-4">
 <label>Coding Score (%)</label>
 <input type="number" id="coding" class="form-control">
 </div>
-
 <div class="col-md-4">
 <label>Assignment Score (%)</label>
 <input type="number" id="assignment" class="form-control">
@@ -154,25 +100,28 @@ label {
 </div>
 
 <button class="btn btn-generate mt-3" onclick="generateReport()">Generate Performance</button>
-<button class="btn btn-success mt-3" onclick="generateCertificate()">Generate Certificate</button>
+    <button class="btn btn-success mt-3" onclick="generateCertificate()">
+Generate Certificate
+</button>
+
 </div>
 
-<!-- Summary -->
-<div class="card-custom summary-box">
+<!-- Output -->
+<div class="card-custom">
 <h5>Performance Summary</h5>
 
-<p>Overall Performance: <span id="overall">-</span></p>
-<p>Skill Level: <span id="skill">-</span></p>
+<p><strong>Overall Performance:</strong> <span id="overall">-</span></p>
+<p><strong>Skill Level:</strong> <span id="skill">-</span></p>
 
-<h6 class="mt-3">Recruitment Feedback</h6>
+<h6>Recruitment Feedback</h6>
 <p id="feedback">-</p>
 
-<button class="btn btn-download mt-3" onclick="downloadPDF()">Download PDF Report</button>
+<button class="btn btn-download mt-3" onclick="downloadPDF()">Download Clean PDF Report</button>
 </div>
 
 </div>
 
-<!-- ================= FIREBASE SCRIPT ================= -->
+<!-- FIREBASE + SCRIPT -->
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -196,7 +145,7 @@ let overallScore = 0;
 let feedbackText = "";
 let skillLevel = "";
 
-/* AUTO LOAD USER */
+// 🔐 AUTO LOAD LOGGED-IN FRESHER
 onAuthStateChanged(auth, async (user) => {
 
 if (!user) {
@@ -207,74 +156,134 @@ if (!user) {
 const docSnap = await getDoc(doc(db, "users", user.uid));
 
 if (docSnap.exists()) {
+
     const data = docSnap.data();
 
-    name.value = data.name || "";
-    empid.value = data.employeeId || "";
-    dept.value = data.department || "";
-    role.value = data.role || "";
-    phase.value = data.phase || "";
-    certs.value = data.certs || "";
+    document.getElementById("name").value = data.name || "";
+    document.getElementById("empid").value = data.employeeId || "";
+    document.getElementById("dept").value = data.department || "";
+    document.getElementById("role").value = data.role || "";
+    document.getElementById("phase").value = data.phase || "";
+    document.getElementById("certs").value = data.certs || "";
+
+} else {
+    alert("User data not found in database.");
 }
 
 });
 
-/* PERFORMANCE */
+// PERFORMANCE CALCULATION
 window.generateReport = function() {
 
 let quiz = parseFloat(document.getElementById("quiz").value) || 0;
 let coding = parseFloat(document.getElementById("coding").value) || 0;
 let assignment = parseFloat(document.getElementById("assignment").value) || 0;
 
-overallScore = (quiz + coding + assignment) / 3;
+overallScore = ((quiz + coding + assignment) / 3).toFixed(2);
 
-overall.innerText = overallScore.toFixed(2) + "%";
+document.getElementById("overall").innerText = overallScore + " %";
 
 if (overallScore >= 85) {
     skillLevel = "Advanced";
-    feedbackText = "Highly recommended for recruitment.";
+    feedbackText = "Highly recommended for recruitment. Demonstrates excellent technical and problem-solving skills.";
 }
 else if (overallScore >= 60) {
     skillLevel = "Intermediate";
-    feedbackText = "Recommended with improvement areas.";
+    feedbackText = "Recommended with minor improvement areas. Strong foundation and good learning capability.";
 }
 else {
     skillLevel = "Beginner";
-    feedbackText = "Needs additional training.";
+    feedbackText = "Requires additional training before recruitment consideration.";
 }
 
-skill.innerText = skillLevel;
-feedback.innerText = feedbackText;
-
+document.getElementById("skill").innerText = skillLevel;
+document.getElementById("feedback").innerText = feedbackText;
 }
 
-/* PDF REPORT */
+// PDF DOWNLOAD (UNCHANGED)
 window.downloadPDF = function() {
 
 const { jsPDF } = window.jspdf;
-const pdf = new jsPDF();
+const doc = new jsPDF();
 
-pdf.setFontSize(18);
-pdf.text("MAVERICKS TRAINING REPORT", 105, 20, null, null, "center");
+let name = document.getElementById("name").value || "-";
+let empid = document.getElementById("empid").value || "-";
+let dept = document.getElementById("dept").value || "-";
+let role = document.getElementById("role").value || "-";
+let phase = document.getElementById("phase").value || "-";
+let certs = document.getElementById("certs").value || "-";
+let quiz = document.getElementById("quiz").value || "0";
+let coding = document.getElementById("coding").value || "0";
+let assignment = document.getElementById("assignment").value || "0";
 
-pdf.save("Training_Report.pdf");
+let y = 20;
+
+doc.setFont("helvetica", "bold");
+doc.setFontSize(20);
+doc.text("MAVERICKS TRAINING REPORT", 105, y, null, null, "center");
+
+y += 10;
+doc.setFontSize(11);
+doc.setFont("helvetica", "normal");
+doc.text("Generated on: " + new Date().toLocaleString(), 105, y, null, null, "center");
+
+y += 10;
+doc.line(20, y, 190, y);
+y += 10;
+
+doc.setFont("helvetica", "bold");
+doc.setFontSize(14);
+doc.text("Candidate Details", 20, y);
+
+y += 8;
+doc.setFont("helvetica", "normal");
+doc.setFontSize(12);
+
+doc.text("Name:", 20, y); doc.text(name, 70, y);
+y += 8;
+doc.text("Employee ID:", 20, y); doc.text(empid, 70, y);
+y += 8;
+doc.text("Department:", 20, y); doc.text(dept, 70, y);
+y += 8;
+doc.text("Role:", 20, y); doc.text(role, 70, y);
+y += 8;
+doc.text("Training Phase:", 20, y); doc.text(phase, 70, y);
+y += 8;
+doc.text("Certifications:", 20, y);
+let splitCerts = doc.splitTextToSize(certs, 120);
+doc.text(splitCerts, 70, y);
+
+doc.save(name + "_Training_Report.pdf");
 
 }
-
-/* CERTIFICATE */
 window.generateCertificate = function() {
 
-const { jsPDF } = window.jspdf;
-const pdf = new jsPDF("landscape");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF("landscape");
 
-const name = document.getElementById("name").value || "Candidate";
+    const name = document.getElementById("name").value || "Candidate";
 
-pdf.setFontSize(30);
-pdf.text(name, 148, 110, null, null, "center");
+    // Load Canva image
+    const img = new Image();
+    img.src = "certificate.jpeg"; // your Canva file
 
-pdf.save(name + "_Certificate.pdf");
+    img.onload = function () {
 
-}
+        // Add full background image
+        doc.addImage(img, "PNG", 0, 0, 297, 210);
+
+        // 🔥 Add dynamic name
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(28);
+
+        // Center name
+        doc.text(name, 148, 110, null, null, "center");
+
+        // Download certificate
+        doc.save(name + "_Certificate.pdf");
+    };
+};
+
 
 </script>
 
