@@ -6,6 +6,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
 <style>
+  /* Hexaware Logo Right Side */
+.hexaware-logo{
+position:absolute;
+right:40px;
+top:40px;
+width:180px;
+height:auto;
+z-index:3;
+opacity:0.9;
+transition:0.4s;
+}
+
+.hexaware-logo:hover{
+transform:scale(1.05);
+opacity:1;
+}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
 
 body{
@@ -300,4 +316,5 @@ sendPasswordResetEmail(auth, resetEmail.value)
 
 </body>
 </html>
+
 
