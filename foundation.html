@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Onboarding Agent</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --primary:#3b5cff;
+  --bg:#f5f7fb;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --success:#22c55e;
+  --radius:16px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Inter',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.hidden{display:none}
+
+/* ---------- WELCOME ---------- */
+#welcome{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#3b5cff,#6c7cff);
+}
+.welcome-card{
+  background:white;
+  width:520px;
+  padding:36px;
+  border-radius:24px;
+  text-align:center;
+  box-shadow:0 25px 60px rgba(0,0,0,.15);
+}
+.welcome-features{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin:26px 0;
+}
+.feature{
+  background:#f8fafc;
+  padding:14px;
+  border-radius:14px;
+  font-size:13px;
+}
+.start-btn{
+  background:var(--primary);
+  color:white;
+  border:none;
+  padding:14px 22px;
+  border-radius:12px;
+  font-size:15px;
+  cursor:pointer;
+}
+
+/* ---------- TRAINING OPTION ---------- */
+#trainingSelect{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.option-card{
+  background:white;
+  width:420px;
+  padding:26px;
+  border-radius:20px;
+  box-shadow:0 20px 40px rgba(0,0,0,.08);
+  cursor:pointer;
+  margin-bottom:16px;
+  transition:.3s;
+}
+.option-card:hover{
+  transform:translateY(-4px);
+}
+
+/* ---------- HEADER ---------- */
+header{
+  background:linear-gradient(135deg,#3b5cff,#5f7cff);
+  color:white;
+  padding:26px 40px;
+  display:flex;
+  justify-content:space-between;
+}
+
+/* ---------- DASHBOARD ---------- */
+.container{
+  max-width:1200px;
+  margin:30px auto;
+  padding:0 20px;
+}
+.card{
+  background:white;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 15px 35px rgba(0,0,0,.06);
+  margin-bottom:20px;
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+.stat{
+  background:#f9fafb;
+  padding:16px;
+  border-radius:14px;
+}
+.option-card{
+  border-left:6px solid var(--primary);
+}
+.option-card:active{
+  transform:scale(0.97);
+}
+.start-btn:hover{
+  background:#2f49d8;
+}
+.progress{
+  height:8px;
+  background:#e5e7eb;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:8px;
+}
+.progress-fill{
+  height:100%;
+  background:var(--primary);
+}
+</style>
+</head>
+
+<body>
+
+<!-- ================= WELCOME ================= -->
+<section id="welcome">
+  <div class="welcome-card">
+    <h1>Welcome to Your Onboarding Journey</h1>
+    <p>Track progress, earn achievements, gain points</p>
+
+    <div class="welcome-features">
+      <div class="feature">🎯 Track Progress</div>
+      <div class="feature">🏆 Earn Achievements</div>
+      <div class="feature">⚡ Gain Points</div>
+    </div>
+
+    <button class="start-btn" onclick="goToTraining()">
+      Get Started
+    </button>
+  </div>
+</section>
+
+<!-- ================= TRAINING SELECTION ================= -->
+<section id="trainingSelect" class="hidden">
+  <div>
+    <h2 style="text-align:center;margin-bottom:20px">
+      Choose Your Training Path
+    </h2>
+
+    <div class="option-card" onclick="selectTraining('Role‑Specific Training')">
+      <h3>🎯 Role‑Specific Training</h3>
+      <p>Customized path based on role & domain</p>
+    </div>
+
+    <div class="option-card" onclick="selectTraining('Foundation Training')">
+      <h3>📘 Foundation Training</h3>
+      <p>Basic structured training for all freshers</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD ================= -->
+<section id="dashboard" class="hidden">
+<header>
+  <div>
+    <h2>Mavericks Onboarding Program</h2>
+    <span id="trainingLabel"></span>
+  </div>
+
+  <div>
+    <button onclick="backToTraining()"
+      style="
+        background:#ffffff;
+        color:#3b5cff;
+        border:none;
+        padding:8px 14px;
+        border-radius:10px;
+        font-weight:600;
+        cursor:pointer;
+        margin-right:10px;
+      ">
+      ← Change Training
+    </button>
+    <strong>100 / 1450 Points</strong>
+  </div>
+</header>
+
+<div class="container">
+
+<div class="stats">
+  <div class="stat">
+    <h3>41%</h3>
+    <span>Overall Progress</span>
+    <div class="progress"><div class="progress-fill" style="width:41%"></div></div>
+  </div>
+  <div class="stat">
+    <h3>1</h3>
+    <span>Tasks Completed</span>
+    <div class="progress"><div class="progress-fill" style="width:25%"></div></div>
+  </div>
+  <div class="stat">
+    <h3>7%</h3>
+    <span>Points Earned</span>
+    <div class="progress"><div class="progress-fill" style="width:7%"></div></div>
+  </div>
+</div>
+<div class="card">
+  <h3>Your Training Path</h3>
+
+  <!-- Role Specific Training -->
+  <div id="roleTraining" class="hidden">
+    <ul>
+      <li>✔ Company Orientation</li>
+      <li>✔ Role‑Based Tools & Technologies</li>
+      <li>✔ Hands‑on Project Simulation</li>
+      <li>✔ Code / Task Review with Mentor</li>
+      <li>✔ Final Role Assessment</li>
+    </ul>
+  </div>
+
+  <!-- Foundation Training -->
+  <div id="basicTraining" class="hidden">
+    <ul>
+      <li>✔ Company Culture & Policies</li>
+      <li>✔ Communication & Soft Skills</li>
+      <li>✔ Basic IT & Office Tools</li>
+      <li>✔ Intro to SDLC</li>
+      <li>✔ Foundation Assessment</li>
+    </ul>
+  </div>
+
+</div>
+</section>
+
+<script>
+let selectedTraining = "";
+
+function goToTraining() {
+  document.getElementById("welcome").style.display = "none";
+  document.getElementById("trainingSelect").classList.remove("hidden");
+}
+
+function selectTraining(type) {
+  selectedTraining = type;
+
+  document.getElementById("trainingSelect").style.display = "none";
+  document.getElementById("dashboard").classList.remove("hidden");
+  document.getElementById("trainingLabel").innerText = type;
+
+  // Hide both first
+  document.getElementById("roleTraining").classList.add("hidden");
+  document.getElementById("basicTraining").classList.add("hidden");
+
+  // Show based on selection
+  if (type.includes("Role")) {
+    document.getElementById("roleTraining").classList.remove("hidden");
+  } else {
+    document.getElementById("basicTraining").classList.remove("hidden");
+  }
+}
+</script>
+</body>
+</html>
