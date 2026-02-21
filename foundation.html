@@ -138,6 +138,21 @@ header{
   height:100%;
   background:var(--primary);
 }
+  .training-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.option-card {
+  width: 350px;
+}
 </style>
 </head>
 
@@ -163,24 +178,28 @@ header{
 
 <!-- ================= TRAINING SELECTION ================= -->
 <section id="trainingSelect" class="hidden">
-  <div>
-    <h2 style="text-align:center;margin-bottom:20px">
-      Choose Your Training Path
-    </h2>
-<div class="option-card" onclick="selectTraining('Foundation Training')">
+
+  <h2 style="text-align:center; margin-bottom:40px;">
+    Choose Your Training Path
+  </h2>
+
+  <div class="training-wrapper">
+
+    <div class="option-card" onclick="selectTraining('Foundation Training')">
       <h3>📘 Foundation Training</h3>
       <p>Basic structured training for all freshers</p>
     </div>
-  </div>
-<a href="onboarding agent.html" style="text-decoration:none; color:inherit;">
-  <div class="option-card">
-    <h3>🎯 Role-Specific Training</h3>
-    <p>Customized path based on role & domain</p>
-  </div>
-</a>
-    
-</section>
 
+    <a href="onboarding agent.html" class="card-link">
+      <div class="option-card">
+        <h3>🎯 Role-Specific Training</h3>
+        <p>Customized path based on role & domain</p>
+      </div>
+    </a>
+
+  </div>
+
+</section>
 <!-- ================= DASHBOARD ================= -->
 <section id="dashboard" class="hidden">
 <header>
@@ -284,6 +303,7 @@ function selectTraining(type) {
 </body>
 
 </html>
+
 
 
 
