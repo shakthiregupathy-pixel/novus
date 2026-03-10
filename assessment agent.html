@@ -418,16 +418,33 @@
         };
 
         async function initStorage() {
+            // 1. OPTIMISTIC LOADING: Show UI instantly using local data so it NEVER gets stuck
+            const local = localStorage.getItem(STORAGE_KEY);
+            if (local) state = { ...state, ...JSON.parse(local) };
+            updateUI();
+            hideLoader();
+
             try {
-                // Add your own Firebase configuration here:
-                const config = {
-                    apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-                    authDomain: "novus-9dfb8.firebaseapp.com",
-                    projectId: "novus-9dfb8",
-                    storageBucket: "novus-9dfb8.appspot.com",
-                    messagingSenderId: "641276518161",
-                    appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-                };
+                let config = null;
+
+                // 2. FIREBASE CONFIGURATION SETUP
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    // Uses injected config if running in a managed environment
+                    config = JSON.parse(__firebase_config);
+                } else {
+                    // !!! PASTE YOUR FIREBASE DETAILS HERE !!!
+                   config = {
+                        apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+                         authDomain: "novus-9dfb8.firebaseapp.com",
+                         projectId: "novus-9dfb8",
+                         storageBucket: "novus-9dfb8.appspot.com",
+                         messagingSenderId: "641276518161",
+                         appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+                    };
+                    
+                }
+                
+                if (config) {
                     const app = initializeApp(config);
                     auth = getAuth(app);
                     db = getFirestore(app);
@@ -440,13 +457,12 @@
                         await signInAnonymously(auth);
                     }
                     
-                    onAuthStateChanged(auth, u => {
+                    onAuthStateChanged(auth, async (u) => {
                         if (u) {
                             user = u;
                             document.getElementById('userBadge').innerText = `Cloud: ${u.uid.substring(0, 6)}`;
                             document.getElementById('syncStatus').innerHTML = '<span class="text-success">● Cloud Sync Active</span>';
-                            loadData();
-                            hideLoader();
+                            await loadData(); // Silently update the UI with cloud data once ready
                         }
                     });
                 } else {
@@ -457,9 +473,8 @@
                 isCloudMode = false;
                 document.getElementById('userBadge').innerText = "Local User";
                 document.getElementById('syncStatus').innerHTML = '<span class="text-info">● Local Storage Mode</span>';
-                loadData();
-                hideLoader();
             }
+        }
 
         async function loadData() {
             if (isCloudMode && user) {
@@ -675,9 +690,10 @@
         window.saveAssignment = saveAssignment;
         window.clearProgress = clearProgress;
 
-        // Initialization
-        window.onload = () => { initStorage(); renderPage(); };
-        window.onhashchange = renderPage;
+        // 3. INITIALIZATION FIX: Execute directly instead of relying on window.onload
+        initStorage(); 
+        renderPage();
+        window.addEventListener('hashchange', renderPage);
     </script>
 </body>
 </html>
