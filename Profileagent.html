@@ -286,12 +286,47 @@ input, .form-control {
 <div class="glass-card fade-in">
 <h5 class="mb-3 pastel-title">Candidate Details</h5>
 <div class="row">
-    <div class="col-md-4"><strong>Name:</strong> <span id="name">Loading...</span></div>
-    <div class="col-md-4"><strong>ID:</strong> <span id="displayEmpId">Loading...</span></div>
-    <div class="col-md-4"><strong>Department:</strong> Engineering</div>
+    <div class="col-md-4">
+        <strong>Name:</strong> <span id="name">Loading...</span>
+    </div>
+
+    <div class="col-md-4">
+        <strong>ID:</strong> <span id="displayEmpId">Loading...</span>
+    </div>
+
+    <div class="col-md-4">
+        <strong>Department:</strong>
+        <select id="department" class="form-control">
+            <option value="">Select Department</option>
+            <option>Engineering</option>
+            <option>Human Resources</option>
+            <option>Finance</option>
+            <option>Marketing</option>
+            <option>Operations</option>
+            <option>Customer Support</option>
+            <option>IT</option>
+        </select>
+    </div>
 </div>
+
 <div class="row mt-2">
-    <div class="col-md-4"><strong>Role:</strong> Software Developer</div>
+    <div class="col-md-4">
+        <strong>Role:</strong>
+        <select id="role" class="form-control">
+            <option value="">Select Role</option>
+            <option>Software Developer</option>
+            <option>Frontend Developer</option>
+            <option>Backend Developer</option>
+            <option>Tester</option>
+            <option>Manager</option>
+            <option>Intern</option>
+            <option>Team Lead</option>
+        </select>
+    </div>
+
+    <div class="col-md-4"><strong>Phase:</strong> Foundation</div>
+    <div class="col-md-4"><strong>Batch:</strong> 2026</div>
+</div>
     <div class="col-md-4"><strong>Phase:</strong> Foundation</div>
     <div class="col-md-4"><strong>Batch:</strong> 2026</div>
 </div>
