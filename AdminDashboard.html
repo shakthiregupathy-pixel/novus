@@ -6,64 +6,29 @@
     <title>Maverick Admin Portal</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
-    /* 1. Global Background & Font */
+    /* Global Background & Font */
     body { 
         font-family: 'Inter', sans-serif; 
-        /* Lavender to Sky Blue Gradient */
         background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
         background-attachment: fixed;
         min-height: 100vh;
-        color: #2c3e50; /* Darker text for better readability on light colors */
+        color: #2c3e50;
     }
 
-    /* 2. Custom Scrollbar - Matching the Palette */
+    /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.3); }
     ::-webkit-scrollbar-thumb { background: #6a5acd; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #5848c2; }
 
-    /* 3. Slate Blue - Generate Button Style */
-    .btn-generate {
-        background-color: #6a5acd !important;
-        color: white !important;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 30px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(106, 90, 205, 0.3);
-    }
-    .btn-generate:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(106, 90, 205, 0.5);
-        background-color: #5848c2 !important;
-    }
-
-    /* 4. Mint Green Gradient - Download Button Style */
-    .btn-download {
-        background: linear-gradient(90deg, #84fab0, #8fd3f4) !important;
-        color: white !important;
-        border: none;
-        padding: 10px 24px;
-        border-radius: 30px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(132, 250, 176, 0.4);
-    }
-    .btn-download:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(132, 250, 176, 0.6);
-    }
-
-    /* 5. Navigation & UI Elements */
+    /* Navigation & UI Elements */
     .nav-item.active { 
-        background-color: #6a5acd; /* Updated to Slate Blue */
+        background-color: #6a5acd; 
         color: white; 
     }
     .nav-item.active svg { color: white; }
@@ -78,6 +43,7 @@
 </head>
 <body class="bg-slate-50 h-screen flex overflow-hidden text-slate-800">
 
+    <!-- Sidebar -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 transition-all duration-300">
         <div class="p-6 flex items-center gap-3">
             <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">M</div>
@@ -91,21 +57,15 @@
             </button>
             <button onclick="navigate('fresher')" id="nav-fresher" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors">
                 <i data-lucide="users" class="w-5 h-5"></i>
-                <span class="font-medium">Fresher</span>
+                <span class="font-medium">Fresher Management</span>
             </button>
             <button onclick="navigate('agent')" id="nav-agent" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors">
                 <i data-lucide="bot" class="w-5 h-5"></i>
                 <span class="font-medium">Agent Monitoring</span>
             </button>
-            <a href="AdminReport.html" 
-   onclick="navigate('reports')" 
-   id="nav-reports"
-   class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors">
-
-    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-    <span class="font-medium text-slate-300">Reports</span>
-</a>
-
+            <button onclick="navigate('reports')" id="nav-reports" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors">
+                <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                <span class="font-medium text-slate-300">Reports</span>
             </button>
             <button onclick="navigate('insights')" id="nav-insights" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-slate-800 transition-colors">
                 <i data-lucide="sparkles" class="w-5 h-5"></i>
@@ -124,60 +84,68 @@
             </button>
         </div>
     </aside>
-<main class="flex-1 flex flex-col min-w-0">
-    <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shadow-sm z-10">
-        
-        <div class="flex items-center gap-4 flex-1">
-            <div class="relative w-64">
-                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                <input type="text" placeholder="Search by name, ID, skill..." 
-                    class="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all">
-            </div>
-        </div>
 
-        <div class="flex items-center gap-4">
-
-            <!-- ✅ NEW ADMIN VIEW BUTTON -->
-            <button onclick="openAdminView()" 
-                class="bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-all flex items-center gap-2">
-                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
-                <a href="adminview1.html"><span>Admin View</span></a>
-            </button>
-
-            <!-- AI Assistant -->
-            <button onclick="toggleAIChat()" 
-                class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all flex items-center gap-2">
-                <i data-lucide="sparkles" class="w-4 h-4"></i>
-                AI Assistant
-            </button> 
-
-            <!-- Download Report -->
-            <button onclick="downloadReport()" 
-                class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-2">
-                <i data-lucide="download" class="w-4 h-4"></i>
-                <span>Download Report</span>
-            </button>
-
-            <div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
-
-            <!-- Profile Section -->
-            <div class="flex items-center gap-3">
-                <div class="text-right hidden md:block">
-                    <p class="text-sm font-bold text-slate-800">Admin User</p>
-                    <p class="text-xs text-slate-500">Super Admin</p>
-                </div>
-                <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-                    <i data-lucide="user" class="w-5 h-5 text-slate-500"></i>
+    <main class="flex-1 flex flex-col min-w-0">
+        <!-- Header -->
+        <header class="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shadow-sm z-10">
+            
+            <div class="flex items-center gap-4 flex-1">
+                <div class="relative w-64">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
+                    <input type="text" id="searchInput" placeholder="Search by name, ID, skill..." 
+                        class="w-full pl-10 pr-4 py-2 bg-slate-100 rounded-lg text-sm outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                 </div>
             </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Data Simulation Button (Kept for testing your real DB) -->
+                <button id="simulate-login-btn" onclick="simulateEmployeeLogin()" 
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-all flex items-center gap-2"
+                    title="Push a test user to your LIVE database">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i>
+                    <span>Test Live DB Push</span>
+                </button>
+
+                <!-- AI Assistant -->
+                <button onclick="toggleAIChat()" 
+                    class="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all flex items-center gap-2">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    AI Assistant
+                </button> 
+
+                <!-- Download Report -->
+                <button onclick="downloadReport()" 
+                    class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors flex items-center gap-2">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    <span>Download Report</span>
+                </button>
+
+                <div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
+
+                <!-- Profile Section -->
+                <div class="flex items-center gap-3">
+                    <div class="text-right hidden md:block">
+                        <p class="text-sm font-bold text-slate-800">Admin User</p>
+                        <p class="text-xs text-slate-500">Super Admin</p>
+                    </div>
+                    <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
+                        <i data-lucide="user" class="w-5 h-5 text-slate-500"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dynamic Content Area -->
+        <div id="page-content" class="flex-1 overflow-y-auto p-6 relative">
+            <!-- Loading Indicator -->
+            <div class="flex h-full items-center justify-center flex-col text-slate-500">
+                <i data-lucide="loader-2" class="w-10 h-10 animate-spin mb-4 text-blue-600"></i>
+                <p>Connecting to Live Database...</p>
+            </div>
         </div>
-    </header>
+    </main>
 
-    <div id="page-content" class="flex-1 overflow-y-auto p-6 relative">
-    </div>
-</main>
-
-
+    <!-- AI Chat Modal -->
     <div id="ai-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl h-[600px] flex flex-col animate-fade-in">
             <div class="flex items-center justify-between p-4 border-b border-slate-200 bg-gradient-to-r from-purple-600 to-blue-600 rounded-t-2xl">
@@ -201,7 +169,7 @@
                         <i data-lucide="bot" class="w-4 h-4 text-white"></i>
                     </div>
                     <div class="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm text-sm text-slate-700 max-w-[80%] border border-slate-100">
-                        Hello! I'm your AI Admin Assistant. I can help with reports, analyzing fresher performance, or identifying trends. Try asking: "Who is at risk?"
+                        Hello! I'm your AI Admin Assistant. I monitor real-time user registrations. Ask me anything about the active freshers!
                     </div>
                 </div>
             </div>
@@ -217,15 +185,19 @@
         </div>
     </div>
 
-    <script>
-        // --- Data ---
-        const freshersData = [
-            { id: 'EMP001', name: 'Ravi Kumar', dept: 'IT', joinDate: '2026-01-15', quiz: 68, status: 'At Risk', skills: ['Java', 'Python', 'React'], progress: 69 },
-            { id: 'EMP002', name: 'Priya Sharma', dept: 'IT', joinDate: '2026-01-10', quiz: 92, status: 'Excellent', skills: ['JavaScript', 'Node.js', 'MongoDB'], progress: 100 },
-            { id: 'EMP003', name: 'Amit Patel', dept: 'Data Science', joinDate: '2026-01-20', quiz: 78, status: 'Active', skills: ['Python', 'Machine Learning', 'SQL'], progress: 75 },
-            { id: 'EMP004', name: 'Sneha Reddy', dept: 'IT', joinDate: '2026-01-08', quiz: 88, status: 'Excellent', skills: ['Angular', 'TypeScript', 'CSS'], progress: 94 },
-            { id: 'EMP005', name: 'Rahul Verma', dept: 'QA', joinDate: '2026-01-25', quiz: 62, status: 'At Risk', skills: ['Selenium', 'Java', 'Testing'], progress: 50 },
-        ];
+    <!-- MAIN APP LOGIC -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global State Array for dynamically fetched users
+        window.freshersData = [];
+        window.db = null;
+        window.dbPath = null; // Will store the correct collection path based on environment
+
+        // Chart instances to prevent canvas reuse errors
+        window.chartInstances = { pie: null, bar: null, line: null, agent: null };
 
         const agentsData = [
             { name: 'Onboarding Agent', status: 'Active', tasks: 120, accuracy: 95, latency: 200, lastActive: '2 min ago' },
@@ -234,37 +206,135 @@
             { name: 'Reporting Agent', status: 'Active', tasks: 45, accuracy: 96, latency: 280, lastActive: '10 min ago' },
         ];
 
+        // =========================================================================
+        // 🛑 IMPORTANT: PASTE YOUR FIREBASE CONFIGURATION HERE 🛑
+        // Get this from Firebase Console -> Project Settings -> General -> Web Apps
+        // =========================================================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // --- Firebase Database Integration ---
+        async function initializeRealtimeData() {
+            try {
+                let activeConfig;
+                let isCanvasEnv = false;
+
+                // Smart Fallback Mechanism:
+                // If you haven't entered your API key yet, it will use the preview environment's built-in DB so it doesn't crash.
+                // Once you deploy this to your website with your real config, it will seamlessly switch to your Live DB.
+                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                    activeConfig = firebaseConfig; // Use User's custom Live DB
+                } else if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    activeConfig = JSON.parse(__firebase_config); // Use Preview Mock DB
+                    isCanvasEnv = true;
+                } else {
+                    throw new Error("No Firebase config available.");
+                }
+
+                // Initialize Firebase
+                const app = initializeApp(activeConfig);
+                const auth = getAuth(app);
+                window.db = getFirestore(app);
+
+                // Authenticate and set up correct data paths depending on the environment
+                if (isCanvasEnv) {
+                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                    window.dbPath = collection(window.db, 'artifacts', appId, 'public', 'data', 'employees');
+                    
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                } else {
+                    window.dbPath = collection(window.db, 'employees');
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) listenToLoggedInEmployees();
+                });
+            } catch (error) {
+                console.error("Firebase init failed.", error);
+                
+                // Show graceful error UI instead of breaking
+                window.freshersData = [];
+                const container = document.getElementById('page-content');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="flex h-full items-center justify-center flex-col text-slate-500 animate-fade-in">
+                            <i data-lucide="database-zap" class="w-16 h-16 mb-4 text-red-400"></i>
+                            <h2 class="text-xl font-bold text-slate-700">Database Connection Failed</h2>
+                            <p class="mt-2 text-sm max-w-md text-center">Please add your valid Firebase credentials to the <code>firebaseConfig</code> object (around line 173) to connect to your live database.</p>
+                        </div>
+                    `;
+                    lucide.createIcons();
+                }
+            }
+        }
+
+        // Listens to the database to fetch users actively logging in
+        function listenToLoggedInEmployees() {
+            if (!window.db || !window.dbPath) return;
+
+            onSnapshot(window.dbPath, async (snapshot) => {
+                // Update Local State array with actual live data from YOUR database
+                window.freshersData = snapshot.docs.map(doc => doc.data());
+                
+                // Refresh the Current UI View automatically
+                const activeNav = document.querySelector('.nav-item.active');
+                const currentPage = activeNav ? activeNav.id.replace('nav-', '') : 'dashboard';
+                window.navigate(currentPage);
+
+            }, (error) => {
+                console.error("Snapshot error:", error);
+            });
+        }
+
         // --- Render Functions ---
 
-        function renderDashboard() {
+        window.renderDashboard = function() {
             const container = document.getElementById('page-content');
+            
+            // Calculate dynamic stats from real-time data
+            const totalFreshers = window.freshersData.length;
+            const lowPerformers = window.freshersData.filter(f => f.status === 'At Risk').length;
+            const activeTraining = totalFreshers - lowPerformers;
+            const avgScore = totalFreshers ? (window.freshersData.reduce((acc, f) => acc + (f.quiz || 0), 0) / totalFreshers).toFixed(1) : 0;
+
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Dashboard</h2>
-                        <p class="text-slate-500">Overview of system performance and fresher progress</p>
+                        <p class="text-slate-500">Realtime overview of system performance and active users</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                            <p class="text-slate-500 text-sm font-medium">Total Freshers</p>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">5</h3>
-                            <p class="text-green-600 text-xs mt-1 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +12% from last month</p>
+                            <p class="text-slate-500 text-sm font-medium">Logged-In Freshers</p>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">${totalFreshers}</h3>
+                            <p class="text-green-600 text-xs mt-1 flex items-center"><i data-lucide="users" class="w-3 h-3 mr-1"></i> Live Update</p>
                         </div>
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <p class="text-slate-500 text-sm font-medium">Active Training</p>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">4</h3>
-                            <p class="text-green-600 text-xs mt-1 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +8% from last month</p>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">${activeTraining}</h3>
+                            <p class="text-blue-600 text-xs mt-1 flex items-center"><i data-lucide="book-open" class="w-3 h-3 mr-1"></i> Excellent & Active</p>
                         </div>
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
                             <p class="text-slate-500 text-sm font-medium">Low Performers</p>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">2</h3>
-                            <p class="text-red-500 text-xs mt-1 flex items-center"><i data-lucide="trending-down" class="w-3 h-3 mr-1"></i> -5% from last month</p>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">${lowPerformers}</h3>
+                            <p class="text-red-500 text-xs mt-1 flex items-center"><i data-lucide="alert-circle" class="w-3 h-3 mr-1"></i> Requires Attention</p>
                         </div>
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
-                            <p class="text-slate-500 text-sm font-medium">Avg Score</p>
-                            <h3 class="text-3xl font-bold text-slate-800 mt-2">77.6</h3>
-                            <p class="text-green-600 text-xs mt-1 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> +3% from last month</p>
+                            <p class="text-slate-500 text-sm font-medium">Platform Avg Score</p>
+                            <h3 class="text-3xl font-bold text-slate-800 mt-2">${avgScore}</h3>
+                            <p class="text-green-600 text-xs mt-1 flex items-center"><i data-lucide="trending-up" class="w-3 h-3 mr-1"></i> Across All Users</p>
                         </div>
                     </div>
 
@@ -289,52 +359,62 @@
             initCharts();
         }
 
-        function renderFresherManagement() {
+        window.renderFresherManagement = function(filteredList = null) {
             const container = document.getElementById('page-content');
-            let cardsHtml = freshersData.map(f => {
+            const dataToRender = filteredList || window.freshersData;
+            
+            let cardsHtml = dataToRender.map(f => {
                 const statusColor = f.status === 'Excellent' ? 'bg-green-100 text-green-700' : 
                                     f.status === 'At Risk' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700';
                 
+                // Fallbacks in case live data is missing fields
+                const name = f.name || 'Unknown User';
+                const id = f.id || 'N/A';
+                const dept = f.dept || 'Unassigned';
+                const quiz = f.quiz || 0;
+                const progress = f.progress || 0;
+                const skills = f.skills || [];
+
                 return `
                 <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center gap-3">
                             <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-lg font-bold text-slate-600">
-                                ${f.name.split(' ').map(n=>n[0]).join('')}
+                                ${name.split(' ').map(n=>n[0]).join('').substring(0,2)}
                             </div>
                             <div>
-                                <h3 class="font-bold text-slate-800">${f.name}</h3>
-                                <p class="text-xs text-slate-500">${f.id}</p>
+                                <h3 class="font-bold text-slate-800">${name}</h3>
+                                <p class="text-xs text-slate-500">${id}</p>
                             </div>
                         </div>
-                        <span class="px-2 py-1 rounded-full text-xs font-bold ${statusColor}">${f.status}</span>
+                        <span class="px-2 py-1 rounded-full text-xs font-bold ${statusColor}">${f.status || 'Active'}</span>
                     </div>
                     
                     <div class="grid grid-cols-2 gap-4 text-sm mb-4">
                         <div>
                             <p class="text-slate-500">Department</p>
-                            <p class="font-medium">${f.dept}</p>
+                            <p class="font-medium">${dept}</p>
                         </div>
                         <div>
                             <p class="text-slate-500">Quiz Avg</p>
-                            <p class="font-medium">${f.quiz}%</p>
+                            <p class="font-medium">${quiz}%</p>
                         </div>
                     </div>
 
                     <div class="mb-4">
                         <p class="text-slate-500 text-xs mb-2">Skills</p>
                         <div class="flex flex-wrap gap-2">
-                            ${f.skills.map(s => `<span class="px-2 py-1 bg-slate-100 rounded text-xs text-slate-600">${s}</span>`).join('')}
+                            ${skills.map(s => `<span class="px-2 py-1 bg-slate-100 rounded text-xs text-slate-600">${s}</span>`).join('')}
                         </div>
                     </div>
 
                     <div>
                         <div class="flex justify-between text-xs mb-1">
                             <span>Overall Progress</span>
-                            <span>${f.progress}%</span>
+                            <span>${progress}%</span>
                         </div>
                         <div class="w-full bg-slate-100 rounded-full h-2">
-                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${f.progress}%"></div>
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${progress}%"></div>
                         </div>
                     </div>
                     
@@ -342,12 +422,19 @@
                 </div>`;
             }).join('');
 
+            if(cardsHtml === '') {
+                cardsHtml = `<div class="col-span-3 text-center p-10 text-slate-500">
+                    <i data-lucide="database" class="w-12 h-12 mx-auto mb-3 opacity-20"></i>
+                    No freshers found in the database. Wait for users to sign up!
+                </div>`;
+            }
+
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6">
                     <div class="flex justify-between items-center">
                         <div>
-                            <h2 class="text-2xl font-bold text-slate-800">Fresher Management</h2>
-                            <p class="text-slate-500">Manage and monitor all freshers in the system</p>
+                            <h2 class="text-2xl font-bold text-slate-800">Live Fresher Management</h2>
+                            <p class="text-slate-500">Monitor all currently registered users on the platform</p>
                         </div>
                         <button class="flex items-center gap-2 bg-white border border-slate-300 px-4 py-2 rounded-lg text-sm font-medium">
                             <i data-lucide="filter" class="w-4 h-4"></i> Filters
@@ -361,7 +448,7 @@
             lucide.createIcons();
         }
 
-        function renderAgentMonitoring() {
+        window.renderAgentMonitoring = function() {
             const container = document.getElementById('page-content');
             
             const agentCards = agentsData.map(agent => `
@@ -408,7 +495,7 @@
                 <div class="animate-fade-in space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Agent Monitoring Dashboard</h2>
-                        <p class="text-slate-600 mt-1">Real-time monitoring of AI agents performance</p>
+                        <p class="text-slate-600 mt-1">Real-time monitoring of AI agents processing user data</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -451,9 +538,11 @@
             `;
             lucide.createIcons();
             
-            // Render Agent Chart
+            // Destroy existing agent chart
+            if(window.chartInstances.agent) window.chartInstances.agent.destroy();
+
             const ctx = document.getElementById('agentLineChart').getContext('2d');
-            new Chart(ctx, {
+            window.chartInstances.agent = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: ['10:00', '11:00', '12:00', '13:00', '14:00'],
@@ -466,7 +555,7 @@
             });
         }
 
-        function renderReports() {
+        window.renderReports = function() {
             const container = document.getElementById('page-content');
             const reports = [
                 { title: 'Executive Summary', desc: 'High-level overview with key metrics', icon: 'bar-chart-3', color: 'blue' },
@@ -479,7 +568,7 @@
                 <div class="animate-fade-in space-y-6">
                     <div>
                         <h2 class="text-2xl font-bold text-slate-800">Reports & Analytics</h2>
-                        <p class="text-slate-600">Generate and analyze comprehensive reports</p>
+                        <p class="text-slate-600">Generate and analyze comprehensive reports based on active data</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         ${reports.map(r => `
@@ -490,7 +579,7 @@
                                 <div class="flex-1">
                                     <h3 class="font-bold text-slate-800 text-lg">${r.title}</h3>
                                     <p class="text-slate-500 text-sm mb-4">${r.desc}</p>
-                                    <button class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800">Generate Report</button>
+                                    <button onclick="downloadReport()" class="bg-slate-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-800">Generate Report</button>
                                 </div>
                             </div>
                         `).join('')}
@@ -500,7 +589,7 @@
             lucide.createIcons();
         }
 
-        function renderInsights() {
+        window.renderInsights = function() {
             const container = document.getElementById('page-content');
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6">
@@ -525,7 +614,7 @@
                                 <h3 class="font-bold text-lg">At-Risk Alert</h3>
                                 <span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">WARNING</span>
                             </div>
-                            <p class="text-slate-600 mb-4">2 freshers showing concerning patterns with risk levels above 40%.</p>
+                            <p class="text-slate-600 mb-4">${window.freshersData.filter(f => f.status==='At Risk').length} freshers showing concerning patterns with risk levels above 40%.</p>
                             <div class="bg-slate-50 p-3 rounded-lg text-sm text-slate-700">
                                 💡 <strong>Recommendation:</strong> Immediate intervention recommended. Assign mentors and increase check-in frequency.
                             </div>
@@ -546,7 +635,7 @@
             `;
         }
 
-        function renderSettings() {
+        window.renderSettings = function() {
             const container = document.getElementById('page-content');
             container.innerHTML = `
                 <div class="animate-fade-in space-y-6 max-w-4xl">
@@ -604,11 +693,11 @@
                     <div class="mt-8 p-6 bg-slate-900 text-white rounded-2xl flex justify-between items-center">
                         <div>
                             <h3 class="font-bold">System Information</h3>
-                            <p class="text-sm text-slate-400">Version v2.4.0</p>
+                            <p class="text-sm text-slate-400">Database Connected</p>
                         </div>
                         <div class="text-right">
-                             <p class="text-sm text-slate-400">Last Updated</p>
-                             <p class="font-bold">Feb 15, 2026</p>
+                             <p class="text-sm text-slate-400">Total Users Tracked</p>
+                             <p class="font-bold">${window.freshersData.length}</p>
                         </div>
                     </div>
                 </div>
@@ -618,82 +707,144 @@
 
         // --- Chart Logic ---
         function initCharts() {
-            // Pie Chart
-            new Chart(document.getElementById('pieChart'), {
-                type: 'doughnut',
-                data: {
-                    labels: ['Excellent', 'Active', 'At Risk'],
-                    datasets: [{
-                        data: [40, 20, 40],
-                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-            });
+            // Destroy existing charts
+            if(window.chartInstances.pie) window.chartInstances.pie.destroy();
+            if(window.chartInstances.bar) window.chartInstances.bar.destroy();
+            if(window.chartInstances.line) window.chartInstances.line.destroy();
 
-            // Bar Chart
-            new Chart(document.getElementById('barChart'), {
-                type: 'bar',
-                data: {
-                    labels: ['Java', 'Python', 'React', 'Node.js', 'Testing'],
-                    datasets: [{
-                        label: 'Skill Gap %',
-                        data: [10, 2, 15, 0, 18],
-                        backgroundColor: '#8b5cf6',
-                        borderRadius: 4
-                    }]
-                },
-                options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-            });
+            // Dynamic Chart Data based on Database fetch
+            const excellent = window.freshersData.filter(f => f.status === 'Excellent').length;
+            const active = window.freshersData.filter(f => f.status === 'Active').length || window.freshersData.filter(f => !f.status).length;
+            const atRisk = window.freshersData.filter(f => f.status === 'At Risk').length;
 
-            // Line Chart
-            new Chart(document.getElementById('lineChart'), {
-                type: 'line',
-                data: {
-                    labels: ['Feb 09', 'Feb 11', 'Feb 13', 'Feb 15'],
-                    datasets: [
-                        { label: 'Quizzes', data: [12, 19, 15, 22], borderColor: '#3b82f6', tension: 0.4 },
-                        { label: 'Coding', data: [8, 12, 10, 15], borderColor: '#10b981', tension: 0.4 }
-                    ]
-                },
-                options: { maintainAspectRatio: false }
-            });
-        }
+            const pieCtx = document.getElementById('pieChart');
+            if(pieCtx && window.freshersData.length > 0) {
+                window.chartInstances.pie = new Chart(pieCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Excellent', 'Active', 'At Risk'],
+                        datasets: [{
+                            data: [excellent, active, atRisk],
+                            backgroundColor: ['#10b981', '#f59e0b', '#ef4444'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                });
+            }
 
-        // --- Navigation Logic ---
-        function navigate(page) {
-            // Update Sidebar State
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById(`nav-${page}`).classList.add('active');
+            const barCtx = document.getElementById('barChart');
+            if(barCtx && window.freshersData.length > 0) {
+                window.chartInstances.bar = new Chart(barCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Java', 'Python', 'React', 'Node.js', 'Testing'],
+                        datasets: [{
+                            label: 'Skill Gap %',
+                            data: [10, 2, 15, 0, 18],
+                            backgroundColor: '#8b5cf6',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: { maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+                });
+            }
 
-            // Render Content
-            if(page === 'dashboard') renderDashboard();
-            else if(page === 'fresher') renderFresherManagement();
-            else if(page === 'agent') renderAgentMonitoring();
-            else if(page === 'reports') renderReports();
-            else if(page === 'insights') renderInsights();
-            else if(page === 'settings') renderSettings();
-        }
-
-        // --- AI Chat Logic ---
-        function toggleAIChat() {
-            const modal = document.getElementById('ai-modal');
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-            } else {
-                modal.classList.add('hidden');
+            const lineCtx = document.getElementById('lineChart');
+            if(lineCtx && window.freshersData.length > 0) {
+                window.chartInstances.line = new Chart(lineCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Feb 09', 'Feb 11', 'Feb 13', 'Feb 15'],
+                        datasets: [
+                            { label: 'Quizzes', data: [12, 19, 15, 22], borderColor: '#3b82f6', tension: 0.4 },
+                            { label: 'Coding', data: [8, 12, 10, 15], borderColor: '#10b981', tension: 0.4 }
+                        ]
+                    },
+                    options: { maintainAspectRatio: false }
+                });
             }
         }
 
-        function sendMessage() {
+        // --- Navigation Logic ---
+        window.navigate = function(page) {
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const navBtn = document.getElementById(`nav-${page}`);
+            if(navBtn) navBtn.classList.add('active');
+
+            if(page === 'dashboard') window.renderDashboard();
+            else if(page === 'fresher') window.renderFresherManagement();
+            else if(page === 'agent') window.renderAgentMonitoring();
+            else if(page === 'reports') window.renderReports();
+            else if(page === 'insights') window.renderInsights();
+            else if(page === 'settings') window.renderSettings();
+        }
+
+        // --- Feature: Test LIVE DB Connection ---
+        window.simulateEmployeeLogin = async function() {
+            if (!window.db || !window.dbPath) {
+                alert("Database not connected correctly. Please check configurations.");
+                return;
+            }
+
+            const btn = document.getElementById('simulate-login-btn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Pushing...`;
+            lucide.createIcons();
+
+            // Create dynamic mocked user data
+            const firstNames = ["Sarah", "John", "Emma", "Liam", "Olivia", "Noah", "Ava", "William", "Sophia", "James"];
+            const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis"];
+            const randomQuiz = Math.floor(Math.random() * 40) + 60; // 60-100
+            
+            // This is the EXACT format your live website should send to Firebase
+            const newEmployee = {
+                id: 'EMP' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
+                name: `${firstNames[Math.floor(Math.random()*firstNames.length)]} ${lastNames[Math.floor(Math.random()*lastNames.length)]}`,
+                dept: ['IT', 'Data Science', 'QA', 'Design'][Math.floor(Math.random() * 4)],
+                joinDate: new Date().toISOString().split('T')[0],
+                quiz: randomQuiz,
+                skills: ['JavaScript', 'HTML', 'CSS', 'Python', 'Java'].sort(() => 0.5 - Math.random()).slice(0, 3),
+                progress: Math.floor(Math.random() * 50) + 50,
+                status: randomQuiz > 85 ? 'Excellent' : randomQuiz < 70 ? 'At Risk' : 'Active'
+            };
+
+            try {
+                // Pushes directly to the resolved database path
+                await addDoc(window.dbPath, newEmployee);
+                
+                // Show Success Message
+                btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i> Data Pushed!`;
+                btn.classList.add('bg-green-600');
+                btn.classList.remove('bg-blue-600');
+                lucide.createIcons();
+                
+                setTimeout(() => { 
+                    btn.innerHTML = originalHTML; 
+                    btn.classList.remove('bg-green-600');
+                    btn.classList.add('bg-blue-600');
+                    lucide.createIcons(); 
+                }, 2000);
+            } catch (error) {
+                console.error("Error pushing to live DB:", error);
+                alert("Error pushing to DB. Check console and make sure your Firestore Security Rules allow writes.");
+                btn.innerHTML = originalHTML;
+                lucide.createIcons();
+            }
+        };
+
+        // --- AI Chat & Downloads ---
+        window.toggleAIChat = function() {
+            const modal = document.getElementById('ai-modal');
+            modal.classList.toggle('hidden');
+        }
+
+        window.sendMessage = function() {
             const input = document.getElementById('chat-input');
             const message = input.value.trim();
             if (!message) return;
 
             const chatContainer = document.getElementById('chat-messages');
-
-            // User Message
             chatContainer.innerHTML += `
                 <div class="flex gap-3 flex-row-reverse animate-fade-in">
                     <div class="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center flex-shrink-0">
@@ -708,15 +859,19 @@
             input.value = '';
             chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            // Simulated AI Response
             setTimeout(() => {
-                let response = "I understand you're asking about that. Based on the current data, IT department performance is strong, but there are risks in QA.";
-                
+                let response = `I currently monitor ${window.freshersData.length} registered users in your database.`;
                 const lowerMsg = message.toLowerCase();
+                
                 if (lowerMsg.includes('risk') || lowerMsg.includes('alert')) {
-                    response = "Based on my analysis: <br><strong>1. Rahul Verma (QA)</strong> is at High Risk (72%) due to low completion rates.<br><strong>2. Ravi Kumar (IT)</strong> is at Medium Risk due to declining quiz scores.";
+                    const atRisk = window.freshersData.filter(f=>f.status === 'At Risk');
+                    response = `Based on the live database, there are ${atRisk.length} users At Risk right now: <br>` + 
+                               atRisk.map(f => `<strong>${f.name} (${f.dept})</strong>`).join(', ');
                 } else if (lowerMsg.includes('top') || lowerMsg.includes('best')) {
-                    response = "The top performer is <strong>Priya Sharma</strong> from IT with a 92% average score and 100% progress.";
+                    const sorted = [...window.freshersData].sort((a,b) => b.quiz - a.quiz);
+                    if(sorted.length > 0) {
+                        response = `The top performer is currently <strong>${sorted[0].name}</strong> with a ${sorted[0].quiz}% average score.`;
+                    }
                 }
 
                 chatContainer.innerHTML += `
@@ -733,110 +888,42 @@
                 chatContainer.scrollTop = chatContainer.scrollHeight;
             }, 1000);
         }
-        
-        // Handle 'Enter' key in chat
-        document.getElementById('chat-input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
+
+        window.downloadReport = function() {
+            let csvContent = "data:text/csv;charset=utf-8,ID,Name,Department,Join Date,Quiz Score,Status,Progress\n";
+            window.freshersData.forEach(f => {
+                let row = `${f.id},${f.name},${f.dept},${f.joinDate},${f.quiz},${f.status},${f.progress}%`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Maverick_Live_Performance_Report.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- Search functionality ---
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            window.navigate('fresher'); // switch to fresher tab
+            
+            const filteredData = window.freshersData.filter(f => 
+                (f.name && f.name.toLowerCase().includes(searchTerm)) || 
+                (f.id && f.id.toLowerCase().includes(searchTerm)) ||
+                (f.dept && f.dept.toLowerCase().includes(searchTerm)) ||
+                (f.skills && f.skills.some(s => s.toLowerCase().includes(searchTerm)))
+            );
+            window.renderFresherManagement(filteredData);
         });
 
-        // Initialize App
+        // Initialize Application DB
         document.addEventListener('DOMContentLoaded', () => {
-            navigate('dashboard');
+            initializeRealtimeData();
         });
-        // Add this to your script section
-document.querySelector('input[type="text"]').addEventListener('input', function(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    
-    // Switch to Fresher Management view to show results
-    navigate('fresher');
-    
-    const container = document.getElementById('page-content');
-    const filteredData = freshersData.filter(f => 
-        f.name.toLowerCase().includes(searchTerm) || 
-        f.id.toLowerCase().includes(searchTerm) ||
-        f.dept.toLowerCase().includes(searchTerm) ||
-        f.skills.some(s => s.toLowerCase().includes(searchTerm))
-    );
 
-    // Update the UI with filtered results
-    if (filteredData.length > 0) {
-        let cardsHtml = filteredData.map(f => {
-            const statusColor = f.status === 'Excellent' ? 'bg-green-100 text-green-700' : 
-                               f.status === 'At Risk' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700';
-            return `
-            <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md transition-shadow">
-                <div class="flex justify-between items-start mb-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center text-lg font-bold text-slate-600">
-                            ${f.name.split(' ').map(n=>n[0]).join('')}
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-slate-800">${f.name}</h3>
-                            <p class="text-xs text-slate-500">${f.id}</p>
-                        </div>
-                    </div>
-                    <span class="px-2 py-1 rounded-full text-xs font-bold ${statusColor}">${f.status}</span>
-                </div>
-                <div class="grid grid-cols-2 gap-4 text-sm mb-4">
-                    <div><p class="text-slate-500">Department</p><p class="font-medium">${f.dept}</p></div>
-                    <div><p class="text-slate-500">Quiz Avg</p><p class="font-medium">${f.quiz}%</p></div>
-                </div>
-                <div class="mb-4">
-                    <p class="text-slate-500 text-xs mb-2">Skills</p>
-                    <div class="flex flex-wrap gap-2">
-                        ${f.skills.map(s => `<span class="px-2 py-1 bg-slate-100 rounded text-xs text-slate-600">${s}</span>`).join('')}
-                    </div>
-                </div>
-                <div>
-                    <div class="flex justify-between text-xs mb-1"><span>Overall Progress</span><span>${f.progress}%</span></div>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${f.progress}%"></div>
-                    </div>
-                </div>
-            </div>`;
-        }).join('');
-
-        container.innerHTML = `
-            <div class="animate-fade-in space-y-6">
-                <h2 class="text-2xl font-bold text-slate-800">Search Results for "${searchTerm}"</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">${cardsHtml}</div>
-            </div>`;
-    } else {
-        container.innerHTML = `<div class="p-20 text-center text-slate-500">No results found for "${searchTerm}"</div>`;
-    }
-    lucide.createIcons();
-});
-            function downloadReport() {
-    // Prepare CSV Header
-    let csvContent = "data:text/csv;charset=utf-8,ID,Name,Department,Join Date,Quiz Score,Status,Progress\n";
-    
-    // Add Fresher data to CSV
-    freshersData.forEach(f => {
-        let row = `${f.id},${f.name},${f.dept},${f.joinDate},${f.quiz},${f.status},${f.progress}%`;
-        csvContent += row + "\n";
-    });
-
-    // Create a temporary link to download
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "Maverick_Performance_Report.csv");
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
     </script>
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
