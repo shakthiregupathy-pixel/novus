@@ -211,12 +211,12 @@
         // Get this from Firebase Console -> Project Settings -> General -> Web Apps
         // =========================================================================
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.firebasestorage.app",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+            authDomain: "novus-9dfb8.firebaseapp.com",
+            projectId: "novus-9dfb8",
+            storageBucket: "novus-9dfb8.appspot.com",
+            messagingSenderId: "641276518161",
+            appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
         };
 
         // --- Firebase Database Integration ---
@@ -228,7 +228,7 @@
                 // Smart Fallback Mechanism:
                 // If you haven't entered your API key yet, it will use the preview environment's built-in DB so it doesn't crash.
                 // Once you deploy this to your website with your real config, it will seamlessly switch to your Live DB.
-                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo") {
                     activeConfig = firebaseConfig; // Use User's custom Live DB
                 } else if (typeof __firebase_config !== 'undefined' && __firebase_config) {
                     activeConfig = JSON.parse(__firebase_config); // Use Preview Mock DB
@@ -927,3 +927,4 @@
     </script>
 </body>
 </html>
+
