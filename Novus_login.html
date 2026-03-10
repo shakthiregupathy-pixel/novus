@@ -147,7 +147,7 @@ box-shadow:0 0 20px #00c6ff;
 </head>
 
 <body>
-<img src="Hexaware.png" class="hexaware-logo" alt="Hexaware Logo">
+<img src="Hexaware.png" class="hexaware-logo" alt="Hexaware Logo" onerror="this.style.display='none'">
 <!-- 🌠 Shooting stars -->
 <div class="shooting-star"></div>
 <div class="shooting-star"></div>
@@ -196,7 +196,8 @@ box-shadow:0 0 20px #00c6ff;
 <input type="text" id="fullName">
 
 <label>Employee ID</label>
-<input type="text" id="loginEmployeeId" placeholder="Enter Employee ID">
+<!-- FIXED: Changed ID to signupEmployeeId to avoid conflicts with login form -->
+<input type="text" id="signupEmployeeId" placeholder="Enter Employee ID">
   
 <label>Email</label>
 <input type="email" id="signupEmail">
@@ -239,19 +240,19 @@ box-shadow:0 0 20px #00c6ff;
 
 <script>
 function showCreate(){
-loginForm.classList.add("hidden");
-createForm.classList.remove("hidden");
-forgotForm.classList.add("hidden");
+document.getElementById("loginForm").classList.add("hidden");
+document.getElementById("createForm").classList.remove("hidden");
+document.getElementById("forgotForm").classList.add("hidden");
 }
 function showForgot(){
-loginForm.classList.add("hidden");
-createForm.classList.add("hidden");
-forgotForm.classList.remove("hidden");
+document.getElementById("loginForm").classList.add("hidden");
+document.getElementById("createForm").classList.add("hidden");
+document.getElementById("forgotForm").classList.remove("hidden");
 }
 function showLogin(){
-loginForm.classList.remove("hidden");
-createForm.classList.add("hidden");
-forgotForm.classList.add("hidden");
+document.getElementById("loginForm").classList.remove("hidden");
+document.getElementById("createForm").classList.add("hidden");
+document.getElementById("forgotForm").classList.add("hidden");
 }
 </script>
 
@@ -277,37 +278,74 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 window.signup = async function(){
-if(signupPassword.value !== confirmPassword.value){
-alert("Passwords do not match!");
-return;
+const signupEmpId = document.getElementById("signupEmployeeId").value.trim();
+
+if(!signupEmpId){
+  alert("Please enter an Employee ID!");
+  return;
 }
+if(document.getElementById("signupPassword").value !== document.getElementById("confirmPassword").value){
+  alert("Passwords do not match!");
+  return;
+}
+
 try{
-const userCredential = await createUserWithEmailAndPassword(auth, signupEmail.value, signupPassword.value);
-await setDoc(doc(db,"users",userCredential.user.uid),{
-name:fullName.value,
-role:signupRole.value
-});
-alert("Account Created!");
-showLogin();
+  const userCredential = await createUserWithEmailAndPassword(auth, document.getElementById("signupEmail").value, document.getElementById("signupPassword").value);
+  
+  // Save the Employee ID along with other data in Firestore
+  await setDoc(doc(db,"users",userCredential.user.uid),{
+    name: document.getElementById("fullName").value,
+    role: document.getElementById("signupRole").value,
+    employee_id: signupEmpId 
+  });
+  
+  alert("Account Created!");
+  showLogin();
 }catch(error){alert(error.message);}
 }
 
 window.login = async function(){
-try{
-const userCredential = await signInWithEmailAndPassword(auth, loginEmail.value, loginPassword.value);
-const docSnap = await getDoc(doc(db,"users",userCredential.user.uid));
-if(!docSnap.exists()){alert("User not found!");return;}
-if(docSnap.data().role !== loginRole.value){alert("Wrong role selected!");return;}
-if(loginRole.value==="admin"){
-window.location.href="AdminDashboard.html";
-}else{
-window.location.href="FresherDashboard.html";
+const loginEmpId = document.getElementById("loginEmployeeId").value.trim();
+
+if(!loginEmpId){
+  alert("Please enter your Employee ID!");
+  return;
 }
+
+try{
+  const userCredential = await signInWithEmailAndPassword(auth, document.getElementById("loginEmail").value, document.getElementById("loginPassword").value);
+  const docSnap = await getDoc(doc(db,"users",userCredential.user.uid));
+  
+  if(!docSnap.exists()){alert("User data not found in database!");return;}
+  
+  const userData = docSnap.data();
+  
+  // 1. Check if the Role matches
+  if(userData.role !== document.getElementById("loginRole").value){alert("Wrong role selected!");return;}
+  
+  // 2. Check if the Employee ID matches the database
+  if(userData.employee_id !== loginEmpId){
+    alert("Incorrect Employee ID entered!");
+    return;
+  }
+
+  // 3. STORE THE EMPLOYEE ID IN SESSION STORAGE (Global State)
+  sessionStorage.setItem("loggedInEmpId", userData.employee_id);
+  sessionStorage.setItem("loggedInName", userData.name);
+  sessionStorage.setItem("loggedInRole", userData.role);
+
+  // 4. Redirect
+  if(document.getElementById("loginRole").value === "admin"){
+    window.location.href="AdminDashboard.html";
+  }else{
+    window.location.href="FresherDashboard.html";
+  }
 }catch(error){alert(error.message);}
 }
 
-window.resetPassword=function(){
-sendPasswordResetEmail(auth, resetEmail.value)
+window.resetPassword = function(){
+const resetEmail = document.getElementById("resetEmail").value;
+sendPasswordResetEmail(auth, resetEmail)
 .then(()=>alert("Reset link sent!"))
 .catch(error=>alert(error.message));
 }
@@ -315,13 +353,3 @@ sendPasswordResetEmail(auth, resetEmail.value)
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
