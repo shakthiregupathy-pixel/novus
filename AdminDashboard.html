@@ -189,7 +189,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, getDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global State Array for dynamically fetched users
         window.freshersData = [];
@@ -231,36 +231,10 @@
 
                 // Listen to Auth State
                 onAuthStateChanged(auth, async (user) => {
+                    window.currentUser = user;
                     if (user) {
                         // 1. UPDATE THE PROFILE SECTION IN TOP RIGHT
-                        const nameDisplay = document.getElementById('admin-name-display');
-                        const roleDisplay = document.getElementById('admin-role-display');
-
-                        if (!user.isAnonymous) {
-                            try {
-                                // Fetch the specific user's document from the "users" collection using their UID
-                                const userDocRef = doc(window.db, 'users', user.uid);
-                                const userDocSnap = await getDoc(userDocRef);
-
-                                if (userDocSnap.exists()) {
-                                    const userData = userDocSnap.data();
-                                    // Set Name and Role from Firebase
-                                    nameDisplay.innerText = userData.name || user.displayName || user.email || 'Admin User';
-                                    roleDisplay.innerText = userData.role ? userData.role : 'Admin';
-                                } else {
-                                    // Fallback if doc is missing but user is logged in
-                                    nameDisplay.innerText = user.displayName || user.email || 'Admin User';
-                                    roleDisplay.innerText = 'Admin';
-                                }
-                            } catch (err) {
-                                console.error("Error fetching admin profile:", err);
-                                nameDisplay.innerText = user.email || 'Admin User';
-                            }
-                        } else {
-                            // If they are anonymous (just testing the page without logging in)
-                            nameDisplay.innerText = 'Test Mode User';
-                            roleDisplay.innerText = 'Guest Viewer';
-                        }
+                        await loadAdminProfile();
 
                         // 2. Fetch Dashboard Data
                         listenToLoggedInEmployees();
@@ -288,6 +262,42 @@
                     `;
                     lucide.createIcons();
                 }
+            }
+        }
+
+        // Fetches the admin profile to display in the top right corner
+        async function loadAdminProfile() {
+            const nameDisplay = document.getElementById('admin-name-display');
+            const roleDisplay = document.getElementById('admin-role-display');
+            try {
+                // 1. Try to use the currently logged-in real user (if they didn't sign in anonymously)
+                if (window.currentUser && !window.currentUser.isAnonymous) {
+                    const userDocRef = doc(window.db, 'users', window.currentUser.uid);
+                    const userDocSnap = await getDoc(userDocRef);
+
+                    if (userDocSnap.exists()) {
+                        const userData = userDocSnap.data();
+                        nameDisplay.innerText = userData.name || window.currentUser.displayName || window.currentUser.email || 'Admin User';
+                        roleDisplay.innerText = userData.role || 'Admin';
+                        return; // Exit if successfully loaded real user
+                    }
+                }
+
+                // 2. Fallback for testing: Search the database for any user with role: "admin"
+                const adminQuery = query(collection(window.db, 'users'), where("role", "==", "admin"));
+                const querySnapshot = await getDocs(adminQuery);
+                
+                if (!querySnapshot.empty) {
+                    // Will automatically grab "Sowndharya" based on your database screenshot!
+                    const adminData = querySnapshot.docs[0].data();
+                    nameDisplay.innerText = adminData.name || 'Admin User';
+                    roleDisplay.innerText = adminData.role || 'Admin';
+                } else {
+                    nameDisplay.innerText = 'Admin User';
+                    roleDisplay.innerText = 'Super Admin';
+                }
+            } catch (err) {
+                console.error("Error fetching admin profile:", err);
             }
         }
 
