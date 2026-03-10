@@ -330,7 +330,35 @@ Highly motivated Software Developer at NOVUS specializing in Frontend Developmen
 <div class="stat"><h2 id="certPercent">0%</h2>Certifications</div>
 <div class="stat"><h2 id="overallPercent">0%</h2>Overall</div>
 </div>
+<!-- ROSIE CHATBOT -->
+<div id="chatbot-container">
 
+<div class="chat-trigger" onclick="toggleChat()">
+<i class="fas fa-robot"></i>
+</div>
+
+<div class="chat-window" id="chatWindow">
+
+<div class="chat-header">
+<span>Rosie Assistant</span>
+<i class="fas fa-times" onclick="toggleChat()" style="cursor:pointer;"></i>
+</div>
+
+<div class="chat-messages" id="chatMsgs">
+<div class="message bot-msg">
+Hello! I am Rosie 🤖 How can I help you?
+</div>
+</div>
+
+<div class="chat-input-area">
+<input id="chatInput" class="chat-input" placeholder="Ask Rosie...">
+<button class="chat-send" onclick="sendMessage()">
+<i class="fas fa-paper-plane"></i>
+</button>
+</div>
+
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -376,7 +404,38 @@ document.getElementById("topInitial").innerText=letter;
 }
 });
 
-async function callGemini(prompt){
+async function callGemini(prompt){function toggleChat(){
+const win=document.getElementById("chatWindow");
+win.style.display=win.style.display==="flex"?"none":"flex";
+}
+
+async function sendMessage(){
+const input=document.getElementById("chatInput");
+const message=input.value.trim();
+
+if(!message) return;
+
+appendMessage(message,"user");
+
+input.value="";
+
+const reply=await callGemini(message);
+
+appendMessage(reply,"bot");
+}
+
+function appendMessage(text,type){
+const chat=document.getElementById("chatMsgs");
+
+const div=document.createElement("div");
+div.className="message "+(type==="user"?"user-msg":"bot-msg");
+
+div.innerText=text;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
+}
 
 const apiKey = "AIzaSyB8opT9wOuUoJ5aAzuNZHCNCVDzd5WKYCE";
 
@@ -402,12 +461,12 @@ const data = await response.json();
 return data.candidates[0].content.parts[0].text;
 
 }
-  const reply = await callGemini(userMessage);
-addMessage("ai", reply);
+  
   
 </script>
 
 </body>
 </html>
+
 
 
