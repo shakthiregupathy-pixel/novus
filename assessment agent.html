@@ -506,16 +506,8 @@ function isPrime(n) {
                 currentUser = user;
                 document.getElementById('userIdentifier').innerText = `ID: ${user.uid.substring(0,8)}...`;
                 
-                // Determine environment: Use your root "users" collection if running locally,
-                // otherwise use the required sandbox path for the preview.
-                if (typeof __app_id === 'undefined') {
-                    // Local/Production Path (matches your Firebase Console screenshot)
-                    progressDocRef = doc(db, 'users', user.uid);
-                } else {
-                    // Canvas Preview Path
-                    progressDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'main');
-                }
-                
+                // Set strict path to private data
+                progressDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'main');
                 listenToProgress();
             }
         });
