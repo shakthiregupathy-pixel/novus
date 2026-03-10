@@ -125,8 +125,8 @@
                 <!-- Profile Section -->
                 <div class="flex items-center gap-3">
                     <div class="text-right hidden md:block">
-                        <p class="text-sm font-bold text-slate-800">Admin User</p>
-                        <p class="text-xs text-slate-500">Super Admin</p>
+                        <p id="admin-name-display" class="text-sm font-bold text-slate-800">Loading...</p>
+                        <p id="admin-role-display" class="text-xs text-slate-500 capitalize">Authenticating</p>
                     </div>
                     <div class="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
                         <i data-lucide="user" class="w-5 h-5 text-slate-500"></i>
@@ -189,7 +189,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global State Array for dynamically fetched users
         window.freshersData = [];
@@ -227,11 +227,50 @@
                 // Set database path to your "users" collection based on your screenshot
                 window.dbPath = collection(window.db, 'users');
                 
-                // Sign in anonymously (requires Anonymous Auth to be enabled in Firebase Console)
-                await signInAnonymously(auth);
+                let initialAuthCheck = false;
 
-                onAuthStateChanged(auth, (user) => {
-                    if (user) listenToLoggedInEmployees();
+                // Listen to Auth State
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        // 1. UPDATE THE PROFILE SECTION IN TOP RIGHT
+                        const nameDisplay = document.getElementById('admin-name-display');
+                        const roleDisplay = document.getElementById('admin-role-display');
+
+                        if (!user.isAnonymous) {
+                            try {
+                                // Fetch the specific user's document from the "users" collection using their UID
+                                const userDocRef = doc(window.db, 'users', user.uid);
+                                const userDocSnap = await getDoc(userDocRef);
+
+                                if (userDocSnap.exists()) {
+                                    const userData = userDocSnap.data();
+                                    // Set Name and Role from Firebase
+                                    nameDisplay.innerText = userData.name || user.displayName || user.email || 'Admin User';
+                                    roleDisplay.innerText = userData.role ? userData.role : 'Admin';
+                                } else {
+                                    // Fallback if doc is missing but user is logged in
+                                    nameDisplay.innerText = user.displayName || user.email || 'Admin User';
+                                    roleDisplay.innerText = 'Admin';
+                                }
+                            } catch (err) {
+                                console.error("Error fetching admin profile:", err);
+                                nameDisplay.innerText = user.email || 'Admin User';
+                            }
+                        } else {
+                            // If they are anonymous (just testing the page without logging in)
+                            nameDisplay.innerText = 'Test Mode User';
+                            roleDisplay.innerText = 'Guest Viewer';
+                        }
+
+                        // 2. Fetch Dashboard Data
+                        listenToLoggedInEmployees();
+                    } else {
+                        // Only sign in anonymously if there is absolutely no user logged in
+                        if (!initialAuthCheck) {
+                            initialAuthCheck = true;
+                            await signInAnonymously(auth);
+                        }
+                    }
                 });
             } catch (error) {
                 console.error("Firebase init failed.", error);
