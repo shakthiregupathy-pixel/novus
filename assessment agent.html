@@ -1,3 +1,5 @@
+Assessment agent hexaware
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -193,12 +195,9 @@
                     <small class="text-muted">Assessment Agent</small>
                 </div>
             </div>
-            <div class="d-flex align-items-center">
-                <span id="syncStatus" class="badge bg-secondary me-3 d-none">Syncing...</span>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-            </div>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto gap-2">
                     <li class="nav-item"><a class="nav-link fw-medium" href="#dashboard">Dashboard</a></li>
@@ -217,9 +216,9 @@
             <div class="hero">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h2 class="fw-bold">Welcome back, Student</h2>
-                        <p class="opacity-75 mb-1">Software Engineering Track • Cloud Sync Active</p>
-                        <small class="opacity-50" id="userIdentifier">Identifying user...</small>
+                        <h2 class="fw-bold">Welcome back, Alex</h2>
+                        <p class="opacity-75 mb-1">Software Engineering Track • Student ID: FR2024‑001</p>
+                        <small class="opacity-50">Last Login: March 10, 2024</small>
                     </div>
                     <div class="col-md-4 text-center mt-3 mt-md-0">
                         <div class="bg-white bg-opacity-10 p-3 rounded-4">
@@ -416,7 +415,7 @@ function isPrime(n) {
 
                         <button class="btn btn-pink w-100" onclick="submitAssignment()">Submit Assignment</button>
                         <div id="assignmentStatus" class="alert alert-success mt-3 d-none">
-                            ✅ Assignment submitted and synced securely to the cloud!
+                            ✅ Assignment submitted and queued for review!
                         </div>
                     </div>
                 </div>
@@ -425,15 +424,11 @@ function isPrime(n) {
 
     </div>
 
-    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- 1. Application Logic (Standard Script - Guarantees UI always works) -->
     <script>
         /* ================= STATE MANAGEMENT ================= */
-        // ⚠️ PASTE YOUR GEMINI API KEY HERE FOR LOCAL TESTING
-        const apiKey = ""; 
-        window.state = {
+        const apiKey = ""; // Provided by environment
+        let state = {
             quizScore: 0,
             codingProgress: 0,
             assignmentSubmitted: false,
@@ -441,31 +436,47 @@ function isPrime(n) {
         };
 
         const quizData = [
-            { question: "Which hook is used to handle side effects in React?", options: ["useState", "useEffect", "useContext", "useReducer"], answer: 1 },
-            { question: "What is the time complexity of searching in a balanced Binary Search Tree?", options: ["O(n)", "O(n log n)", "O(log n)", "O(1)"], answer: 2 },
-            { question: "Which of these is NOT a principle of OOP?", options: ["Encapsulation", "Inheritance", "Polymorphism", "Compilation"], answer: 3 },
-            { question: "In CSS, which property is used to change the background color?", options: ["color", "bgcolor", "background-color", "fill"], answer: 2 },
-            { question: "Which keyword is used to declare a constant variable in JavaScript?", options: ["var", "let", "const", "fixed"], answer: 2 }
+            {
+                question: "Which hook is used to handle side effects in React?",
+                options: ["useState", "useEffect", "useContext", "useReducer"],
+                answer: 1
+            },
+            {
+                question: "What is the time complexity of searching in a balanced Binary Search Tree?",
+                options: ["O(n)", "O(n log n)", "O(log n)", "O(1)"],
+                answer: 2
+            },
+            {
+                question: "Which of these is NOT a principle of OOP?",
+                options: ["Encapsulation", "Inheritance", "Polymorphism", "Compilation"],
+                answer: 3
+            },
+            {
+                question: "In CSS, which property is used to change the background color?",
+                options: ["color", "bgcolor", "background-color", "fill"],
+                answer: 2
+            },
+            {
+                question: "Which keyword is used to declare a constant variable in JavaScript?",
+                options: ["var", "let", "const", "fixed"],
+                answer: 2
+            }
         ];
 
         let currentQuestion = 0;
         let localQuizScore = 0;
         let selectedOption = null;
 
-        /* ================= FAIL-SAFE CLOUD SYNC ================= */
-        // Default dummy function. Will be overridden if Firebase loads successfully.
-        window.saveProgressToCloud = async () => {};
-
         /* ================= GEMINI API HELPERS ================= */
         async function callGemini(prompt, systemPrompt = "You are a helpful teaching assistant.") {
-            if (!apiKey) return "API Key missing! Paste your Gemini API key in the code to use the AI Mentor locally.";
-            
+            // Updated to the supported model for the preview environment
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 systemInstruction: { parts: [{ text: systemPrompt }] }
             };
 
+            // Implement exponential backoff for reliability
             for (let i = 0; i < 5; i++) {
                 try {
                     const response = await fetch(url, {
@@ -483,69 +494,62 @@ function isPrime(n) {
                     throw new Error("Invalid response format");
                 } catch (err) {
                     if (i === 4) return "AI Mentor is currently busy. Please try again in a moment.";
+                    // Retry with delays: 1s, 2s, 4s, 8s, 16s
                     await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
                 }
             }
         }
 
         /* ================= NAVIGATION ================= */
-        function go(page) { location.hash = page; }
+        function go(page) {
+            location.hash = page;
+        }
 
         function showPage() {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const id = location.hash.replace('#', '') || 'dashboard';
             const target = document.getElementById(id);
             if (target) target.classList.add('active');
-            if (id === 'quiz' && !window.state.quizCompleted) startQuiz();
+            
+            if (id === 'quiz' && !state.quizCompleted) startQuiz();
         }
 
         window.addEventListener('hashchange', showPage);
-        window.addEventListener('load', () => { showPage(); window.calculateAssessment(); });
+        window.addEventListener('load', () => {
+            showPage();
+            calculateAssessment();
+        });
 
         /* ================= CORE LOGIC ================= */
-        window.calculateAssessment = function() {
-            document.getElementById("quizScoreDisplay").innerText = `${window.state.quizScore} / 100`;
-            document.getElementById("codingProgressText").innerText = `${window.state.codingProgress}%`;
-            document.getElementById("codingProgressBar").style.width = `${window.state.codingProgress}%`;
 
-            const overall = Math.round((window.state.quizScore + window.state.codingProgress + (window.state.assignmentSubmitted ? 100 : 0)) / 3);
+        function calculateAssessment() {
+            document.getElementById("quizScoreDisplay").innerText = `${state.quizScore} / 100`;
+            document.getElementById("codingProgressText").innerText = `${state.codingProgress}%`;
+            document.getElementById("codingProgressBar").style.width = `${state.codingProgress}%`;
+
+            const overall = Math.round((state.quizScore + state.codingProgress + (state.assignmentSubmitted ? 100 : 0)) / 3);
             
             document.getElementById("overallProgressHeader").innerText = `${overall}%`;
             document.getElementById("assessmentScore").innerText = `${overall}%`;
             document.getElementById("assessmentBar").style.width = `${overall}%`;
 
-            if (window.state.quizCompleted) {
+            if (state.quizCompleted) {
                 document.getElementById("check-quiz").className = "check-done";
                 document.getElementById("quizStatusBadge").innerText = "Completed";
                 document.getElementById("quizStatusBadge").className = "badge bg-success";
                 document.getElementById("quizAlert").className = "alert alert-success py-2 small mb-3";
                 document.getElementById("quizAlert").innerText = "✔ Daily quiz finished";
-            } else {
-                document.getElementById("check-quiz").className = "check-pending";
-                document.getElementById("quizStatusBadge").innerText = "Pending";
-                document.getElementById("quizStatusBadge").className = "badge bg-secondary";
-                document.getElementById("quizAlert").className = "alert alert-light border py-2 small mb-3";
-                document.getElementById("quizAlert").innerText = "⏳ Quiz not started yet";
             }
-
-            if (window.state.codingProgress >= 100) {
+            if (state.codingProgress >= 100) {
                 document.getElementById("check-coding").className = "check-done";
                 document.getElementById("codingStatusBadge").innerText = "Completed";
                 document.getElementById("codingStatusBadge").className = "badge bg-success";
-            } else if (window.state.codingProgress > 0) {
-                document.getElementById("check-coding").className = "check-pending";
+            } else if (state.codingProgress > 0) {
                 document.getElementById("codingStatusBadge").innerText = "In Progress";
                 document.getElementById("codingStatusBadge").className = "badge bg-warning text-dark";
-            } else {
-                document.getElementById("check-coding").className = "check-pending";
-                document.getElementById("codingStatusBadge").innerText = "Not Started";
-                document.getElementById("codingStatusBadge").className = "badge bg-warning text-dark";
             }
-
-            if (window.state.assignmentSubmitted) {
+            if (state.assignmentSubmitted) {
                 document.getElementById("check-assignment").className = "check-done";
-            } else {
-                document.getElementById("check-assignment").className = "check-pending";
             }
 
             const feedbackBox = document.getElementById("assessmentFeedback");
@@ -562,11 +566,13 @@ function isPrime(n) {
                 feedbackBox.className = "assessment-feedback alert-danger text-danger";
                 feedbackBox.innerText = "Low activity detected. Please complete pending modules.";
             }
-        };
+        }
 
         /* ================= QUIZ ENGINE ================= */
         function startQuiz() {
-            currentQuestion = 0; localQuizScore = 0; selectedOption = null;
+            currentQuestion = 0;
+            localQuizScore = 0;
+            selectedOption = null;
             document.getElementById("qTotal").innerText = quizData.length;
             document.getElementById("quizResult").classList.add("d-none");
             loadQuestion();
@@ -602,38 +608,47 @@ function isPrime(n) {
         }
 
         function nextQuestion() {
-            if (selectedOption === null) return;
+            if (selectedOption === null) return alert("Please select an answer");
             if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
-            selectedOption = null; currentQuestion++;
+            selectedOption = null;
+            currentQuestion++;
             loadQuestion();
         }
 
         function submitQuiz() {
-            if (selectedOption === null) return;
+            if (selectedOption === null) return alert("Please select an answer");
             if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
             
             const percentage = Math.round((localQuizScore / quizData.length) * 100);
-            window.state.quizScore = percentage;
-            window.state.quizCompleted = true;
-            window.saveProgressToCloud();
+            state.quizScore = percentage;
+            state.quizCompleted = true;
             
             document.getElementById("quizResult").classList.remove("d-none");
             document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
+            
+            calculateAssessment();
             setTimeout(() => go('dashboard'), 1500);
         }
 
         /* ================= CODING CHALLENGE ENGINE ================= */
         function runCode() {
             const code = document.getElementById('codeEditor').value;
+            const consoleBox = document.getElementById('codingConsole');
             const output = document.getElementById('consoleOutput');
-            document.getElementById('codingConsole').classList.remove('d-none');
+            consoleBox.classList.remove('d-none');
             output.innerHTML = "";
 
             try {
                 const testFunc = new Function(`return ${code}`)();
-                const tests = [{ input: 1, expected: false }, { input: 2, expected: true }, { input: 4, expected: false }, { input: 7, expected: true }, { input: 13, expected: true }];
+                const tests = [
+                    { input: 1, expected: false },
+                    { input: 2, expected: true },
+                    { input: 4, expected: false },
+                    { input: 7, expected: true },
+                    { input: 13, expected: true }
+                ];
+
                 let passedCount = 0;
-                
                 tests.forEach(t => {
                     const result = testFunc(t.input);
                     const status = result === t.expected ? "✅ PASSED" : "❌ FAILED";
@@ -655,18 +670,28 @@ function isPrime(n) {
         }
 
         async function askAICoding() {
+            const panel = document.getElementById('aiCodingPanel');
             const responseDiv = document.getElementById('aiCodingResponse');
             const code = document.getElementById('codeEditor').value;
-            document.getElementById('aiCodingPanel').classList.remove('d-none');
+            
+            panel.classList.remove('d-none');
             responseDiv.innerHTML = '<span class="loading-dots">Analyzing code</span>';
 
-            const prompt = `I am solving a JS challenge to fix 'isPrime(n)'. It should return false for numbers <= 1, and true for primes. My code: \`\`\`javascript\n${code}\n\`\`\` Explain what is wrong and give a hint.`;
-            responseDiv.innerText = await callGemini(prompt, "You are an encouraging technical mentor. Focus on logical hints.");
+            const prompt = `I am trying to solve a coding challenge: Fix a function 'isPrime(n)' which should return true if n is prime and false otherwise (including for n <= 1). 
+            My current code is: 
+            \`\`\`javascript
+            ${code}
+            \`\`\`
+            Can you explain what is wrong and give me a hint without giving away the full answer?`;
+
+            const hint = await callGemini(prompt, "You are an encouraging technical mentor. Focus on logical hints rather than just rewriting the code.");
+            responseDiv.innerText = hint;
         }
 
         function submitCode() {
-            window.state.codingProgress = 100;
-            window.saveProgressToCloud();
+            state.codingProgress = 100;
+            calculateAssessment();
+            alert("Solution successfully submitted!");
             go('dashboard');
         }
 
@@ -674,126 +699,49 @@ function isPrime(n) {
         async function analyzeAnswers() {
             const q1 = document.getElementById("assign-q1").value;
             const q2 = document.getElementById("assign-q2").value;
-            if (!q1 && !q2) return;
-
+            const panel = document.getElementById('aiReviewPanel');
             const reviewText = document.getElementById('aiReviewText');
-            document.getElementById('aiReviewPanel').classList.remove('d-none');
+
+            if (!q1 && !q2) return alert("Please type something first!");
+
+            panel.classList.remove('d-none');
             reviewText.innerHTML = '<span class="loading-dots">Reviewing your reflection</span>';
 
-            const prompt = `Review this student's answers regarding SOLID principles and System Design. Q1: "${q1}". Q2: "${q2}". Be constructive.`;
-            reviewText.innerText = await callGemini(prompt, "You are a specialized professor in Software Architecture. Be concise but deep.");
+            const prompt = `A student just watched a video on Software Engineering Best Practices (SOLID principles and System Design). 
+            Question 1: Principles discussed? Student Answer: "${q1}"
+            Question 2: Application of SOLID? Student Answer: "${q2}"
+            Provide a short, constructive review of their answers. Mention if they missed key points like Single Responsibility or Open/Closed if they didn't include them.`;
+
+            const feedback = await callGemini(prompt, "You are a specialized professor in Software Architecture. Be concise but deep.");
+            reviewText.innerText = feedback;
         }
 
         function submitAssignment() {
-            if (!document.getElementById("assign-q1").value || !document.getElementById("assign-q2").value) return;
-            window.state.assignmentSubmitted = true;
-            window.saveProgressToCloud();
+            const q1 = document.getElementById("assign-q1").value;
+            const q2 = document.getElementById("assign-q2").value;
             
+            if (!q1 || !q2) return alert("Please answer all questions before submitting.");
+            
+            state.assignmentSubmitted = true;
             document.getElementById("assignmentStatus").classList.remove("d-none");
-            setTimeout(() => { document.getElementById("assignmentStatus").classList.add("d-none"); go('dashboard'); }, 2000);
+            calculateAssessment();
+            setTimeout(() => {
+                document.getElementById("assignmentStatus").classList.add("d-none");
+                go('dashboard');
+            }, 2000);
         }
 
         function resetAll() {
-            window.state = { quizScore: 0, codingProgress: 0, assignmentSubmitted: false, quizCompleted: false };
-            window.saveProgressToCloud();
+            state = { quizScore: 0, codingProgress: 0, assignmentSubmitted: false, quizCompleted: false };
+            document.querySelectorAll('.check-done').forEach(el => el.className = 'check-pending');
             document.getElementById("assign-q1").value = "";
             document.getElementById("assign-q2").value = "";
             document.getElementById("submitCodeBtn").disabled = true;
             document.getElementById("codingConsole").classList.add("d-none");
             document.getElementById("aiCodingPanel").classList.add("d-none");
             document.getElementById("aiReviewPanel").classList.add("d-none");
-            window.calculateAssessment();
-        }
-
-        // Export globally so HTML bindings work seamlessly
-        window.go = go;
-        window.nextQuestion = nextQuestion;
-        window.submitQuiz = submitQuiz;
-        window.runCode = runCode;
-        window.submitCode = submitCode;
-        window.askAICoding = askAICoding;
-        window.analyzeAnswers = analyzeAnswers;
-        window.submitAssignment = submitAssignment;
-        window.resetAll = resetAll;
-    </script>
-
-    <!-- 2. Firebase Cloud Sync (Module - Runs silently in background) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        let currentUser = null;
-        let progressDocRef = null;
-
-        try {
-            // ⚠️ PASTE YOUR FIREBASE CONFIG HERE FOR LOCAL TESTING
-            const localFirebaseConfig = {
-                // apiKey: "YOUR_API_KEY",
-                // authDomain: "novus-9dfb8.firebaseapp.com",
-                // projectId: "novus-9dfb8",
-                // storageBucket: "novus-9dfb8.appspot.com",
-                // messagingSenderId: "...",
-                // appId: "..."
-            };
-
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig;
-            
-            if (Object.keys(firebaseConfig).length > 0) {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-assessment-app';
-                const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                const db = getFirestore(app);
-
-                const initAuth = async () => {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) { console.error("Auth Error:", error); }
-                };
-
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        currentUser = user;
-                        document.getElementById('userIdentifier').innerText = `ID: ${user.uid.substring(0,8)}...`;
-                        
-                        if (typeof __app_id === 'undefined') {
-                            progressDocRef = doc(db, 'users', user.uid);
-                        } else {
-                            progressDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'main');
-                        }
-                        
-                        document.getElementById('syncStatus').classList.remove('d-none');
-                        onSnapshot(progressDocRef, (docSnap) => {
-                            if (docSnap.exists()) {
-                                window.state = { ...window.state, ...docSnap.data() };
-                            }
-                            window.calculateAssessment();
-                            setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 800);
-                        }, (error) => {
-                            console.error("Firestore Error:", error);
-                            document.getElementById('syncStatus').classList.add('d-none');
-                        });
-                    }
-                });
-
-                initAuth();
-
-                // Connect the UI to the Database seamlessly
-                window.saveProgressToCloud = async () => {
-                    if (!currentUser || !progressDocRef) return;
-                    document.getElementById('syncStatus').classList.remove('d-none');
-                    try {
-                        await setDoc(progressDocRef, window.state, { merge: true });
-                        setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 500);
-                    } catch (error) { console.error("Error saving progress:", error); }
-                };
-            }
-        } catch (e) {
-            console.error("Firebase sync module offline:", e);
+            calculateAssessment();
+            alert("Progress cleared.");
         }
     </script>
 </body>
