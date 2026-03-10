@@ -428,16 +428,12 @@ function isPrime(n) {
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Application Logic (Module for Firebase) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
+    <!-- 1. Application Logic (Standard Script - Guarantees UI always works) -->
+    <script>
         /* ================= STATE MANAGEMENT ================= */
         // ⚠️ PASTE YOUR GEMINI API KEY HERE FOR LOCAL TESTING
         const apiKey = ""; 
-        let state = {
+        window.state = {
             quizScore: 0,
             codingProgress: 0,
             assignmentSubmitted: false,
@@ -457,86 +453,8 @@ function isPrime(n) {
         let selectedOption = null;
 
         /* ================= FAIL-SAFE CLOUD SYNC ================= */
-        // Default dummy function if Firebase fails or isn't configured locally
-        let saveProgressToCloud = async () => {};
-
-        /* ================= FIREBASE SETUP ================= */
-        let currentUser = null;
-        let progressDocRef = null;
-
-        try {
-            // ⚠️ PASTE YOUR FIREBASE CONFIG HERE FOR LOCAL TESTING
-            const localFirebaseConfig = {
-                // apiKey: "YOUR_API_KEY",
-                // authDomain: "novus-9dfb8.firebaseapp.com",
-                // projectId: "novus-9dfb8",
-                // storageBucket: "novus-9dfb8.appspot.com",
-                // messagingSenderId: "...",
-                // appId: "..."
-            };
-
-            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig;
-            
-            // Only initialize Firebase if a config is actually provided
-            if (Object.keys(firebaseConfig).length > 0) {
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-assessment-app';
-                const app = initializeApp(firebaseConfig);
-                const auth = getAuth(app);
-                const db = getFirestore(app);
-
-                const initAuth = async () => {
-                    try {
-                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                            await signInWithCustomToken(auth, __initial_auth_token);
-                        } else {
-                            await signInAnonymously(auth);
-                        }
-                    } catch (error) { console.error("Auth Error:", error); }
-                };
-
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        currentUser = user;
-                        document.getElementById('userIdentifier').innerText = `ID: ${user.uid.substring(0,8)}...`;
-                        
-                        // Local dev uses root 'users' path, Sandbox uses strict path
-                        if (typeof __app_id === 'undefined') {
-                            progressDocRef = doc(db, 'users', user.uid);
-                        } else {
-                            progressDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'main');
-                        }
-                        
-                        document.getElementById('syncStatus').classList.remove('d-none');
-                        onSnapshot(progressDocRef, (docSnap) => {
-                            if (docSnap.exists()) {
-                                state = { ...state, ...docSnap.data() };
-                            }
-                            calculateAssessment();
-                            setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 800);
-                        }, (error) => {
-                            console.error("Firestore Error:", error);
-                            document.getElementById('syncStatus').classList.add('d-none');
-                        });
-                    }
-                });
-
-                initAuth();
-
-                // Override dummy function with actual saving logic now that Firebase is loaded
-                saveProgressToCloud = async () => {
-                    if (!currentUser || !progressDocRef) return;
-                    document.getElementById('syncStatus').classList.remove('d-none');
-                    try {
-                        await setDoc(progressDocRef, state, { merge: true });
-                        setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 500);
-                    } catch (error) { console.error("Error saving progress:", error); }
-                };
-            } else {
-                console.warn("⚠️ No Firebase config found. Running purely locally without database sync.");
-            }
-        } catch (e) {
-            console.error("Firebase init failed (running locally):", e);
-        }
+        // Default dummy function. Will be overridden if Firebase loads successfully.
+        window.saveProgressToCloud = async () => {};
 
         /* ================= GEMINI API HELPERS ================= */
         async function callGemini(prompt, systemPrompt = "You are a helpful teaching assistant.") {
@@ -578,25 +496,25 @@ function isPrime(n) {
             const id = location.hash.replace('#', '') || 'dashboard';
             const target = document.getElementById(id);
             if (target) target.classList.add('active');
-            if (id === 'quiz' && !state.quizCompleted) startQuiz();
+            if (id === 'quiz' && !window.state.quizCompleted) startQuiz();
         }
 
         window.addEventListener('hashchange', showPage);
-        window.addEventListener('load', () => { showPage(); calculateAssessment(); });
+        window.addEventListener('load', () => { showPage(); window.calculateAssessment(); });
 
         /* ================= CORE LOGIC ================= */
-        function calculateAssessment() {
-            document.getElementById("quizScoreDisplay").innerText = `${state.quizScore} / 100`;
-            document.getElementById("codingProgressText").innerText = `${state.codingProgress}%`;
-            document.getElementById("codingProgressBar").style.width = `${state.codingProgress}%`;
+        window.calculateAssessment = function() {
+            document.getElementById("quizScoreDisplay").innerText = `${window.state.quizScore} / 100`;
+            document.getElementById("codingProgressText").innerText = `${window.state.codingProgress}%`;
+            document.getElementById("codingProgressBar").style.width = `${window.state.codingProgress}%`;
 
-            const overall = Math.round((state.quizScore + state.codingProgress + (state.assignmentSubmitted ? 100 : 0)) / 3);
+            const overall = Math.round((window.state.quizScore + window.state.codingProgress + (window.state.assignmentSubmitted ? 100 : 0)) / 3);
             
             document.getElementById("overallProgressHeader").innerText = `${overall}%`;
             document.getElementById("assessmentScore").innerText = `${overall}%`;
             document.getElementById("assessmentBar").style.width = `${overall}%`;
 
-            if (state.quizCompleted) {
+            if (window.state.quizCompleted) {
                 document.getElementById("check-quiz").className = "check-done";
                 document.getElementById("quizStatusBadge").innerText = "Completed";
                 document.getElementById("quizStatusBadge").className = "badge bg-success";
@@ -610,11 +528,11 @@ function isPrime(n) {
                 document.getElementById("quizAlert").innerText = "⏳ Quiz not started yet";
             }
 
-            if (state.codingProgress >= 100) {
+            if (window.state.codingProgress >= 100) {
                 document.getElementById("check-coding").className = "check-done";
                 document.getElementById("codingStatusBadge").innerText = "Completed";
                 document.getElementById("codingStatusBadge").className = "badge bg-success";
-            } else if (state.codingProgress > 0) {
+            } else if (window.state.codingProgress > 0) {
                 document.getElementById("check-coding").className = "check-pending";
                 document.getElementById("codingStatusBadge").innerText = "In Progress";
                 document.getElementById("codingStatusBadge").className = "badge bg-warning text-dark";
@@ -624,7 +542,7 @@ function isPrime(n) {
                 document.getElementById("codingStatusBadge").className = "badge bg-warning text-dark";
             }
 
-            if (state.assignmentSubmitted) {
+            if (window.state.assignmentSubmitted) {
                 document.getElementById("check-assignment").className = "check-done";
             } else {
                 document.getElementById("check-assignment").className = "check-pending";
@@ -644,7 +562,7 @@ function isPrime(n) {
                 feedbackBox.className = "assessment-feedback alert-danger text-danger";
                 feedbackBox.innerText = "Low activity detected. Please complete pending modules.";
             }
-        }
+        };
 
         /* ================= QUIZ ENGINE ================= */
         function startQuiz() {
@@ -695,9 +613,9 @@ function isPrime(n) {
             if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
             
             const percentage = Math.round((localQuizScore / quizData.length) * 100);
-            state.quizScore = percentage;
-            state.quizCompleted = true;
-            saveProgressToCloud();
+            window.state.quizScore = percentage;
+            window.state.quizCompleted = true;
+            window.saveProgressToCloud();
             
             document.getElementById("quizResult").classList.remove("d-none");
             document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
@@ -747,8 +665,8 @@ function isPrime(n) {
         }
 
         function submitCode() {
-            state.codingProgress = 100;
-            saveProgressToCloud();
+            window.state.codingProgress = 100;
+            window.saveProgressToCloud();
             go('dashboard');
         }
 
@@ -768,26 +686,26 @@ function isPrime(n) {
 
         function submitAssignment() {
             if (!document.getElementById("assign-q1").value || !document.getElementById("assign-q2").value) return;
-            state.assignmentSubmitted = true;
-            saveProgressToCloud();
+            window.state.assignmentSubmitted = true;
+            window.saveProgressToCloud();
             
             document.getElementById("assignmentStatus").classList.remove("d-none");
             setTimeout(() => { document.getElementById("assignmentStatus").classList.add("d-none"); go('dashboard'); }, 2000);
         }
 
         function resetAll() {
-            state = { quizScore: 0, codingProgress: 0, assignmentSubmitted: false, quizCompleted: false };
-            saveProgressToCloud();
+            window.state = { quizScore: 0, codingProgress: 0, assignmentSubmitted: false, quizCompleted: false };
+            window.saveProgressToCloud();
             document.getElementById("assign-q1").value = "";
             document.getElementById("assign-q2").value = "";
             document.getElementById("submitCodeBtn").disabled = true;
             document.getElementById("codingConsole").classList.add("d-none");
             document.getElementById("aiCodingPanel").classList.add("d-none");
             document.getElementById("aiReviewPanel").classList.add("d-none");
-            calculateAssessment();
+            window.calculateAssessment();
         }
 
-        /* Bind functions globally so HTML onclicks work regardless of Firebase state */
+        // Export globally so HTML bindings work seamlessly
         window.go = go;
         window.nextQuestion = nextQuestion;
         window.submitQuiz = submitQuiz;
@@ -797,7 +715,86 @@ function isPrime(n) {
         window.analyzeAnswers = analyzeAnswers;
         window.submitAssignment = submitAssignment;
         window.resetAll = resetAll;
+    </script>
 
+    <!-- 2. Firebase Cloud Sync (Module - Runs silently in background) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        let currentUser = null;
+        let progressDocRef = null;
+
+        try {
+            // ⚠️ PASTE YOUR FIREBASE CONFIG HERE FOR LOCAL TESTING
+            const localFirebaseConfig = {
+                // apiKey: "YOUR_API_KEY",
+                // authDomain: "novus-9dfb8.firebaseapp.com",
+                // projectId: "novus-9dfb8",
+                // storageBucket: "novus-9dfb8.appspot.com",
+                // messagingSenderId: "...",
+                // appId: "..."
+            };
+
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig;
+            
+            if (Object.keys(firebaseConfig).length > 0) {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-assessment-app';
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) { console.error("Auth Error:", error); }
+                };
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        document.getElementById('userIdentifier').innerText = `ID: ${user.uid.substring(0,8)}...`;
+                        
+                        if (typeof __app_id === 'undefined') {
+                            progressDocRef = doc(db, 'users', user.uid);
+                        } else {
+                            progressDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'main');
+                        }
+                        
+                        document.getElementById('syncStatus').classList.remove('d-none');
+                        onSnapshot(progressDocRef, (docSnap) => {
+                            if (docSnap.exists()) {
+                                window.state = { ...window.state, ...docSnap.data() };
+                            }
+                            window.calculateAssessment();
+                            setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 800);
+                        }, (error) => {
+                            console.error("Firestore Error:", error);
+                            document.getElementById('syncStatus').classList.add('d-none');
+                        });
+                    }
+                });
+
+                initAuth();
+
+                // Connect the UI to the Database seamlessly
+                window.saveProgressToCloud = async () => {
+                    if (!currentUser || !progressDocRef) return;
+                    document.getElementById('syncStatus').classList.remove('d-none');
+                    try {
+                        await setDoc(progressDocRef, window.state, { merge: true });
+                        setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 500);
+                    } catch (error) { console.error("Error saving progress:", error); }
+                };
+            }
+        } catch (e) {
+            console.error("Firebase sync module offline:", e);
+        }
     </script>
 </body>
 </html>
