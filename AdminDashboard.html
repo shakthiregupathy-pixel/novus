@@ -188,13 +188,13 @@
     <!-- MAIN APP LOGIC -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Global State Array for dynamically fetched users
         window.freshersData = [];
         window.db = null;
-        window.dbPath = null; // Will store the correct collection path based on environment
+        window.dbPath = null; 
 
         // Chart instances to prevent canvas reuse errors
         window.chartInstances = { pie: null, bar: null, line: null, agent: null };
@@ -206,10 +206,7 @@
             { name: 'Reporting Agent', status: 'Active', tasks: 45, accuracy: 96, latency: 280, lastActive: '10 min ago' },
         ];
 
-        // =========================================================================
-        // 🛑 IMPORTANT: PASTE YOUR FIREBASE CONFIGURATION HERE 🛑
-        // Replace "YOUR_API_KEY", "YOUR_MESSAGING_SENDER_ID", and "YOUR_APP_ID"
-        // =========================================================================
+        // LIVE DATABASE CREDENTIALS
         const firebaseConfig = {
             apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
             authDomain: "novus-9dfb8.firebaseapp.com",
@@ -217,44 +214,21 @@
             storageBucket: "novus-9dfb8.appspot.com",
             messagingSenderId: "641276518161",
             appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-      };
+        };
 
         // --- Firebase Database Integration ---
         async function initializeRealtimeData() {
             try {
-                let activeConfig;
-                let isCanvasEnv = false;
-
-                // Smart Fallback Mechanism:
-                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo") {
-                    activeConfig = firebaseConfig; // Use User's custom Live DB
-                } else if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    activeConfig = JSON.parse(__firebase_config); // Use Preview Mock DB
-                    isCanvasEnv = true;
-                } else {
-                    throw new Error("No Firebase config available.");
-                }
-
-                // Initialize Firebase
-                const app = initializeApp(activeConfig);
+                // Initialize Firebase directly with your configuration
+                const app = initializeApp(firebaseConfig);
                 const auth = getAuth(app);
                 window.db = getFirestore(app);
 
-                // Authenticate and set up correct data paths depending on the environment
-                if (isCanvasEnv) {
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    window.dbPath = collection(window.db, 'artifacts', appId, 'public', 'data', 'agents');
-                    
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    // This now points to your 'agents' collection!
-                    window.dbPath = collection(window.db, 'agents');
-                    await signInAnonymously(auth);
-                }
+                // Set database path to your "agents" collection
+                window.dbPath = collection(window.db, 'agents');
+                
+                // Sign in anonymously (requires Anonymous Auth to be enabled in Firebase Console)
+                await signInAnonymously(auth);
 
                 onAuthStateChanged(auth, (user) => {
                     if (user) listenToLoggedInEmployees();
@@ -262,7 +236,7 @@
             } catch (error) {
                 console.error("Firebase init failed.", error);
                 
-                // Show graceful error UI instead of breaking
+                // Show graceful error UI
                 window.freshersData = [];
                 const container = document.getElementById('page-content');
                 if (container) {
@@ -270,7 +244,7 @@
                         <div class="flex h-full items-center justify-center flex-col text-slate-500 animate-fade-in">
                             <i data-lucide="database-zap" class="w-16 h-16 mb-4 text-red-400"></i>
                             <h2 class="text-xl font-bold text-slate-700">Database Connection Failed</h2>
-                            <p class="mt-2 text-sm max-w-md text-center">Please copy your API key from Firebase settings and paste it into the <code>firebaseConfig</code> object to connect to the live <strong>agents</strong> database.</p>
+                            <p class="mt-2 text-sm max-w-md text-center">Connection error: ${error.message}</p>
                         </div>
                     `;
                     lucide.createIcons();
