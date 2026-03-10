@@ -4,333 +4,111 @@
 <title>NOVUS Dashboard</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
 <style>
+
 body{
 margin:0;
 font-family:Segoe UI;
 background: radial-gradient(circle at 20% 30%, #0f2027, #070b1a 60%);
 color:white;
-overflow-x: hidden;
 }
 
-.top-nav{
+#chatbot-container{
+position:fixed;
+bottom:30px;
+right:30px;
+z-index:1000;
+}
+
+.chat-trigger{
+width:60px;
 height:60px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 20px;
-background:rgba(255,255,255,0.05);
-backdrop-filter:blur(12px);
-position: sticky;
-top: 0;
-z-index: 100;
-}
-
-.logo{
-font-size:20px;
-font-weight:bold;
-background:linear-gradient(90deg,#00d4ff,#a855f7);
--webkit-background-clip:text;
-color:transparent;
-}
-
-.container{ display:flex; }
-
-.sidebar{
-width:220px;
-margin:20px;
-border-radius:20px;
-padding-top:10px;
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(18px);
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:
-0 0 14px rgba(0,212,255,0.35),
-0 0 24px rgba(168,85,247,0.25),
-inset 0 0 12px rgba(0,212,255,0.15);
-height: fit-content;
-}
-
-.sidebar a{ text-decoration:none;color:white; }
-
-.sidebar-item{
-padding:16px 20px;
-margin:12px 15px;
-border-radius:14px;
-cursor:pointer;
-background:linear-gradient(135deg,#1f8ac0,#6b5bd6);
-transition:.25s;
-}
-
-.sidebar-item:hover{
-transform:translateX(4px);
-background:linear-gradient(135deg,#2aa9e0,#8b6cff);
-}
-
-.main{
-flex:1;
-padding:40px;
-display:flex;
-justify-content:center;
-}
-
-.profile-card{
-width:100%;
-max-width:900px;
-background:rgba(255,255,255,0.06);
-backdrop-filter:blur(18px);
-padding:35px;
-border-radius:22px;
-border:1px solid rgba(255,255,255,0.12);
-box-shadow:
-0 0 14px rgba(0,212,255,0.3),
-0 0 24px rgba(168,85,247,0.22);
-}
-
-.dashboard-title{
-text-align:center;
-margin-bottom:5px;
-}
-
-.dashboard-title h1{
-margin:0;
-font-size:32px;
-background:linear-gradient(90deg,#00d4ff,#a855f7);
--webkit-background-clip:text;
-color:transparent;
-letter-spacing:1px;
-}
-
-.dashboard-title p{
-margin:6px 0 0;
-font-size:16px;
-opacity:0.85;
-letter-spacing:2px;
-}
-
-.profile-avatar{
-width:90px;
-height:90px;
 border-radius:50%;
 background:linear-gradient(135deg,#00d4ff,#a855f7);
 display:flex;
 align-items:center;
 justify-content:center;
-font-size:30px;
-margin:10px auto 20px;
+cursor:pointer;
+box-shadow:0 0 20px rgba(0,212,255,0.4);
 }
 
-.info-box{
-margin-top:22px;
-padding:20px;
-border-radius:16px;
-background:rgba(255,255,255,0.05);
-border:1px solid rgba(255,255,255,0.08);
-box-shadow:
-0 0 12px rgba(0,212,255,0.22),
-0 0 20px rgba(168,85,247,0.15);
-}
-
-.stats{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:40px;
-margin-top:45px;
-padding:10px 5px;
-}
-
-.stat{
-padding:35px;
+.chat-window{
+position:absolute;
+bottom:80px;
+right:0;
+width:350px;
+height:500px;
+background:rgba(15,32,39,0.95);
 border-radius:20px;
-background:linear-gradient(135deg,#00d4ff33,#a855f733);
-text-align:center;
-border:1px solid rgba(255,255,255,0.1);
-box-shadow:
-0 0 15px rgba(0,212,255,0.28),
-0 0 28px rgba(168,85,247,0.20);
-transition:.3s;
+display:none;
+flex-direction:column;
+overflow:hidden;
 }
 
-.stat:hover{
-transform:translateY(-8px);
+.chat-header{
+padding:15px;
+background:linear-gradient(90deg,#00d4ff33,#a855f733);
+display:flex;
+justify-content:space-between;
 }
 
-.stat h2{
-margin:0;
-font-size:30px;
-margin-bottom:8px;
-}
-  
-/* =========================================
-   ROSIE AI CHATBOT (NOVUS THEMED)
-   ========================================= */
-
-#chatbot-container {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 1000;
+.chat-messages{
+flex:1;
+padding:15px;
+overflow-y:auto;
+display:flex;
+flex-direction:column;
+gap:10px;
 }
 
-.chat-trigger {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #00d4ff, #a855f7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    transition: 0.3s;
+.message{
+padding:10px 14px;
+border-radius:15px;
+max-width:80%;
 }
 
-.chat-trigger:hover { transform: scale(1.1); }
-
-.chat-window {
-    position: absolute;
-    bottom: 80px;
-    right: 0;
-    width: 350px;
-    height: 500px;
-    background: rgba(15, 32, 39, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    display: none;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
-    animation: slideIn 0.3s ease-out;
+.bot-msg{
+background:#ffffff15;
+align-self:flex-start;
 }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+.user-msg{
+background:linear-gradient(135deg,#00d4ffaa,#a855f7aa);
+align-self:flex-end;
 }
 
-.chat-header {
-    background: linear-gradient(90deg, #00d4ff33, #a855f733);
-    padding: 15px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.chat-input-area{
+display:flex;
+padding:10px;
+gap:10px;
 }
 
-.chat-messages {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+.chat-input{
+flex:1;
+padding:10px;
+border-radius:10px;
+border:none;
+outline:none;
 }
 
-.chat-messages::-webkit-scrollbar { width: 4px; }
-.chat-messages::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.3); border-radius: 10px; }
-
-.message {
-    max-width: 80%;
-    padding: 12px 16px;
-    border-radius: 18px;
-    font-size: 14px;
-    line-height: 1.5;
+.chat-send{
+width:40px;
+border:none;
+border-radius:10px;
+background:linear-gradient(135deg,#00d4ff,#a855f7);
+color:white;
+cursor:pointer;
 }
 
-.bot-msg {
-    background: rgba(255, 255, 255, 0.08);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.user-msg {
-    background: linear-gradient(135deg, #00d4ffaa, #a855f7aa);
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-}
-
-.chat-input-area {
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.05);
-    display: flex;
-    gap: 10px;
-}
-
-.chat-input {
-    flex: 1;
-    background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(0, 212, 255, 0.3);
-    border-radius: 12px;
-    padding: 10px 15px;
-    color: white;
-    outline: none;
-}
-
-.chat-send {
-    background: linear-gradient(135deg, #00d4ff, #a855f7);
-    border: none;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-.typing-indicator { font-size: 11px; color: #00d4ff; padding: 0 20px 10px; display: none; }
 </style>
 </head>
 
 <body>
 
-<div class="top-nav">
-<div class="logo">NOVUS</div>
-<div id="topInitial" style="width:35px;height:35px;background:linear-gradient(135deg,#00d4ff,#a855f7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;">U</div>
-</div>
-
-<div class="container">
-
-<div class="sidebar">
-<a href="FresherDashboard.html"><div class="sidebar-item">Dashboard</div></a>
-<a href="foundation.html"><div class="sidebar-item">Onboarding Agent</div></a>
-<a href="assessment agent.html"><div class="sidebar-item">Assessment Agent</div></a>
-<a href="Profileagent.html"><div class="sidebar-item">Profile Agent</div></a>
-<a href="FresherReport.html"><div class="sidebar-item">Report Agent</div></a>
-<a href="interview.html"><div class="sidebar-item">Interview Details</div></a>
-</div>
-
-<div class="main">
-<div class="profile-card">
-
-<div class="dashboard-title">
-<h1>Training Dashboard</h1>
-<p>Mavericks Onboarding</p>
-</div>
-
-<div class="profile-avatar" id="avatarInitial">U</div>
-
-<div class="info-box"><b>Name:</b> <span id="displayName">Loading...</span></div>
-<div class="info-box"><b>Email:</b> <span id="displayEmail">Loading...</span></div>
-<div class="info-box"><b>Employee ID:</b> <span id="displayEmpId">Loading...</span></div>
-
-<div class="info-box">
-<b>Professional Summary:</b>
-<span id="displaySummary">
-Highly motivated Software Developer at NOVUS specializing in Frontend Development, UI/UX design, and AI-driven web applications. Passionate about building scalable and performance-optimized solutions.
-</span>
-</div>
-
-<div class="stats">
-<div class="stat"><h2 id="onboardingPercent">0%</h2>Onboarding</div>
-<div class="stat"><h2 id="assessmentPercent">0%</h2>Assessment</div>
-<div class="stat"><h2 id="certPercent">0%</h2>Certifications</div>
-<div class="stat"><h2 id="overallPercent">0%</h2>Overall</div>
-</div>
-<!-- ROSIE CHATBOT -->
+<!-- CHATBOT -->
 <div id="chatbot-container">
 
 <div class="chat-trigger" onclick="toggleChat()">
@@ -359,79 +137,49 @@ Hello! I am Rosie 🤖 How can I help you?
 
 </div>
 </div>
-</div>
-</div>
-</div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth,onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore,doc,getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-const firebaseConfig={
-apiKey:"AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-authDomain:"novus-9dfb8.firebaseapp.com",
-projectId:"novus-9dfb8"
-};
-
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app);
-const db=getFirestore(app);
-
-onAuthStateChanged(auth,async user=>{
-if(!user){
-window.location.href="Novus_login.html";
-return;
-}
-
-document.getElementById("displayEmpId").innerText=sessionStorage.getItem("loggedInEmpId") || "No ID";
-
-const userDoc=await getDoc(doc(db,"users",user.uid));
-if(userDoc.exists()){
-const d=userDoc.data();
-
-document.getElementById("displayName").innerText=d.name||"No Name";
-document.getElementById("displayEmail").innerText=user.email;
-document.getElementById("displaySummary").innerText=d.professionalSummary||document.getElementById("displaySummary").innerText;
-document.getElementById("onboardingPercent").innerText=(d.onboardingPercentage||0)+"%";
-document.getElementById("assessmentPercent").innerText=(d.assessmentPercentage||0)+"%";
-document.getElementById("certPercent").innerText=(d.certificationPercentage||0)+"%";
-document.getElementById("overallPercent").innerText=(d.overallScore||0)+"%";
-
-let letter=d.name?d.name[0].toUpperCase():"U";
-document.getElementById("avatarInitial").innerText=letter;
-document.getElementById("topInitial").innerText=letter;
-}
-});
+<script>
 
 function toggleChat(){
 const win=document.getElementById("chatWindow");
-win.style.display=win.style.display==="flex"?"none":"flex";
+
+if(win.style.display==="flex"){
+win.style.display="none";
+}else{
+win.style.display="flex";
+}
+}
+
+function appendMessage(text,type){
+
+const chat=document.getElementById("chatMsgs");
+
+const div=document.createElement("div");
+
+div.className="message "+(type==="user"?"user-msg":"bot-msg");
+
+div.innerText=text;
+
+chat.appendChild(div);
+
+chat.scrollTop=chat.scrollHeight;
 }
 
 async function sendMessage(){
+
 const input=document.getElementById("chatInput");
 const message=input.value.trim();
 
 if(!message) return;
 
 appendMessage(message,"user");
+
 input.value="";
 
 const reply=await callGemini(message);
 
 appendMessage(reply,"bot");
-}
 
-function appendMessage(text,type){
-const chat=document.getElementById("chatMsgs");
-const div=document.createElement("div");
-
-div.className="message "+(type==="user"?"user-msg":"bot-msg");
-div.innerText=text;
-
-chat.appendChild(div);
-chat.scrollTop=chat.scrollHeight;
 }
 
 async function callGemini(prompt){
@@ -446,30 +194,28 @@ headers:{
 "Content-Type":"application/json"
 },
 body:JSON.stringify({
-contents:[
-{
+contents:[{
 parts:[{text:prompt}]
-}
-]
+}]
 })
 }
 );
 
 const data=await response.json();
+
 return data.candidates[0].content.parts[0].text;
 
 }
-  document.getElementById("chatInput").addEventListener("keypress",function(e){
+
+document.getElementById("chatInput").addEventListener("keypress",function(e){
+
 if(e.key==="Enter"){
 sendMessage();
 }
+
 });
-  
+
 </script>
 
 </body>
 </html>
-
-
-
-
