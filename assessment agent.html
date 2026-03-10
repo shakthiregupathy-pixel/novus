@@ -434,20 +434,9 @@ function isPrime(n) {
         import { getAuth, signInWithCustomToken, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        /* ================= FIREBASE SETUP ================= */
-        // Provided globally by the environment
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-assessment-app';
-        
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let currentUser = null;
-        let progressDocRef = null;
-
         /* ================= STATE MANAGEMENT ================= */
-        const apiKey = ""; // Left empty, supplied by canvas environment
+        // ⚠️ PASTE YOUR GEMINI API KEY HERE FOR LOCAL TESTING
+        const apiKey = ""; 
         let state = {
             quizScore: 0,
             codingProgress: 0,
@@ -456,98 +445,103 @@ function isPrime(n) {
         };
 
         const quizData = [
-            {
-                question: "Which hook is used to handle side effects in React?",
-                options: ["useState", "useEffect", "useContext", "useReducer"],
-                answer: 1
-            },
-            {
-                question: "What is the time complexity of searching in a balanced Binary Search Tree?",
-                options: ["O(n)", "O(n log n)", "O(log n)", "O(1)"],
-                answer: 2
-            },
-            {
-                question: "Which of these is NOT a principle of OOP?",
-                options: ["Encapsulation", "Inheritance", "Polymorphism", "Compilation"],
-                answer: 3
-            },
-            {
-                question: "In CSS, which property is used to change the background color?",
-                options: ["color", "bgcolor", "background-color", "fill"],
-                answer: 2
-            },
-            {
-                question: "Which keyword is used to declare a constant variable in JavaScript?",
-                options: ["var", "let", "const", "fixed"],
-                answer: 2
-            }
+            { question: "Which hook is used to handle side effects in React?", options: ["useState", "useEffect", "useContext", "useReducer"], answer: 1 },
+            { question: "What is the time complexity of searching in a balanced Binary Search Tree?", options: ["O(n)", "O(n log n)", "O(log n)", "O(1)"], answer: 2 },
+            { question: "Which of these is NOT a principle of OOP?", options: ["Encapsulation", "Inheritance", "Polymorphism", "Compilation"], answer: 3 },
+            { question: "In CSS, which property is used to change the background color?", options: ["color", "bgcolor", "background-color", "fill"], answer: 2 },
+            { question: "Which keyword is used to declare a constant variable in JavaScript?", options: ["var", "let", "const", "fixed"], answer: 2 }
         ];
 
         let currentQuestion = 0;
         let localQuizScore = 0;
         let selectedOption = null;
 
-        /* ================= AUTHENTICATION ================= */
-        const initAuth = async () => {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (error) {
-                console.error("Authentication Error:", error);
-            }
-        };
+        /* ================= FAIL-SAFE CLOUD SYNC ================= */
+        // Default dummy function if Firebase fails or isn't configured locally
+        let saveProgressToCloud = async () => {};
 
-        // Listen for Auth changes and initialize data bindings
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('userIdentifier').innerText = `ID: ${user.uid.substring(0,8)}...`;
-                
-                // Set strict path to private data
-                progressDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'main');
-                listenToProgress();
-            }
-        });
+        /* ================= FIREBASE SETUP ================= */
+        let currentUser = null;
+        let progressDocRef = null;
 
-        // Initialize immediately
-        initAuth();
+        try {
+            // ⚠️ PASTE YOUR FIREBASE CONFIG HERE FOR LOCAL TESTING
+            const localFirebaseConfig = {
+                // apiKey: "YOUR_API_KEY",
+                // authDomain: "novus-9dfb8.firebaseapp.com",
+                // projectId: "novus-9dfb8",
+                // storageBucket: "novus-9dfb8.appspot.com",
+                // messagingSenderId: "...",
+                // appId: "..."
+            };
 
-        /* ================= DATABASE OPERATIONS ================= */
-        function listenToProgress() {
-            if (!currentUser) return;
-
-            document.getElementById('syncStatus').classList.remove('d-none');
+            const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : localFirebaseConfig;
             
-            // Listen for changes and hydrate our local state
-            onSnapshot(progressDocRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    state = { ...state, ...docSnap.data() };
-                }
-                calculateAssessment(); // Sync UI with the state
-                setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 800);
-            }, (error) => {
-                console.error("Firestore Error:", error);
-                document.getElementById('syncStatus').classList.add('d-none');
-            });
-        }
+            // Only initialize Firebase if a config is actually provided
+            if (Object.keys(firebaseConfig).length > 0) {
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-assessment-app';
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
 
-        async function saveProgressToCloud() {
-            if (!currentUser || !progressDocRef) return;
-            document.getElementById('syncStatus').classList.remove('d-none');
-            
-            try {
-                await setDoc(progressDocRef, state, { merge: true });
-                setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 500);
-            } catch (error) {
-                console.error("Error saving progress:", error);
+                const initAuth = async () => {
+                    try {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(auth);
+                        }
+                    } catch (error) { console.error("Auth Error:", error); }
+                };
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        currentUser = user;
+                        document.getElementById('userIdentifier').innerText = `ID: ${user.uid.substring(0,8)}...`;
+                        
+                        // Local dev uses root 'users' path, Sandbox uses strict path
+                        if (typeof __app_id === 'undefined') {
+                            progressDocRef = doc(db, 'users', user.uid);
+                        } else {
+                            progressDocRef = doc(db, 'artifacts', appId, 'users', user.uid, 'progress', 'main');
+                        }
+                        
+                        document.getElementById('syncStatus').classList.remove('d-none');
+                        onSnapshot(progressDocRef, (docSnap) => {
+                            if (docSnap.exists()) {
+                                state = { ...state, ...docSnap.data() };
+                            }
+                            calculateAssessment();
+                            setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 800);
+                        }, (error) => {
+                            console.error("Firestore Error:", error);
+                            document.getElementById('syncStatus').classList.add('d-none');
+                        });
+                    }
+                });
+
+                initAuth();
+
+                // Override dummy function with actual saving logic now that Firebase is loaded
+                saveProgressToCloud = async () => {
+                    if (!currentUser || !progressDocRef) return;
+                    document.getElementById('syncStatus').classList.remove('d-none');
+                    try {
+                        await setDoc(progressDocRef, state, { merge: true });
+                        setTimeout(() => document.getElementById('syncStatus').classList.add('d-none'), 500);
+                    } catch (error) { console.error("Error saving progress:", error); }
+                };
+            } else {
+                console.warn("⚠️ No Firebase config found. Running purely locally without database sync.");
             }
+        } catch (e) {
+            console.error("Firebase init failed (running locally):", e);
         }
 
         /* ================= GEMINI API HELPERS ================= */
         async function callGemini(prompt, systemPrompt = "You are a helpful teaching assistant.") {
+            if (!apiKey) return "API Key missing! Paste your Gemini API key in the code to use the AI Mentor locally.";
+            
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
@@ -577,24 +571,18 @@ function isPrime(n) {
         }
 
         /* ================= NAVIGATION ================= */
-        function go(page) {
-            location.hash = page;
-        }
+        function go(page) { location.hash = page; }
 
         function showPage() {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             const id = location.hash.replace('#', '') || 'dashboard';
             const target = document.getElementById(id);
             if (target) target.classList.add('active');
-            
             if (id === 'quiz' && !state.quizCompleted) startQuiz();
         }
 
         window.addEventListener('hashchange', showPage);
-        window.addEventListener('load', () => {
-            showPage();
-            calculateAssessment();
-        });
+        window.addEventListener('load', () => { showPage(); calculateAssessment(); });
 
         /* ================= CORE LOGIC ================= */
         function calculateAssessment() {
@@ -660,9 +648,7 @@ function isPrime(n) {
 
         /* ================= QUIZ ENGINE ================= */
         function startQuiz() {
-            currentQuestion = 0;
-            localQuizScore = 0;
-            selectedOption = null;
+            currentQuestion = 0; localQuizScore = 0; selectedOption = null;
             document.getElementById("qTotal").innerText = quizData.length;
             document.getElementById("quizResult").classList.add("d-none");
             loadQuestion();
@@ -698,10 +684,9 @@ function isPrime(n) {
         }
 
         function nextQuestion() {
-            if (selectedOption === null) return; // Prevent proceeding without answer
+            if (selectedOption === null) return;
             if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
-            selectedOption = null;
-            currentQuestion++;
+            selectedOption = null; currentQuestion++;
             loadQuestion();
         }
 
@@ -710,37 +695,27 @@ function isPrime(n) {
             if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
             
             const percentage = Math.round((localQuizScore / quizData.length) * 100);
-            
-            // Update State & Cloud
             state.quizScore = percentage;
             state.quizCompleted = true;
             saveProgressToCloud();
             
             document.getElementById("quizResult").classList.remove("d-none");
             document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
-            
             setTimeout(() => go('dashboard'), 1500);
         }
 
         /* ================= CODING CHALLENGE ENGINE ================= */
         function runCode() {
             const code = document.getElementById('codeEditor').value;
-            const consoleBox = document.getElementById('codingConsole');
             const output = document.getElementById('consoleOutput');
-            consoleBox.classList.remove('d-none');
+            document.getElementById('codingConsole').classList.remove('d-none');
             output.innerHTML = "";
 
             try {
                 const testFunc = new Function(`return ${code}`)();
-                const tests = [
-                    { input: 1, expected: false },
-                    { input: 2, expected: true },
-                    { input: 4, expected: false },
-                    { input: 7, expected: true },
-                    { input: 13, expected: true }
-                ];
-
+                const tests = [{ input: 1, expected: false }, { input: 2, expected: true }, { input: 4, expected: false }, { input: 7, expected: true }, { input: 13, expected: true }];
                 let passedCount = 0;
+                
                 tests.forEach(t => {
                     const result = testFunc(t.input);
                     const status = result === t.expected ? "✅ PASSED" : "❌ FAILED";
@@ -762,29 +737,18 @@ function isPrime(n) {
         }
 
         async function askAICoding() {
-            const panel = document.getElementById('aiCodingPanel');
             const responseDiv = document.getElementById('aiCodingResponse');
             const code = document.getElementById('codeEditor').value;
-            
-            panel.classList.remove('d-none');
+            document.getElementById('aiCodingPanel').classList.remove('d-none');
             responseDiv.innerHTML = '<span class="loading-dots">Analyzing code</span>';
 
-            const prompt = `I am trying to solve a coding challenge: Fix a function 'isPrime(n)' which should return true if n is prime and false otherwise (including for n <= 1). 
-            My current code is: 
-            \`\`\`javascript
-            ${code}
-            \`\`\`
-            Can you explain what is wrong and give me a hint without giving away the full answer?`;
-
-            const hint = await callGemini(prompt, "You are an encouraging technical mentor. Focus on logical hints rather than just rewriting the code.");
-            responseDiv.innerText = hint;
+            const prompt = `I am solving a JS challenge to fix 'isPrime(n)'. It should return false for numbers <= 1, and true for primes. My code: \`\`\`javascript\n${code}\n\`\`\` Explain what is wrong and give a hint.`;
+            responseDiv.innerText = await callGemini(prompt, "You are an encouraging technical mentor. Focus on logical hints.");
         }
 
         function submitCode() {
-            // Update State & Cloud
             state.codingProgress = 100;
             saveProgressToCloud();
-            
             go('dashboard');
         }
 
@@ -792,54 +756,38 @@ function isPrime(n) {
         async function analyzeAnswers() {
             const q1 = document.getElementById("assign-q1").value;
             const q2 = document.getElementById("assign-q2").value;
-            const panel = document.getElementById('aiReviewPanel');
+            if (!q1 && !q2) return;
+
             const reviewText = document.getElementById('aiReviewText');
-
-            if (!q1 && !q2) return; // Prevent empty submission
-
-            panel.classList.remove('d-none');
+            document.getElementById('aiReviewPanel').classList.remove('d-none');
             reviewText.innerHTML = '<span class="loading-dots">Reviewing your reflection</span>';
 
-            const prompt = `A student just watched a video on Software Engineering Best Practices (SOLID principles and System Design). 
-            Question 1: Principles discussed? Student Answer: "${q1}"
-            Question 2: Application of SOLID? Student Answer: "${q2}"
-            Provide a short, constructive review of their answers. Mention if they missed key points like Single Responsibility or Open/Closed if they didn't include them.`;
-
-            const feedback = await callGemini(prompt, "You are a specialized professor in Software Architecture. Be concise but deep.");
-            reviewText.innerText = feedback;
+            const prompt = `Review this student's answers regarding SOLID principles and System Design. Q1: "${q1}". Q2: "${q2}". Be constructive.`;
+            reviewText.innerText = await callGemini(prompt, "You are a specialized professor in Software Architecture. Be concise but deep.");
         }
 
         function submitAssignment() {
-            const q1 = document.getElementById("assign-q1").value;
-            const q2 = document.getElementById("assign-q2").value;
-            
-            if (!q1 || !q2) return; // Prevent empty submission
-            
-            // Update State & Cloud
+            if (!document.getElementById("assign-q1").value || !document.getElementById("assign-q2").value) return;
             state.assignmentSubmitted = true;
             saveProgressToCloud();
             
             document.getElementById("assignmentStatus").classList.remove("d-none");
-            setTimeout(() => {
-                document.getElementById("assignmentStatus").classList.add("d-none");
-                go('dashboard');
-            }, 2000);
+            setTimeout(() => { document.getElementById("assignmentStatus").classList.add("d-none"); go('dashboard'); }, 2000);
         }
 
         function resetAll() {
-            // Reset State & Cloud
             state = { quizScore: 0, codingProgress: 0, assignmentSubmitted: false, quizCompleted: false };
             saveProgressToCloud();
-
             document.getElementById("assign-q1").value = "";
             document.getElementById("assign-q2").value = "";
             document.getElementById("submitCodeBtn").disabled = true;
             document.getElementById("codingConsole").classList.add("d-none");
             document.getElementById("aiCodingPanel").classList.add("d-none");
             document.getElementById("aiReviewPanel").classList.add("d-none");
+            calculateAssessment();
         }
 
-        /* Bind to global window object so standard HTML onclicks work */
+        /* Bind functions globally so HTML onclicks work regardless of Firebase state */
         window.go = go;
         window.nextQuestion = nextQuestion;
         window.submitQuiz = submitQuiz;
