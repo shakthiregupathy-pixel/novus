@@ -20,7 +20,7 @@ body {
     padding: 40px;
 }
 
-/* HEADER */
+/* HEADER - Updated Logo Size to Medium */
 .header-bar {
     position: relative;
     display: flex;
@@ -29,15 +29,14 @@ body {
     margin-bottom: 50px;
 }
 
-/* LOGO LEFT */
 .novus-logo-img {
     position: absolute;
     left: 0;
-    width: 110px;
-    height: 110px;
+    width: 80px; /* Reduced from 110px to medium size */
+    height: 80px;
     border-radius: 50%;
     object-fit: contain;
-    padding: 10px;
+    padding: 8px;
     background: white;
     box-shadow: 0 8px 25px rgba(0,0,0,0.18);
     transition: 0.3s ease;
@@ -58,11 +57,6 @@ body {
     transition: 0.3s ease;
 }
 
-.glass-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-}
-
 .pastel-title {
     color: #6a5acd;
     font-weight: 600;
@@ -78,11 +72,6 @@ body {
     transition: 0.3s;
 }
 
-.btn-pastel:hover {
-    opacity: 0.85;
-    transform: scale(1.03);
-}
-
 .progress {
     height: 18px;
     border-radius: 20px;
@@ -95,34 +84,11 @@ body {
     color: #444;
 }
 
-.badge-gold {
-    background: #ffe29f;
-    color: #444;
-    border-radius: 12px;
-    padding: 5px 10px;
-}
-
-.badge-silver {
-    background: #d4d4f7;
-    color: #444;
-    border-radius: 12px;
-    padding: 5px 10px;
-}
-
 input, .form-control {
     background: #ffffff;
     border-radius: 15px;
     border: 1px solid #ddd;
     color: #444;
-}
-
-input::placeholder {
-    color: #999;
-}
-
-ul {
-    list-style: none;
-    padding-left: 0;
 }
 
 .fade-in {
@@ -135,7 +101,7 @@ ul {
 }
 
 /* =========================================
-   ROSIE AI CHATBOT (NOVUS THEMED)
+   ROSIE AI - ORGANIC SHAPE REDESIGN
    ========================================= */
 #chatbot-container {
     position: fixed;
@@ -144,53 +110,87 @@ ul {
     z-index: 1000;
 }
 
+/* Unique Squircle Pulse Trigger */
 .chat-trigger {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+    width: 80px;
+    height: 80px;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; 
+    background: white;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 0 20px rgba(255, 175, 189, 0.4);
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    transition: 0.3s;
-    color: #444;
-    font-size: 24px;
+    box-shadow: 0 15px 35px rgba(106, 90, 205, 0.2);
+    border: 2px solid white;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+    animation: morph 8s ease-in-out infinite;
 }
 
-.chat-trigger:hover { transform: scale(1.1); }
+@keyframes morph {
+  0% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+  50% { border-radius: 70% 30% 30% 70% / 70% 70% 30% 30%; }
+  100% { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+}
 
+.chat-trigger img {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.chat-trigger:hover { 
+    transform: scale(1.1) rotate(10deg);
+    box-shadow: 0 20px 40px rgba(106, 90, 205, 0.4);
+}
+
+/* Organic Shaped Window */
 .chat-window {
     position: absolute;
-    bottom: 80px;
+    bottom: 100px;
     right: 0;
-    width: 350px;
-    height: 500px;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    width: 360px;
+    height: 520px;
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(30px);
+    border-radius: 40px 40px 5px 40px; 
+    border: 2px solid rgba(255, 255, 255, 0.8);
     display: none;
     flex-direction: column;
     overflow: hidden;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    animation: slideIn 0.3s ease-out;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+    transform-origin: bottom right;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+@keyframes popIn {
+    from { opacity: 0; transform: scale(0.5) translateY(50px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .chat-header {
-    background: linear-gradient(90deg, #ffafbd33, #ffc3a033);
-    padding: 15px 20px;
+    background: linear-gradient(135deg, rgba(224, 195, 252, 0.4), rgba(142, 197, 252, 0.4));
+    padding: 20px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    gap: 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+
+.bot-avatar-frame {
+    width: 50px;
+    height: 50px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.bot-avatar-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .chat-messages {
@@ -203,54 +203,69 @@ ul {
 }
 
 .message {
-    max-width: 80%;
-    padding: 12px 16px;
-    border-radius: 18px;
+    max-width: 85%;
+    padding: 12px 18px;
     font-size: 14px;
-    line-height: 1.5;
+    line-height: 1.6;
+    border-radius: 20px;
 }
 
 .bot-msg {
-    background: rgba(0, 0, 0, 0.05);
+    background: white;
     align-self: flex-start;
     border-bottom-left-radius: 4px;
     color: #444;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
 }
 
 .user-msg {
-    background: linear-gradient(135deg, #ffafbdcc, #ffc3a0cc);
+    background: linear-gradient(135deg, #6a5acd, #8e2de2);
     align-self: flex-end;
     border-bottom-right-radius: 4px;
-    color: #444;
+    color: white;
+    box-shadow: 0 8px 20px rgba(106, 90, 205, 0.2);
 }
 
 .chat-input-area {
-    padding: 15px;
-    background: rgba(255, 255, 255, 0.5);
+    padding: 15px 20px 25px;
+    background: transparent;
     display: flex;
+    align-items: center;
     gap: 10px;
 }
 
 .chat-input {
     flex: 1;
     background: white;
-    border: 1px solid #ddd;
-    border-radius: 12px;
-    padding: 10px 15px;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     outline: none;
+    font-size: 14px;
 }
 
 .chat-send {
-    background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+    background: #6a5acd;
     border: none;
-    color: #444;
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
+    color: white;
+    width: 45px;
+    height: 45px;
+    border-radius: 18px;
     cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 5px 15px rgba(106, 90, 205, 0.3);
 }
 
-.typing-indicator { font-size: 11px; color: #ffafbd; padding: 0 20px 10px; display: none; }
+.chat-send:hover { transform: scale(1.1); background: #5a4db8; }
+
+.typing-indicator { 
+    font-size: 11px; 
+    color: #6a5acd; 
+    padding: 0 25px 10px; 
+    display: none; 
+    font-style: italic;
+}
 </style>
 </head>
 
@@ -260,10 +275,7 @@ ul {
 
 <!-- HEADER -->
 <div class="header-bar fade-in">
-    <!-- LEFT LOGO -->
     <img src="novus-logo.png" alt="NOVUS Logo" class="novus-logo-img">
-
-    <!-- CENTER TITLE -->
     <div class="text-center">
         <h2 class="pastel-title mb-1">Profile Agent</h2>
         <h5 class="pastel-title">MAVERIK TRAINING</h5>
@@ -308,7 +320,6 @@ ul {
     </div>
 </div>
 
-<!-- CERTIFICATE UPLOAD SECTION -->
 <div class="row mt-3">
     <div class="col-md-9">
         <input type="file" id="certFile" class="form-control" accept=".pdf,.jpg,.png">
@@ -328,14 +339,12 @@ ul {
 
 <!-- OUTPUT SECTION -->
 <div class="row fade-in">
-
 <div class="col-md-4">
 <div class="glass-card text-center">
 <h6>Average Score</h6>
 <h3 id="averageScore" class="pastel-title">0</h3>
 </div>
 </div>
-
 <div class="col-md-4">
 <div class="glass-card text-center">
 <h6>Skill Level</h6>
@@ -343,17 +352,14 @@ ul {
 <div id="badgeArea"></div>
 </div>
 </div>
-
 <div class="col-md-4">
 <div class="glass-card">
 <h6>Certifications</h6>
 <ul id="certList"></ul>
 </div>
 </div>
-
 </div>
 
-<!-- AI FEEDBACK -->
 <div class="glass-card fade-in">
 <h6 class="pastel-title">AI Performance Feedback</h6>
 <p id="aiFeedback">No feedback generated yet.</p>
@@ -361,25 +367,28 @@ ul {
 
 </div>
 
-<!-- ROSIE CHATBOT UI -->
+<!-- UNIQUE ORGANIC CHATBOT UI -->
 <div id="chatbot-container">
     <div class="chat-trigger" onclick="toggleChat()">
-        <i class="fas fa-robot"></i>
+        <img src="image_7bd85a.jpg" alt="Rosie Avatar" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
     </div>
     <div class="chat-window" id="chatWindow">
         <div class="chat-header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <i class="fas fa-robot" style="color:#ffafbd;"></i>
-                <span style="font-weight:bold; font-size:14px;">Rosie Assistant</span>
+            <div class="bot-avatar-frame">
+                <img src="image_7bd85a.jpg" alt="Rosie" onerror="this.src='https://cdn-icons-png.flaticon.com/512/4712/4712035.png'">
             </div>
-            <i class="fas fa-times" onclick="toggleChat()" style="cursor:pointer; opacity:0.7;"></i>
+            <div style="flex:1">
+                <div style="font-weight:700; font-size:16px; color:#6a5acd;">Rosie Assistant</div>
+                <div style="font-size:11px; color:#444; opacity:0.7">Powered by NOVUS AI</div>
+            </div>
+            <i class="fas fa-minus" onclick="toggleChat()" style="cursor:pointer; opacity:0.4;"></i>
         </div>
         <div class="chat-messages" id="chatMsgs">
-            <div class="message bot-msg">System Online. 🤖 Hello! I am Rosie, your mechanical companion. How may I assist you today? 💖</div>
+            <div class="message bot-msg">Welcome back! I've been monitoring your profile data. Ready to push those scores higher? 🚀🤖</div>
         </div>
         <div class="typing-indicator" id="typing">Rosie is processing...</div>
         <div class="chat-input-area">
-            <input type="text" class="chat-input" id="chatInput" placeholder="Command ROSIE...">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask me anything...">
             <button class="chat-send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
@@ -391,14 +400,9 @@ let certifications = [];
 function addCertification() {
     const fileInput = document.getElementById("certFile");
     const file = fileInput.files[0];
-
     if (file) {
         const fileURL = URL.createObjectURL(file);
-        certifications.push({
-            name: file.name,
-            url: fileURL
-        });
-
+        certifications.push({ name: file.name, url: fileURL });
         displayCertifications();
         fileInput.value = "";
     }
@@ -407,13 +411,8 @@ function addCertification() {
 function displayCertifications() {
     const list = document.getElementById("certList");
     list.innerHTML = "";
-
     certifications.forEach(cert => {
-        list.innerHTML += `
-            <li>
-                📄 <a href="${cert.url}" target="_blank">${cert.name}</a>
-            </li>
-        `;
+        list.innerHTML += `<li>📄 <a href="${cert.url}" target="_blank">${cert.name}</a></li>`;
     });
 }
 
@@ -426,7 +425,6 @@ function calculateProfile() {
     const coding = parseFloat(document.getElementById("coding").value) || 0;
     const assignment = parseFloat(document.getElementById("assignment").value) || 0;
     const progress = document.getElementById("progressSlider").value;
-
     const average = ((quiz + coding + assignment) / 3).toFixed(2);
     document.getElementById("averageScore").innerText = average;
 
@@ -438,13 +436,11 @@ function calculateProfile() {
         skill = "Advanced";
         badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
         feedback = "Outstanding progress! Keep shining.";
-    } 
-    else if(average >= 60) {
+    } else if(average >= 60) {
         skill = "Intermediate";
         badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
         feedback = "Great improvement. Stay consistent.";
-    } 
-    else {
+    } else {
         feedback = "Keep practicing. You are improving steadily.";
     }
 
@@ -492,7 +488,7 @@ async function callGemini(prompt) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
     const payload = {
         contents: [{ parts: [{ text: prompt }] }],
-        systemInstruction: { parts: [{ text: "You are Rosie, a kind and helpful pink robot AI. You assist users with their Profile Agent. Use emojis like 🤖, 🌸, ✨, and 💖. Keep responses concise." }] }
+        systemInstruction: { parts: [{ text: "You are Rosie, a white robot AI assistant. You are polite, high-tech, and helpful. You analyze user training data and give constructive feedback. Use emojis like 🤖, ⚛️, 📈." }] }
     };
 
     try {
@@ -506,7 +502,7 @@ async function callGemini(prompt) {
             return data.candidates[0].content.parts[0].text;
         }
     } catch (e) {}
-    return "Connection error. Re-calibrating circuits... 🎀";
+    return "Connection interrupted. Rebooting systems... 🤖";
 }
 
 document.getElementById('chatInput').addEventListener('keypress', (e) => {
@@ -534,21 +530,12 @@ onAuthStateChanged(auth, async (user) => {
     try {
       const docRef = doc(db, "users", user.uid);
       const docSnap = await getDoc(docRef);
-
       if (docSnap.exists()) {
         const data = docSnap.data();
         document.getElementById("name").innerText = data.name || "No Name";
         document.getElementById("displayEmpId").innerText = data.empId || "EMP1001";
-      } else {
-        document.getElementById("name").innerText = "No Data Found";
-        document.getElementById("displayEmpId").innerText = "N/A";
       }
-    } catch (error) {
-      console.error(error);
-      document.getElementById("name").innerText = "Error loading";
-    }
-  } else {
-    document.getElementById("name").innerText = "Not Logged In";
+    } catch (error) { console.error(error); }
   }
 });
 </script>
