@@ -156,8 +156,10 @@ onAuthStateChanged(auth, async (user) => {
 
   if (docSnap.exists()) {
       const data = docSnap.data();
-      document.getElementById("name").value = data.name || "";
-      document.getElementById("empid").value = data.employeeId || "";
+   document.getElementById("name").value =
+sessionStorage.getItem("loggedInName") || data.name || "";
+  document.getElementById("empid").value =
+sessionStorage.getItem("loggedInEmpId") || data.employee_id || "";
       document.getElementById("dept").value = data.department || "";
       document.getElementById("role").value = data.role || "";
       document.getElementById("phase").value = data.phase || "";
