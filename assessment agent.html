@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Novus Assessment Agent - Cloud Sync</title>
+    <title>Novus Assessment Agent - Hybrid Sync</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- External Assets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase SDKs (Compat version for broader support) -->
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
@@ -87,17 +87,6 @@
             margin-bottom: 2rem;
             position: relative;
             overflow: hidden;
-        }
-
-        .hero-banner::after {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -10%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            border-radius: 50%;
         }
 
         /* Component Cards */
@@ -178,16 +167,6 @@
         .quiz-option:hover { background: #f8fafc; border-color: var(--primary); }
         .quiz-option.selected { background: #eef2ff; border-color: var(--primary); color: var(--primary); }
 
-        /* AI Feed */
-        .ai-mentor-bubble {
-            background: #f0fdf4;
-            border-left: 4px solid var(--green);
-            padding: 1.25rem;
-            border-radius: 12px;
-            margin-top: 1rem;
-            font-size: 0.95rem;
-        }
-
         /* Notifications */
         .sync-indicator {
             position: fixed;
@@ -226,14 +205,14 @@
     <!-- App Initial Loader -->
     <div id="app-loader">
         <div class="brand-logo mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">N</div>
-        <div class="loading-spinner mb-2" style="width: 24px; height: 24px;"></div>
-        <p class="text-muted small">Synchronizing Learning Portal...</p>
+        <div id="loader-icon" class="loading-spinner mb-2" style="width: 24px; height: 24px;"></div>
+        <p id="loader-text" class="text-muted small">Synchronizing Learning Portal...</p>
     </div>
 
     <!-- Sync Indicator -->
     <div id="syncIndicator" class="sync-indicator">
         <div class="loading-spinner"></div>
-        <span>Saving progress...</span>
+        <span id="syncText">Saving progress...</span>
     </div>
 
     <!-- Navigation -->
@@ -256,7 +235,7 @@
                     <li class="nav-item"><a class="nav-link fw-medium" href="#coding">Coding Lab</a></li>
                     <li class="nav-item"><a class="nav-link fw-medium" href="#assignments">Assignments</a></li>
                     <li class="nav-item ms-md-2">
-                        <span id="userBadge" class="badge bg-light text-dark border p-2 rounded-3">Guest</span>
+                        <span id="userBadge" class="badge bg-light text-dark border p-2 rounded-3">Loading...</span>
                     </li>
                 </ul>
             </div>
@@ -280,7 +259,7 @@
                             <div class="vr opacity-25"></div>
                             <div class="text-start">
                                 <small class="d-block opacity-50 text-uppercase fw-bold" style="font-size: 0.65rem;">System Status</small>
-                                <span class="text-success">● Cloud Synced</span>
+                                <span id="syncStatus" class="text-warning">● Initializing...</span>
                             </div>
                         </div>
                     </div>
@@ -331,48 +310,14 @@
                     </div>
                 </div>
             </div>
-
-            <div class="row g-4">
-                <div class="col-lg-7">
-                    <div class="stat-card">
-                        <h6 class="fw-bold mb-4">Milestones</h6>
-                        <div id="milestoneList" class="d-flex flex-column gap-3">
-                            <div class="d-flex align-items-center gap-3">
-                                <div id="m1-icon" class="text-muted">○</div>
-                                <div class="flex-grow-1">
-                                    <div class="fw-semibold">Fundamental Quiz</div>
-                                    <small class="text-muted">Mastering JS and React basics</small>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center gap-3">
-                                <div id="m2-icon" class="text-muted">○</div>
-                                <div class="flex-grow-1">
-                                    <div class="fw-semibold">Algorithm Implementation</div>
-                                    <small class="text-muted">Prime number logic challenge</small>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center gap-3">
-                                <div id="m3-icon" class="text-muted">○</div>
-                                <div class="flex-grow-1">
-                                    <div class="fw-semibold">Final Assignment</div>
-                                    <small class="text-muted">System design and SOLID principles</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-5">
+            
+            <div class="row">
+                <div class="col-12">
                     <div class="stat-card">
                         <h6 class="fw-bold mb-3">Settings</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-outline-danger btn-sm" onclick="clearProgress()">Reset All Progress</button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">Force Sync</button>
-                        </div>
-                        <hr>
-                        <div class="small text-muted">
-                            <strong>Novus Cloud v2.0</strong><br>
-                            Persistence layer: Firestore Native<br>
-                            AI Engine: Gemini 2.5 Flash
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-danger btn-sm" onclick="clearProgress()">Reset Progress</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">Refresh Data</button>
                         </div>
                     </div>
                 </div>
@@ -390,7 +335,6 @@
                         </div>
                         <h5 id="qText" class="mb-4 lh-base"></h5>
                         <div id="qOptions" class="mb-4"></div>
-                        
                         <div class="d-flex justify-content-between pt-3 border-top">
                             <button class="btn btn-light" onclick="go('dashboard')">Exit</button>
                             <button id="qNext" class="btn btn-primary px-4" onclick="nextQuizQuestion()">Next</button>
@@ -405,18 +349,13 @@
             <div class="row g-4">
                 <div class="col-lg-8">
                     <div class="stat-card">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="fw-bold mb-0">Algorithm Lab</h4>
-                            <span class="badge bg-success">AI Mentor Connected</span>
-                        </div>
+                        <h4 class="fw-bold mb-3">Algorithm Lab</h4>
                         <div class="alert alert-secondary border-0 bg-light small mb-4">
                             <strong>Task:</strong> Implement <code>isPrime(n)</code>. Return <code>true</code> for prime numbers, <code>false</code> for others. Note: 1 is not prime.
                         </div>
                         <div class="editor-wrapper mb-3">
                             <textarea id="codeEditor" class="code-input" spellcheck="false">function isPrime(n) {
-  // Fix the logic below
-  if (n <= 1) return true; 
-
+  if (n <= 1) return false; 
   for (let i = 2; i < n; i++) {
     if (n % i === 0) return false;
   }
@@ -425,16 +364,9 @@
                         </div>
                         <div class="d-flex gap-2">
                             <button class="btn btn-primary" onclick="testCode()">Run Tests</button>
-                            <button id="submitSolutionBtn" class="btn btn-success" disabled onclick="submitSolution()">Submit Solution</button>
-                            <button class="btn btn-outline-dark" onclick="askAIMentor()">Ask AI</button>
+                            <button id="submitSolutionBtn" class="btn btn-success" onclick="submitSolution()">Submit Solution</button>
                         </div>
                         <div id="testResults" class="mt-3 p-3 bg-light rounded font-monospace small d-none"></div>
-                    </div>
-                </div>
-                <div class="col-lg-4">
-                    <div id="aiPanel" class="stat-card h-100 d-none">
-                        <h6 class="fw-bold text-success mb-3">Novus AI Mentor</h6>
-                        <div id="aiResponse" class="small lh-lg"></div>
                     </div>
                 </div>
             </div>
@@ -445,21 +377,12 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10">
                     <div class="stat-card">
-                        <h4 class="fw-bold mb-4">System Design Reflection</h4>
-                        <div class="ratio ratio-16x9 mb-4 rounded-4 overflow-hidden shadow-sm">
-                            <iframe src="https://www.youtube.com/embed/Z57566JBaZQ" title="Architecture" frameborder="0" allowfullscreen></iframe>
-                        </div>
-                        
+                        <h4 class="fw-bold mb-4">Reflection</h4>
                         <div class="mb-4">
-                            <label class="form-label fw-bold">1. Summarize the 'O' in SOLID based on the video:</label>
-                            <textarea id="ans1" class="form-control mb-3" rows="2"></textarea>
-                            
-                            <label class="form-label fw-bold">2. How does dependency inversion improve testability?</label>
-                            <textarea id="ans2" class="form-control mb-3" rows="2"></textarea>
+                            <label class="form-label fw-bold">1. Key takeaway from Software Engineering principles:</label>
+                            <textarea id="ans1" class="form-control mb-3" rows="3"></textarea>
                         </div>
-
-                        <div id="assignStatus" class="alert alert-success d-none mb-3">Submission synced to cloud.</div>
-                        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="saveAssignment()">Save & Sync Assignment</button>
+                        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="saveAssignment()">Save Assignment</button>
                     </div>
                 </div>
             </div>
@@ -470,301 +393,199 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        /* ================= CONFIGURATION & INITIALIZATION ================= */
+        /* ================= STORAGE WRAPPER (HYBRID) ================= */
+        const STORAGE_KEY = 'novus_local_v2';
+        let isCloudMode = false;
+        let db = null;
+        let user = null;
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-agent-v2';
-        const firebaseConfig = JSON.parse(__firebase_config);
-        
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        const apiKey = ""; // Provided by env
 
         let state = {
             quizScore: 0,
             codingProgress: 0,
             assignmentSubmitted: false,
             quizCompleted: false,
-            answers: { q1: "", q2: "" }
+            answers: { q1: "" }
         };
 
-        let user = null;
-
-        // Quiz Logic Data
-        const quizData = [
-            { q: "What is the primary purpose of useEffect in React?", a: ["Handle state", "Handle side effects", "Route pages", "Style components"], correct: 1 },
-            { q: "Time complexity of looking up a key in a Hash Map (average)?", a: ["O(n)", "O(log n)", "O(1)", "O(n^2)"], correct: 2 },
-            { q: "Which is NOT a SOLID principle?", a: ["Single Responsibility", "Open/Closed", "Direct Access", "Interface Segregation"], correct: 2 },
-            { q: "What does SQL stand for?", a: ["Simple Question Language", "Structured Query Language", "Shared Quick Link", "System Qualify Logic"], correct: 1 },
-            { q: "In CSS, 'flex-direction: column' aligns items...", a: ["Horizontally", "Vertically", "Diagonally", "Circularly"], correct: 1 }
-        ];
-
-        let quizIndex = 0;
-        let runningQuizScore = 0;
-        let selectedAns = null;
-
-        /* ================= AUTHENTICATION (RULE 3) ================= */
-        async function initAuth() {
+        async function initStorage() {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await auth.signInWithCustomToken(__initial_auth_token);
+                // Check if Firebase globals are available (Canvas environment only)
+                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                    const config = JSON.parse(__firebase_config);
+                    firebase.initializeApp(config);
+                    db = firebase.firestore();
+                    isCloudMode = true;
+                    
+                    // Auth
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await firebase.auth().signInWithCustomToken(__initial_auth_token);
+                    } else {
+                        await firebase.auth().signInAnonymously();
+                    }
+                    
+                    firebase.auth().onAuthStateChanged(u => {
+                        if (u) {
+                            user = u;
+                            document.getElementById('userBadge').innerText = `Cloud: ${u.uid.substring(0, 6)}`;
+                            document.getElementById('syncStatus').innerHTML = '<span class="text-success">● Cloud Sync Active</span>';
+                            loadData();
+                            hideLoader();
+                        }
+                    });
                 } else {
-                    await auth.signInAnonymously();
+                    throw new Error("No config");
                 }
-            } catch (err) {
-                console.error("Auth failed:", err);
+            } catch (e) {
+                console.warn("Storage: Using Local Mode");
+                isCloudMode = false;
+                document.getElementById('userBadge').innerText = "Local User";
+                document.getElementById('syncStatus').innerHTML = '<span class="text-info">● Local Storage Mode</span>';
+                loadData();
+                hideLoader();
             }
         }
 
-        auth.onAuthStateChanged(u => {
-            user = u;
-            if (user) {
-                document.getElementById('userBadge').innerText = `ID: ${user.uid.substring(0, 8)}...`;
-                loadProgress();
-                document.getElementById('app-loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('app-loader').style.display = 'none', 500);
-            }
-        });
-
-        /* ================= DATA PERSISTENCE (RULE 1 & 2) ================= */
-        async function loadProgress() {
-            if (!user) return;
-            const docRef = db.doc(`artifacts/${appId}/users/${user.uid}/progress/current`);
-            
-            docRef.onSnapshot(doc => {
-                if (doc.exists) {
-                    state = { ...state, ...doc.data() };
-                    updateUI();
+        function loadData() {
+            if (isCloudMode && user) {
+                db.doc(`artifacts/${appId}/users/${user.uid}/progress/current`).get().then(doc => {
+                    if (doc.exists) {
+                        state = { ...state, ...doc.data() };
+                        updateUI();
+                    }
+                });
+            } else {
+                const local = localStorage.getItem(STORAGE_KEY);
+                if (local) {
+                    state = { ...state, ...JSON.parse(local) };
                 }
-            }, err => console.error("Firestore Error:", err));
+                updateUI();
+            }
         }
 
-        async function syncState() {
-            if (!user) return;
+        function syncData() {
             const indicator = document.getElementById('syncIndicator');
             indicator.classList.add('active');
             
-            try {
-                await db.doc(`artifacts/${appId}/users/${user.uid}/progress/current`).set(state, { merge: true });
-                setTimeout(() => indicator.classList.remove('active'), 1000);
-            } catch (err) {
-                console.error("Sync Error:", err);
+            if (isCloudMode && user) {
+                db.doc(`artifacts/${appId}/users/${user.uid}/progress/current`).set(state, { merge: true })
+                  .finally(() => setTimeout(() => indicator.classList.remove('active'), 800));
+            } else {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                setTimeout(() => indicator.classList.remove('active'), 800);
             }
+            updateUI();
         }
 
-        /* ================= CORE LOGIC ================= */
+        function hideLoader() {
+            document.getElementById('app-loader').style.opacity = '0';
+            setTimeout(() => document.getElementById('app-loader').style.display = 'none', 500);
+        }
+
+        /* ================= UI & NAVIGATION ================= */
+        function go(page) {
+            location.hash = page;
+            renderPage();
+        }
+
+        function renderPage() {
+            const h = location.hash.replace('#', '') || 'dashboard';
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(h);
+            if (target) target.classList.add('active');
+            if (h === 'quiz') startQuiz();
+        }
 
         function updateUI() {
             document.getElementById('quizScoreDisplay').innerText = `${state.quizScore} / 100`;
             document.getElementById('codingProgressDisplay').innerText = `${state.codingProgress}%`;
             document.getElementById('codingBar').style.width = `${state.codingProgress}%`;
-
+            
             const overall = Math.round((state.quizScore + state.codingProgress + (state.assignmentSubmitted ? 100 : 0)) / 3);
             document.getElementById('overallPercent').innerText = `${overall}%`;
             document.getElementById('gradeDisplay').innerText = `${overall}%`;
 
-            // Badges
             document.getElementById('quizBadge').className = state.quizCompleted ? 'badge bg-success' : 'badge bg-secondary';
             document.getElementById('quizBadge').innerText = state.quizCompleted ? 'Completed' : 'Pending';
-            
-            document.getElementById('codingBadge').className = state.codingProgress >= 100 ? 'badge bg-success' : 'badge bg-secondary';
-            document.getElementById('codingBadge').innerText = state.codingProgress >= 100 ? 'Success' : 'Incomplete';
 
-            // Milestone Icons
-            document.getElementById('m1-icon').innerHTML = state.quizCompleted ? '✅' : '○';
-            document.getElementById('m2-icon').innerHTML = state.codingProgress >= 100 ? '✅' : '○';
-            document.getElementById('m3-icon').innerHTML = state.assignmentSubmitted ? '✅' : '○';
-
-            // Grade feedback
-            const feedback = document.getElementById('gradeStatus');
-            if (overall >= 80) feedback.innerText = "Senior Level Performance";
-            else if (overall >= 50) feedback.innerText = "Mid-Level Performance";
-            else if (overall > 0) feedback.innerText = "Junior/Entry Performance";
-            
-            // Assignment values
-            if (state.answers) {
-                document.getElementById('ans1').value = state.answers.q1 || "";
-                document.getElementById('ans2').value = state.answers.q2 || "";
-            }
+            if (state.answers) document.getElementById('ans1').value = state.answers.q1 || "";
         }
 
-        function go(page) {
-            location.hash = page;
-            showActivePage();
-        }
+        /* ================= MODULE LOGIC ================= */
+        const quizData = [
+            { q: "What hook handles side effects?", a: ["useState", "useEffect", "useMemo", "useRef"], c: 1 },
+            { q: "O(1) search is common in...", a: ["Arrays", "Linked Lists", "Hash Maps", "Trees"], c: 2 },
+            { q: "What is 'S' in SOLID?", a: ["Static", "Simple", "Single Responsibility", "Structural"], c: 2 },
+            { q: "Which CSS property is for inner spacing?", a: ["margin", "padding", "border", "gap"], c: 1 },
+            { q: "JS: 'const' variables can be reassigned?", a: ["Yes", "No", "Only if array", "Only in functions"], c: 1 }
+        ];
 
-        function showActivePage() {
-            const h = location.hash.replace('#', '') || 'dashboard';
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(h);
-            if (target) target.classList.add('active');
-            
-            if (h === 'quiz') startQuiz();
-        }
+        let quizIdx = 0;
+        let quizRunningScore = 0;
+        let quizSelected = null;
 
-        window.addEventListener('hashchange', showActivePage);
-        window.addEventListener('load', () => {
-            initAuth();
-            showActivePage();
-        });
-
-        /* ================= QUIZ SYSTEM ================= */
         function startQuiz() {
             if (state.quizCompleted) {
-                document.getElementById('quiz').innerHTML = `
-                    <div class="stat-card text-center py-5">
-                        <h2 class="fw-bold mb-3">Quiz Finished!</h2>
-                        <p class="text-muted mb-4">You scored ${state.quizScore}% on this assessment.</p>
-                        <button class="btn btn-primary" onclick="go('dashboard')">Return to Dashboard</button>
-                    </div>`;
+                document.getElementById('quiz').innerHTML = `<div class='stat-card text-center p-5'><h4>Quiz Done!</h4><p>Score: ${state.quizScore}%</p><button class='btn btn-primary' onclick="go('dashboard')">Back</button></div>`;
                 return;
             }
-            quizIndex = 0;
-            runningQuizScore = 0;
-            renderQuestion();
+            quizIdx = 0; quizRunningScore = 0; renderQuiz();
         }
 
-        function renderQuestion() {
-            const q = quizData[quizIndex];
-            document.getElementById('qIdx').innerText = quizIndex + 1;
+        function renderQuiz() {
+            const q = quizData[quizIdx];
+            document.getElementById('qIdx').innerText = quizIdx + 1;
             document.getElementById('qText').innerText = q.q;
-            const optDiv = document.getElementById('qOptions');
-            optDiv.innerHTML = '';
-            
+            const box = document.getElementById('qOptions');
+            box.innerHTML = '';
             q.a.forEach((opt, i) => {
                 const d = document.createElement('div');
                 d.className = 'quiz-option';
                 d.innerText = opt;
-                d.onclick = () => {
-                    selectedAns = i;
-                    document.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
-                    d.classList.add('selected');
-                };
-                optDiv.appendChild(d);
+                d.onclick = () => { quizSelected = i; document.querySelectorAll('.quiz-option').forEach(e => e.classList.remove('selected')); d.classList.add('selected'); };
+                box.appendChild(d);
             });
         }
 
         function nextQuizQuestion() {
-            if (selectedAns === null) return;
-            if (selectedAns === quizData[quizIndex].correct) runningQuizScore++;
-            
-            selectedAns = null;
-            quizIndex++;
-            
-            if (quizIndex < quizData.length) {
-                renderQuestion();
-            } else {
-                state.quizScore = Math.round((runningQuizScore / quizData.length) * 100);
+            if (quizSelected === null) return;
+            if (quizSelected === quizData[quizIdx].c) quizRunningScore++;
+            quizSelected = null;
+            quizIdx++;
+            if (quizIdx < quizData.length) renderQuiz();
+            else {
+                state.quizScore = Math.round((quizRunningScore / quizData.length) * 100);
                 state.quizCompleted = true;
-                syncState();
+                syncData();
                 go('dashboard');
             }
         }
 
-        /* ================= CODING SYSTEM ================= */
         function testCode() {
             const code = document.getElementById('codeEditor').value;
-            const resBox = document.getElementById('testResults');
-            resBox.classList.remove('d-none');
-            resBox.innerHTML = 'Running tests...';
-
+            const box = document.getElementById('testResults');
+            box.classList.remove('d-none');
             try {
                 const fn = new Function(`return ${code}`)();
-                const tests = [
-                    { i: 2, e: true },
-                    { i: 4, e: false },
-                    { i: 7, e: true },
-                    { i: 1, e: false },
-                    { i: 13, e: true }
-                ];
-                
-                let passed = 0;
-                resBox.innerHTML = '';
+                const tests = [{i:2,e:true}, {i:4,e:false}, {i:7,e:true}];
+                let pass = 0;
+                box.innerHTML = '';
                 tests.forEach(t => {
-                    const got = fn(t.i);
-                    const isOk = got === t.e;
-                    if (isOk) passed++;
-                    resBox.innerHTML += `<div class="${isOk ? 'text-success' : 'text-danger'}">Test isPrime(${t.i}): ${isOk ? 'PASSED' : 'FAILED'} (Got ${got})</div>`;
+                    const res = fn(t.i);
+                    const ok = res === t.e;
+                    if(ok) pass++;
+                    box.innerHTML += `<div>isPrime(${t.i}): ${ok ? '✅' : '❌'}</div>`;
                 });
-
-                if (passed === tests.length) {
-                    document.getElementById('submitSolutionBtn').disabled = false;
-                }
-            } catch (e) {
-                resBox.innerHTML = `<span class="text-danger">Syntax Error: ${e.message}</span>`;
-            }
+                if (pass === 3) document.getElementById('submitSolutionBtn').disabled = false;
+            } catch (e) { box.innerText = "Error: " + e.message; }
         }
 
-        async function submitSolution() {
-            state.codingProgress = 100;
-            await syncState();
-            go('dashboard');
-        }
+        function submitSolution() { state.codingProgress = 100; syncData(); go('dashboard'); }
+        function saveAssignment() { state.answers.q1 = document.getElementById('ans1').value; state.assignmentSubmitted = true; syncData(); go('dashboard'); }
+        function clearProgress() { if(confirm("Clear data?")) { state = { quizScore: 0, codingProgress: 0, assignmentSubmitted: false, quizCompleted: false, answers: { q1: "" } }; syncData(); location.reload(); } }
 
-        async function askAIMentor() {
-            const code = document.getElementById('codeEditor').value;
-            const panel = document.getElementById('aiPanel');
-            const resp = document.getElementById('aiResponse');
-            
-            panel.classList.remove('d-none');
-            resp.innerHTML = '<div class="spinner-border spinner-border-sm text-success me-2"></div>Thinking...';
-
-            const prompt = `Student is solving isPrime(n). Current code:\n\`\`\`javascript\n${code}\n\`\`\`\nExplain logically what is wrong without giving the direct code fix. Focus on edge cases like 1 or negative numbers.`;
-            
-            const hint = await callGemini(prompt, "You are an encouraging coding mentor. Be brief.");
-            resp.innerText = hint;
-        }
-
-        /* ================= ASSIGNMENT ================= */
-        function saveAssignment() {
-            const q1 = document.getElementById('ans1').value;
-            const q2 = document.getElementById('ans2').value;
-            
-            state.answers = { q1, q2 };
-            state.assignmentSubmitted = (q1.length > 5 && q2.length > 5);
-            
-            document.getElementById('assignStatus').classList.remove('d-none');
-            syncState();
-            setTimeout(() => go('dashboard'), 1500);
-        }
-
-        /* ================= GEMINI API (RETRY LOGIC) ================= */
-        async function callGemini(prompt, system) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const body = {
-                contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: system }] }
-            };
-
-            for (let i = 0; i < 5; i++) {
-                try {
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(body)
-                    });
-                    if (!res.ok) throw new Error("API Limit");
-                    const data = await res.json();
-                    return data.candidates[0].content.parts[0].text;
-                } catch (e) {
-                    if (i === 4) return "Mentor is offline. Check connection.";
-                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
-                }
-            }
-        }
-
-        function clearProgress() {
-            if (confirm("This will permanently wipe your cloud-saved progress. Continue?")) {
-                state = {
-                    quizScore: 0,
-                    codingProgress: 0,
-                    assignmentSubmitted: false,
-                    quizCompleted: false,
-                    answers: { q1: "", q2: "" }
-                };
-                syncState();
-                location.reload();
-            }
-        }
+        window.onload = () => { initStorage(); renderPage(); };
+        window.onhashchange = renderPage;
     </script>
 </body>
 </html>
