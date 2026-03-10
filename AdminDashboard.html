@@ -208,7 +208,7 @@
 
         // =========================================================================
         // 🛑 IMPORTANT: PASTE YOUR FIREBASE CONFIGURATION HERE 🛑
-        // Get this from Firebase Console -> Project Settings -> General -> Web Apps
+        // Replace "YOUR_API_KEY", "YOUR_MESSAGING_SENDER_ID", and "YOUR_APP_ID"
         // =========================================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
@@ -217,7 +217,7 @@
             storageBucket: "novus-9dfb8.appspot.com",
             messagingSenderId: "641276518161",
             appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-        };
+      };
 
         // --- Firebase Database Integration ---
         async function initializeRealtimeData() {
@@ -226,8 +226,6 @@
                 let isCanvasEnv = false;
 
                 // Smart Fallback Mechanism:
-                // If you haven't entered your API key yet, it will use the preview environment's built-in DB so it doesn't crash.
-                // Once you deploy this to your website with your real config, it will seamlessly switch to your Live DB.
                 if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo") {
                     activeConfig = firebaseConfig; // Use User's custom Live DB
                 } else if (typeof __firebase_config !== 'undefined' && __firebase_config) {
@@ -245,7 +243,7 @@
                 // Authenticate and set up correct data paths depending on the environment
                 if (isCanvasEnv) {
                     const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-                    window.dbPath = collection(window.db, 'artifacts', appId, 'public', 'data', 'employees');
+                    window.dbPath = collection(window.db, 'artifacts', appId, 'public', 'data', 'agents');
                     
                     if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                         await signInWithCustomToken(auth, __initial_auth_token);
@@ -253,7 +251,8 @@
                         await signInAnonymously(auth);
                     }
                 } else {
-                    window.dbPath = collection(window.db, 'employees');
+                    // This now points to your 'agents' collection!
+                    window.dbPath = collection(window.db, 'agents');
                     await signInAnonymously(auth);
                 }
 
@@ -271,7 +270,7 @@
                         <div class="flex h-full items-center justify-center flex-col text-slate-500 animate-fade-in">
                             <i data-lucide="database-zap" class="w-16 h-16 mb-4 text-red-400"></i>
                             <h2 class="text-xl font-bold text-slate-700">Database Connection Failed</h2>
-                            <p class="mt-2 text-sm max-w-md text-center">Please add your valid Firebase credentials to the <code>firebaseConfig</code> object (around line 173) to connect to your live database.</p>
+                            <p class="mt-2 text-sm max-w-md text-center">Please copy your API key from Firebase settings and paste it into the <code>firebaseConfig</code> object to connect to the live <strong>agents</strong> database.</p>
                         </div>
                     `;
                     lucide.createIcons();
@@ -367,9 +366,9 @@
                 const statusColor = f.status === 'Excellent' ? 'bg-green-100 text-green-700' : 
                                     f.status === 'At Risk' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700';
                 
-                // Fallbacks in case live data is missing fields
+                // Fallbacks in case live data is missing fields (Added support for EMPID from your screenshot)
                 const name = f.name || 'Unknown User';
-                const id = f.id || 'N/A';
+                const id = f.id || f.EMPID || 'N/A';
                 const dept = f.dept || 'Unassigned';
                 const quiz = f.quiz || 0;
                 const progress = f.progress || 0;
@@ -799,7 +798,7 @@
             
             // This is the EXACT format your live website should send to Firebase
             const newEmployee = {
-                id: 'EMP' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
+                EMPID: Math.floor(Math.random() * 1000).toString().padStart(4, '0'), // Switched to EMPID as shown in screenshot
                 name: `${firstNames[Math.floor(Math.random()*firstNames.length)]} ${lastNames[Math.floor(Math.random()*lastNames.length)]}`,
                 dept: ['IT', 'Data Science', 'QA', 'Design'][Math.floor(Math.random() * 4)],
                 joinDate: new Date().toISOString().split('T')[0],
@@ -810,7 +809,7 @@
             };
 
             try {
-                // Pushes directly to the resolved database path
+                // Pushes directly to the resolved database path ('agents')
                 await addDoc(window.dbPath, newEmployee);
                 
                 // Show Success Message
@@ -892,7 +891,7 @@
         window.downloadReport = function() {
             let csvContent = "data:text/csv;charset=utf-8,ID,Name,Department,Join Date,Quiz Score,Status,Progress\n";
             window.freshersData.forEach(f => {
-                let row = `${f.id},${f.name},${f.dept},${f.joinDate},${f.quiz},${f.status},${f.progress}%`;
+                let row = `${f.id || f.EMPID || 'N/A'},${f.name || 'Unknown'},${f.dept || 'N/A'},${f.joinDate || 'N/A'},${f.quiz || 0},${f.status || 'Active'},${f.progress || 0}%`;
                 csvContent += row + "\n";
             });
 
@@ -913,6 +912,7 @@
             const filteredData = window.freshersData.filter(f => 
                 (f.name && f.name.toLowerCase().includes(searchTerm)) || 
                 (f.id && f.id.toLowerCase().includes(searchTerm)) ||
+                (f.EMPID && f.EMPID.toLowerCase().includes(searchTerm)) ||
                 (f.dept && f.dept.toLowerCase().includes(searchTerm)) ||
                 (f.skills && f.skills.some(s => s.toLowerCase().includes(searchTerm)))
             );
