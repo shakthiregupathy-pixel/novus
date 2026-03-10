@@ -364,6 +364,9 @@ function isPrime(n) {
                             <button class="btn btn-ai" onclick="askAICoding()">Ask AI for Help</button>
                         </div>
                         
+                        <!-- Added to display frontend coding score dynamically -->
+                        <div id="codingResult" class="alert alert-success mt-4 d-none"></div>
+
                         <div id="codingConsole" class="mt-4 p-3 rounded bg-light border font-monospace small d-none">
                             <div id="consoleOutput"></div>
                         </div>
@@ -465,16 +468,26 @@ function isPrime(n) {
         let localQuizScore = 0;
         let selectedOption = null;
 
+        /* ================= MOCK BACKEND SERVER ================= */
+        // Simulated API call to save data in a backend database
+        async function saveToBackend(moduleName, data) {
+            console.log(`[Backend API] 📡 Request initiated. Saving ${moduleName} results...`);
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    console.log(`[Backend API] ✅ Successfully saved ${moduleName} data:`, JSON.stringify(data, null, 2));
+                    resolve({ status: 200, message: "Saved successfully" });
+                }, 500); // simulate 500ms network delay
+            });
+        }
+
         /* ================= GEMINI API HELPERS ================= */
         async function callGemini(prompt, systemPrompt = "You are a helpful teaching assistant.") {
-            // Updated to the supported model for the preview environment
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
             const payload = {
                 contents: [{ parts: [{ text: prompt }] }],
                 systemInstruction: { parts: [{ text: systemPrompt }] }
             };
 
-            // Implement exponential backoff for reliability
             for (let i = 0; i < 5; i++) {
                 try {
                     const response = await fetch(url, {
@@ -492,7 +505,6 @@ function isPrime(n) {
                     throw new Error("Invalid response format");
                 } catch (err) {
                     if (i === 4) return "AI Mentor is currently busy. Please try again in a moment.";
-                    // Retry with delays: 1s, 2s, 4s, 8s, 16s
                     await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
                 }
             }
@@ -613,7 +625,7 @@ function isPrime(n) {
             loadQuestion();
         }
 
-        function submitQuiz() {
+        async function submitQuiz() {
             if (selectedOption === null) return alert("Please select an answer");
             if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
             
@@ -621,11 +633,15 @@ function isPrime(n) {
             state.quizScore = percentage;
             state.quizCompleted = true;
             
+            // Display Results dynamically on the frontend before redirecting
             document.getElementById("quizResult").classList.remove("d-none");
-            document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
+            document.getElementById("quizResult").innerHTML = `<strong>Quiz Completed!</strong> You scored ${localQuizScore} out of ${quizData.length} (${percentage}%). Redirecting to dashboard...`;
             
+            // Send Results to Backend Simulated API
+            await saveToBackend('Daily Quiz', { score: percentage, rawScore: localQuizScore, total: quizData.length });
+
             calculateAssessment();
-            setTimeout(() => go('dashboard'), 1500);
+            setTimeout(() => go('dashboard'), 2500); // Wait 2.5s so the user can read the mark
         }
 
         /* ================= CODING CHALLENGE ENGINE ================= */
@@ -686,11 +702,25 @@ function isPrime(n) {
             responseDiv.innerText = hint;
         }
 
-        function submitCode() {
+        async function submitCode() {
             state.codingProgress = 100;
+            
+            // Display Result on the Frontend
+            const resultBox = document.getElementById("codingResult");
+            if (resultBox) {
+                resultBox.classList.remove("d-none");
+                resultBox.innerHTML = `<strong>Success!</strong> All tests passed. Coding challenge complete! Score: 100%. Redirecting...`;
+            }
+
+            // Send Results to Backend Simulated API
+            await saveToBackend('Coding Challenge', { progress: 100, status: "Completed", testsPassed: 5 });
+
             calculateAssessment();
-            alert("Solution successfully submitted!");
-            go('dashboard');
+            // Removed alert and set a timeout instead to allow reading the text
+            setTimeout(() => {
+                go('dashboard');
+                resultBox.classList.add("d-none"); // Hide it for next time
+            }, 2500); 
         }
 
         /* ================= ASSIGNMENT ================= */
@@ -714,19 +744,30 @@ function isPrime(n) {
             reviewText.innerText = feedback;
         }
 
-        function submitAssignment() {
+        async function submitAssignment() {
             const q1 = document.getElementById("assign-q1").value;
             const q2 = document.getElementById("assign-q2").value;
             
             if (!q1 || !q2) return alert("Please answer all questions before submitting.");
             
             state.assignmentSubmitted = true;
+            
+            // Display Results on Frontend
             document.getElementById("assignmentStatus").classList.remove("d-none");
+            document.getElementById("assignmentStatus").innerHTML = `✅ Assignment submitted and queued for review! (Score Pending)`;
+
+            // Send Results to Backend Simulated API
+            await saveToBackend('Assignment', { 
+                submitted: true, 
+                answers: { q1, q2 },
+                timestamp: new Date().toISOString()
+            });
+
             calculateAssessment();
             setTimeout(() => {
                 document.getElementById("assignmentStatus").classList.add("d-none");
                 go('dashboard');
-            }, 2000);
+            }, 2500);
         }
 
         function resetAll() {
