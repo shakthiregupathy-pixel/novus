@@ -1,5 +1,443 @@
 <!DOCTYPE html>
+<html lang="en"><!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mavericks Fresher Reporting - Rosie AI</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        .card-custom {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        h2, h5 { 
+            color: #333;
+            font-weight: 600;
+        }
+
+        .btn-generate {
+            background: #6a5acd;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            transition: 0.3s;
+        }
+        .btn-generate:hover {
+            background: #5a4abd;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-download {
+            background: linear-gradient(90deg, #84fab0, #8fd3f4);
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            color: #333;
+            padding: 10px 25px;
+        }
+
+        /* =========================================
+           ROSIE AI CHATBOT (PURPLE THEMED)
+           ========================================= */
+        #chatbot-container {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .chat-trigger {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #42a5f5, #7e57c2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(126, 87, 194, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: white;
+            font-size: 24px;
+        }
+
+        .chat-trigger:hover { transform: scale(1.1); }
+
+        .chat-window {
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 24px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #42a5f5, #7e57c2);
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background: #f9faff;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .bot-msg {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            border: 1px solid #eee;
+            color: #444;
+        }
+
+        .user-msg {
+            background: #7e57c2;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            color: white;
+        }
+
+        .chat-input-area {
+            padding: 15px;
+            background: white;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: #f0f2f5;
+            border: 1px solid #e0e0e0;
+            border-radius: 25px;
+            padding: 10px 20px;
+            color: #333;
+            outline: none;
+        }
+
+        .chat-send {
+            background: #42a5f5;
+            border: none;
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .typing-indicator { 
+            font-size: 11px; 
+            color: #7e57c2; 
+            padding: 5px 20px 10px; 
+            display: none; 
+            background: #f9faff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h2 style="color: #6a5acd; font-weight: 700;">Mavericks Training Dashboard</h2>
+        <p class="text-muted">Fresher Reporting & Performance Analytics</p>
+    </div>
+
+    <!-- Candidate Details -->
+    <div class="card-custom">
+        <h5><i class="fas fa-user-graduate me-2"></i>Candidate Profile</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="name" class="form-control" readonly value="Loading...">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Employee ID</label>
+                <input type="text" id="empid" class="form-control" readonly value="EMP101">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Department</label>
+                <input type="text" id="dept" class="form-control" readonly value="Engineering">
+            </div>
+        </div>
+        <div class="row mt-2 g-3">
+            <div class="col-md-4">
+                <label class="form-label">Designated Role</label>
+                <input type="text" id="role" class="form-control" readonly value="Associate Developer">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Training Phase</label>
+                <input type="text" id="phase" class="form-control" readonly value="Foundation">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Badges Earned</label>
+                <input type="text" id="certs" class="form-control" readonly value="Python, React">
+            </div>
+        </div>
+    </div>
+
+    <!-- Assessment Section -->
+    <div class="card-custom">
+        <h5><i class="fas fa-chart-line me-2"></i>Skill Assessment Input</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Quiz Mastery (%)</label>
+                <input type="number" id="quiz" class="form-control" placeholder="0-100">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Coding Proficiency (%)</label>
+                <input type="number" id="coding" class="form-control" placeholder="0-100">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Project Execution (%)</label>
+                <input type="number" id="assignment" class="form-control" placeholder="0-100">
+            </div>
+        </div>
+        <div class="d-flex flex-wrap gap-3 mt-4">
+            <button class="btn btn-generate" onclick="generateReport()">
+                <i class="fas fa-sync-alt me-2"></i>Update Performance
+            </button>
+            <button class="btn btn-outline-success rounded-pill" onclick="generateCertificate()">
+                <i class="fas fa-award me-2"></i>Issue Certificate
+            </button>
+        </div>
+    </div>
+
+    <!-- Performance Summary -->
+    <div class="card-custom">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h5>Final Evaluation</h5>
+                <p><strong>Calculated Score:</strong> <span id="overall" style="color: #6a5acd; font-weight: bold;">-</span></p>
+                <p><strong>Expertise Level:</strong> <span id="skill" style="color: #42a5f5; font-weight: bold;">-</span></p>
+                <p class="mt-3"><strong>AI Feedback:</strong></p>
+                <p id="feedback" class="text-muted small">-</p>
+            </div>
+            <div class="col-md-6 text-md-end">
+                <button class="btn btn-download" onclick="downloadPDF()">
+                    <i class="fas fa-file-pdf me-2"></i>Export Official PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROSIE CHATBOT UI -->
+<div id="chatbot-container">
+    <div class="chat-trigger" onclick="toggleChat()">
+        <i class="fas fa-robot"></i>
+    </div>
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <i class="fas fa-microchip"></i>
+                <span style="font-weight:bold; font-size:14px;">Rosie Assistant</span>
+            </div>
+            <i class="fas fa-times" onclick="toggleChat()" style="cursor:pointer; opacity:0.8;"></i>
+        </div>
+        <div class="chat-messages" id="chatMsgs">
+            <div class="message bot-msg">System Online. 🤖 Hello! I am Rosie, your mechanical companion. How may I assist you today? 💖</div>
+        </div>
+        <div class="typing-indicator" id="typing">Rosie is processing...</div>
+        <div class="chat-input-area">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Command ROSIE...">
+            <button class="chat-send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+        authDomain: "novus-9dfb8.firebaseapp.com",
+        projectId: "novus-9dfb8",
+        storageBucket: "novus-9dfb8.firebasestorage.app",
+        messagingSenderId: "641276518161",
+        appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let overallScore = 0;
+    let feedbackText = "";
+    let skillLevel = "";
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
+        try {
+            const docSnap = await getDoc(doc(db, "users", user.uid));
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("name").value = data.name || "Mavericks Member";
+                document.getElementById("empid").value = data.employeeId || "EMP101";
+                document.getElementById("dept").value = data.department || "Engineering";
+                document.getElementById("role").value = data.role || "Fresher";
+                document.getElementById("phase").value = data.phase || "Training";
+                document.getElementById("certs").value = data.certs || "In Progress";
+            }
+        } catch (e) { console.error("Data error", e); }
+    });
+
+    window.generateReport = function() {
+        let quiz = parseFloat(document.getElementById("quiz").value) || 0;
+        let coding = parseFloat(document.getElementById("coding").value) || 0;
+        let assignment = parseFloat(document.getElementById("assignment").value) || 0;
+        overallScore = ((quiz + coding + assignment) / 3).toFixed(2);
+        if (overallScore >= 85) {
+            skillLevel = "Advanced";
+            feedbackText = "Highly recommended for recruitment. Excellent technical skills.";
+        } else if (overallScore >= 60) {
+            skillLevel = "Intermediate";
+            feedbackText = "Recommended. Strong foundation and good learning capability.";
+        } else {
+            skillLevel = "Beginner";
+            feedbackText = "Requires additional training before recruitment.";
+        }
+        document.getElementById("overall").innerText = overallScore + " %";
+        document.getElementById("skill").innerText = skillLevel;
+        document.getElementById("feedback").innerText = feedbackText;
+    };
+
+    window.downloadPDF = function() {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        let name = document.getElementById("name").value;
+        pdf.text("Mavericks Training Report", 105, 20, null, null, "center");
+        pdf.text(`Candidate: ${name}`, 20, 40);
+        pdf.text(`Overall Score: ${overallScore}%`, 20, 50);
+        pdf.save(`${name}_Report.pdf`);
+    };
+
+    window.generateCertificate = function() {
+        if(overallScore < 1) { alert("Please calculate performance first."); return; }
+        const { jsPDF } = window.jspdf;
+        const cert = new jsPDF("landscape");
+        const name = document.getElementById("name").value;
+        cert.text("CERTIFICATE OF COMPLETION", 148, 60, null, null, "center");
+        cert.text(name, 148, 110, null, null, "center");
+        cert.save(`${name}_Certificate.pdf`);
+    };
+
+    // --- ROSIE CHATBOT LOGIC ---
+    const apiKey = "";
+    window.toggleChat = () => {
+        const win = document.getElementById('chatWindow');
+        win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+    };
+
+    window.sendMessage = async () => {
+        const input = document.getElementById('chatInput');
+        const msg = input.value.trim();
+        if(!msg) return;
+
+        addMessage(msg, 'user-msg');
+        input.value = '';
+        
+        document.getElementById('typing').style.display = 'block';
+        const response = await callGemini(msg);
+        document.getElementById('typing').style.display = 'none';
+        
+        addMessage(response, 'bot-msg');
+    };
+
+    function addMessage(text, className) {
+        const chatMsgs = document.getElementById('chatMsgs');
+        const div = document.createElement('div');
+        div.className = `message ${className}`;
+        div.innerText = text;
+        chatMsgs.appendChild(div);
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+
+    async function callGemini(prompt) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        const payload = {
+            contents: [{ parts: [{ text: prompt }] }],
+            systemInstruction: { parts: [{ text: "You are Rosie, a sophisticated but bubbly pink robot AI. Your personality is extremely kind, helpful, and slightly robotic but friendly. Use emojis like 🤖, 🌸, ✨, and 💖. Keep responses concise." }] }
+        };
+        let delay = 1000;
+        for (let i = 0; i < 5; i++) {
+            try {
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (resp.ok) {
+                    const data = await resp.json();
+                    return data.candidates[0].content.parts[0].text;
+                }
+            } catch (e) {}
+            await new Promise(r => setTimeout(r, delay));
+            delay *= 2;
+        }
+        return "Connection error. Re-calibrating circuits... 🎀";
+    }
+
+    document.getElementById('chatInput').addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') sendMessage();
+    });
+</script>
+
+</body>
+</html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
