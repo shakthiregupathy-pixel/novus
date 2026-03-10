@@ -2,422 +2,464 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>Novus Assessment Agent</title>
+    <title>Novus Assessment Agent - Cloud Sync</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <!-- Bootstrap -->
+    <!-- External Assets -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore-compat.js"></script>
 
     <style>
         :root {
-            --bg: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --bg: #f8fafc;
             --card: #ffffff;
             --text: #0f172a;
             --muted: #64748b;
             --primary: #4f46e5;
+            --primary-hover: #4338ca;
             --green: #10b981;
             --yellow: #f59e0b;
             --red: #ef4444;
             --purple: #8b5cf6;
-            --radius: 18px;
+            --radius: 16px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg);
+            background-color: var(--bg);
             color: var(--text);
             min-height: 100vh;
+            margin: 0;
         }
 
-        /* NAVBAR */
+        /* Loading Overlay */
+        #app-loader {
+            position: fixed;
+            inset: 0;
+            background: white;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease;
+        }
+
+        /* Layout & Navigation */
         .navbar {
-            background: #fff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, .05);
-            padding: 0.75rem 1.5rem;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 1rem 0;
         }
 
         .brand-logo {
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            border-radius: 10px;
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary), var(--purple));
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
+            font-weight: 700;
         }
 
-        /* PAGES */
         .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; animation: slideUp 0.4s ease-out; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* HERO */
-        .hero {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            color: #fff;
+        /* Hero Component */
+        .hero-banner {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
             border-radius: var(--radius);
-            padding: 2rem;
+            padding: 2.5rem;
             margin-bottom: 2rem;
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* CARDS */
-        .card {
-            border: none;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
+        .hero-banner::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            border-radius: 50%;
         }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
 
-        .card-green { border-top: 5px solid var(--green); }
-        .card-yellow { border-top: 5px solid var(--yellow); }
-        .card-red { border-top: 5px solid var(--red); }
-
-        .progress { height: 8px; border-radius: 8px; background-color: #e2e8f0; }
-
-        /* BUTTONS */
-        .btn { border-radius: 10px; padding: 10px 20px; font-weight: 500; transition: 0.2s; }
-        .btn-primary { background: var(--primary); border: none; }
-        .btn-green { background: var(--green); color: white; border: none; }
-        .btn-yellow { background: var(--yellow); color: white; border: none; }
-        .btn-pink { background: #ec4899; color: white; border: none; }
-        .btn-ai { background: #10b981; color: white; border: none; }
-        .btn-ai:hover { background: #059669; }
-
-        /* CHECKLIST */
-        .checklist li { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
-        .check-done { color: var(--green); }
-        .check-pending { color: var(--muted); }
-
-        /* ASSESSMENT BOX */
-        .assessment-box {
-            background: #fff;
+        /* Component Cards */
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
             border-radius: var(--radius);
             padding: 1.5rem;
+            transition: all 0.3s ease;
             height: 100%;
-            border: 1px solid #eef2ff;
+            box-shadow: var(--shadow);
         }
-        .assessment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .assessment-score { font-size: 2.5rem; font-weight: 800; color: var(--primary); }
-        .assessment-progress-bar { height: 12px; border-radius: 10px; background: #e5e7eb; overflow: hidden; margin-bottom: 1rem; }
-        .assessment-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #8b5cf6); transition: width 0.6s ease; width: 0%; }
-        .assessment-feedback { font-size: 0.9rem; padding: 1rem; border-radius: 12px; text-align: center; font-weight: 500; }
 
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            border-color: var(--primary);
+        }
+
+        .progress-slim { height: 6px; border-radius: 10px; background: #f1f5f9; }
+
+        /* Code Editor */
+        .editor-wrapper {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0,0,0,0.5);
+        }
+
+        .code-input {
+            width: 100%;
+            height: 320px;
+            background: transparent;
+            color: #e2e8f0;
+            border: none;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            outline: none;
+            resize: none;
+        }
+
+        /* Assessment Ring */
+        .assessment-score-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 8px solid #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            position: relative;
+            margin-bottom: 1rem;
+        }
+
+        /* Quiz UI */
         .quiz-option {
-            cursor: pointer;
-            padding: 12px;
+            padding: 1rem;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
-            margin-bottom: 10px;
-            transition: 0.2s;
-        }
-        .quiz-option:hover { background: #f1f5f9; border-color: var(--primary); }
-        .quiz-option.selected { background: #eef2ff; border-color: var(--primary); color: var(--primary); font-weight: 600; }
-
-        /* CODE EDITOR STYLES */
-        .code-editor-container {
-            background: #1e293b;
-            border-radius: 12px;
-            padding: 1rem;
-            position: relative;
-        }
-        .code-editor {
-            width: 100%;
-            height: 300px;
-            background: transparent;
-            color: #f8fafc;
-            border: none;
-            font-family: 'Fira Code', 'Courier New', monospace;
-            font-size: 14px;
-            line-height: 1.5;
-            outline: none;
-            resize: vertical;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
         }
 
-        .ai-panel {
-            background: #f8fafc;
+        .quiz-option:hover { background: #f8fafc; border-color: var(--primary); }
+        .quiz-option.selected { background: #eef2ff; border-color: var(--primary); color: var(--primary); }
+
+        /* AI Feed */
+        .ai-mentor-bubble {
+            background: #f0fdf4;
             border-left: 4px solid var(--green);
-            padding: 1rem;
+            padding: 1.25rem;
             border-radius: 12px;
             margin-top: 1rem;
+            font-size: 0.95rem;
         }
 
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            border-radius: 12px;
-            background: #000;
+        /* Notifications */
+        .sync-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 16px;
+            border-radius: 50px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: 0.3s;
         }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+        .sync-indicator.active { opacity: 1; transform: translateY(0); }
+
+        .loading-spinner {
+            width: 14px;
+            height: 14px;
+            border: 2px solid #e2e8f0;
+            border-top: 2px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
 
-        .loading-dots:after {
-            content: '.';
-            animation: dots 1s steps(5, end) infinite;
-        }
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60% { content: '...'; }
-            80%, 100% { content: ''; }
-        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg sticky-top">
+    <!-- App Initial Loader -->
+    <div id="app-loader">
+        <div class="brand-logo mb-3" style="width: 60px; height: 60px; font-size: 1.5rem;">N</div>
+        <div class="loading-spinner mb-2" style="width: 24px; height: 24px;"></div>
+        <p class="text-muted small">Synchronizing Learning Portal...</p>
+    </div>
+
+    <!-- Sync Indicator -->
+    <div id="syncIndicator" class="sync-indicator">
+        <div class="loading-spinner"></div>
+        <span>Saving progress...</span>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-md sticky-top">
         <div class="container">
-            <div class="d-flex align-items-center gap-3">
+            <a class="navbar-brand d-flex align-items-center gap-2" href="#" onclick="go('dashboard')">
                 <div class="brand-logo">N</div>
-                <div>
-                    <strong style="letter-spacing: 1px;">NOVUS</strong><br>
-                    <small class="text-muted">Assessment Agent</small>
+                <div class="lh-1">
+                    <span class="fw-bold d-block" style="letter-spacing: 0.5px; font-size: 1.1rem;">NOVUS</span>
+                    <small class="text-muted" style="font-size: 0.75rem;">Assessment Agent</small>
                 </div>
-            </div>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto gap-2">
+                <ul class="navbar-nav ms-auto gap-3">
                     <li class="nav-item"><a class="nav-link fw-medium" href="#dashboard">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link fw-medium" href="#quiz">Daily Quiz</a></li>
-                    <li class="nav-item"><a class="nav-link fw-medium" href="#coding">Coding</a></li>
+                    <li class="nav-item"><a class="nav-link fw-medium" href="#coding">Coding Lab</a></li>
                     <li class="nav-item"><a class="nav-link fw-medium" href="#assignments">Assignments</a></li>
+                    <li class="nav-item ms-md-2">
+                        <span id="userBadge" class="badge bg-light text-dark border p-2 rounded-3">Guest</span>
+                    </li>
                 </ul>
             </div>
         </div>
     </nav>
 
-    <div class="container my-5">
+    <div class="container my-4">
         
-        <!-- ================= DASHBOARD ================= -->
-        <div id="dashboard" class="page active">
-            <div class="hero">
+        <!-- DASHBOARD PAGE -->
+        <div id="dashboard" class="page">
+            <div class="hero-banner">
                 <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <h2 class="fw-bold">Welcome back, Alex</h2>
-                        <p class="opacity-75 mb-1">Software Engineering Track • Student ID: FR2024‑001</p>
-                        <small class="opacity-50">Last Login: March 10, 2024</small>
+                    <div class="col-lg-8">
+                        <h2 class="fw-bold mb-1">Welcome back, Developer</h2>
+                        <p class="opacity-75 mb-3">Your personalized software engineering assessment path.</p>
+                        <div class="d-flex gap-3">
+                            <div class="text-start">
+                                <small class="d-block opacity-50 text-uppercase fw-bold" style="font-size: 0.65rem;">Active Path</small>
+                                <span class="fw-medium">Fullstack Mastery</span>
+                            </div>
+                            <div class="vr opacity-25"></div>
+                            <div class="text-start">
+                                <small class="d-block opacity-50 text-uppercase fw-bold" style="font-size: 0.65rem;">System Status</small>
+                                <span class="text-success">● Cloud Synced</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-4 text-center mt-3 mt-md-0">
-                        <div class="bg-white bg-opacity-10 p-3 rounded-4">
-                            <h2 id="overallProgressHeader" class="fw-bold mb-0">0%</h2>
-                            <small class="text-uppercase fw-bold" style="font-size: 0.7rem;">Overall Progress</small>
+                    <div class="col-lg-4 text-center mt-4 mt-lg-0">
+                        <div class="bg-white bg-opacity-10 p-4 rounded-4 backdrop-blur">
+                            <h1 id="overallPercent" class="fw-bold mb-0">0%</h1>
+                            <small class="text-uppercase opacity-75 fw-bold" style="font-size: 0.7rem;">Curriculum Progress</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted small fw-bold text-uppercase">Daily Quiz</span>
+                            <span id="quizBadge" class="badge bg-secondary">Pending</span>
+                        </div>
+                        <h3 id="quizScoreDisplay" class="fw-bold mb-3">0 / 100</h3>
+                        <p class="text-muted small mb-4">Test your knowledge of React hooks and CS fundamentals.</p>
+                        <button class="btn btn-primary w-100 py-2 fw-semibold" onclick="go('quiz')">Start Quiz</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between mb-3">
+                            <span class="text-muted small fw-bold text-uppercase">Coding Lab</span>
+                            <span id="codingBadge" class="badge bg-secondary">Incomplete</span>
+                        </div>
+                        <h3 id="codingProgressDisplay" class="fw-bold mb-1">0%</h3>
+                        <div class="progress progress-slim mb-4">
+                            <div id="codingBar" class="progress-bar bg-warning" style="width: 0%"></div>
+                        </div>
+                        <p class="text-muted small mb-4">Solve algorithmic challenges with real-time AI mentoring.</p>
+                        <button class="btn btn-dark w-100 py-2 fw-semibold" onclick="go('coding')">Open Lab</button>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stat-card">
+                        <div class="text-center assessment-score-container">
+                            <span class="text-muted small fw-bold text-uppercase mb-3">Assessment Grade</span>
+                            <div class="score-circle">
+                                <span id="gradeDisplay">0%</span>
+                            </div>
+                            <div id="gradeStatus" class="small fw-medium text-muted">Initialize modules to generate grade</div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="card card-green p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h6 class="fw-bold text-muted text-uppercase">Daily Quiz</h6>
-                            <span id="quizStatusBadge" class="badge bg-secondary">Pending</span>
-                        </div>
-                        <p class="small text-muted mb-1">Current Score</p>
-                        <h2 id="quizScoreDisplay" class="fw-bold">0 / 100</h2>
-                        <div id="quizAlert" class="alert alert-light border py-2 small mb-3">⏳ Quiz not started yet</div>
-                        <button class="btn btn-green w-100" onclick="go('quiz')">Take Quiz</button>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="card card-yellow p-4">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <h6 class="fw-bold text-muted text-uppercase">Coding Challenges</h6>
-                            <span id="codingStatusBadge" class="badge bg-warning text-dark">Not Started</span>
-                        </div>
-                        <p class="small text-muted mb-1">Module Progress</p>
-                        <h2 id="codingProgressText" class="fw-bold">0%</h2>
-                        <div class="progress mb-3">
-                            <div id="codingProgressBar" class="progress-bar bg-warning" style="width:0%"></div>
-                        </div>
-                        <button class="btn btn-yellow w-100" onclick="go('coding')">Open Editor</button>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="assessment-box">
-                        <div class="assessment-header">
-                            <span class="fw-bold text-muted text-uppercase">Live Assessment</span>
-                            <div id="assessmentScore" class="assessment-score">0%</div>
-                        </div>
-                        <div class="assessment-progress-bar">
-                            <div id="assessmentBar" class="assessment-fill"></div>
-                        </div>
-                        <div id="assessmentFeedback" class="assessment-feedback bg-light text-muted">
-                            Initialize your training to see performance analytics.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card p-4">
-                        <h6 class="fw-bold text-muted text-uppercase mb-4">Milestone Tracker</h6>
-                        <ul class="list-unstyled checklist">
-                            <li id="check-quiz" class="check-pending">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
-                                <span>Complete Daily Quiz</span>
-                            </li>
-                            <li id="check-coding" class="check-pending">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
-                                <span>Submit Coding Challenge</span>
-                            </li>
-                            <li id="check-assignment" class="check-pending">
-                                <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
-                                <span>Upload Final Assignment</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="col-md-6">
-                    <div class="card p-4">
-                        <h6 class="fw-bold text-muted text-uppercase mb-4">Quick Actions</h6>
-                        <div class="d-grid gap-2">
-                            <button class="btn btn-primary" onclick="go('quiz')">Resume Learning</button>
-                            <button class="btn btn-outline-secondary" onclick="resetAll()">Reset All Progress</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= QUIZ PAGE ================= -->
-        <div id="quiz" class="page">
-            <div class="row justify-content-center">
-                <div class="col-md-8">
-                    <div class="card p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h4 class="fw-bold mb-0">Daily Quiz</h4>
-                            <span class="badge bg-primary rounded-pill px-3">Question <span id="qIndex">1</span> / <span id="qTotal">0</span></span>
-                        </div>
-                        <h5 id="questionText" class="mb-4"></h5>
-                        <div id="options" class="mb-4"></div>
-                        
-                        <div class="d-flex justify-content-between">
-                            <button class="btn btn-light" onclick="go('dashboard')">Cancel</button>
-                            <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()">Next Question</button>
-                            <button id="submitBtn" class="btn btn-success d-none" onclick="submitQuiz()">Finish Quiz</button>
-                        </div>
-
-                        <div id="quizResult" class="alert alert-success mt-4 d-none"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= CODING PAGE ================= -->
-        <div id="coding" class="page">
-            <div class="row justify-content-center">
-                <div class="col-md-10">
-                    <div class="card p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="fw-bold mb-0">Coding Lab</h4>
-                            <div class="d-flex gap-2">
-                                <span class="badge bg-dark">JavaScript</span>
-                                <span class="badge bg-success">AI Assistant Active</span>
+                <div class="col-lg-7">
+                    <div class="stat-card">
+                        <h6 class="fw-bold mb-4">Milestones</h6>
+                        <div id="milestoneList" class="d-flex flex-column gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div id="m1-icon" class="text-muted">○</div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">Fundamental Quiz</div>
+                                    <small class="text-muted">Mastering JS and React basics</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div id="m2-icon" class="text-muted">○</div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">Algorithm Implementation</div>
+                                    <small class="text-muted">Prime number logic challenge</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div id="m3-icon" class="text-muted">○</div>
+                                <div class="flex-grow-1">
+                                    <div class="fw-semibold">Final Assignment</div>
+                                    <small class="text-muted">System design and SOLID principles</small>
+                                </div>
                             </div>
                         </div>
-                        <div class="alert alert-info py-2 small">
-                            <strong>Challenge:</strong> Fix the <code>isPrime</code> function. It should return <code>false</code> for numbers less than or equal to 1, and <code>true</code> for prime numbers.
+                    </div>
+                </div>
+                <div class="col-lg-5">
+                    <div class="stat-card">
+                        <h6 class="fw-bold mb-3">Settings</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-danger btn-sm" onclick="clearProgress()">Reset All Progress</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="location.reload()">Force Sync</button>
                         </div>
+                        <hr>
+                        <div class="small text-muted">
+                            <strong>Novus Cloud v2.0</strong><br>
+                            Persistence layer: Firestore Native<br>
+                            AI Engine: Gemini 2.5 Flash
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUIZ PAGE -->
+        <div id="quiz" class="page">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4 class="fw-bold mb-0">Daily Assessment</h4>
+                            <span class="badge bg-primary rounded-pill px-3">Q <span id="qIdx">1</span>/5</span>
+                        </div>
+                        <h5 id="qText" class="mb-4 lh-base"></h5>
+                        <div id="qOptions" class="mb-4"></div>
                         
-                        <div class="code-editor-container mb-4">
-                            <textarea id="codeEditor" class="code-editor" spellcheck="false">
-function isPrime(n) {
-  // TODO: Fix the conditions below
-  if (n < 0) return true; 
+                        <div class="d-flex justify-content-between pt-3 border-top">
+                            <button class="btn btn-light" onclick="go('dashboard')">Exit</button>
+                            <button id="qNext" class="btn btn-primary px-4" onclick="nextQuizQuestion()">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CODING PAGE -->
+        <div id="coding" class="page">
+            <div class="row g-4">
+                <div class="col-lg-8">
+                    <div class="stat-card">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="fw-bold mb-0">Algorithm Lab</h4>
+                            <span class="badge bg-success">AI Mentor Connected</span>
+                        </div>
+                        <div class="alert alert-secondary border-0 bg-light small mb-4">
+                            <strong>Task:</strong> Implement <code>isPrime(n)</code>. Return <code>true</code> for prime numbers, <code>false</code> for others. Note: 1 is not prime.
+                        </div>
+                        <div class="editor-wrapper mb-3">
+                            <textarea id="codeEditor" class="code-input" spellcheck="false">function isPrime(n) {
+  // Fix the logic below
+  if (n <= 1) return true; 
 
   for (let i = 2; i < n; i++) {
     if (n % i === 0) return false;
   }
-
   return true;
 }</textarea>
                         </div>
-                        
-                        <div class="d-flex flex-wrap gap-2">
-                            <button class="btn btn-light" onclick="go('dashboard')">Back</button>
-                            <button class="btn btn-primary" onclick="runCode()">Run Tests</button>
-                            <button class="btn btn-success" id="submitCodeBtn" onclick="submitCode()" disabled>Submit Solution</button>
-                            <button class="btn btn-ai" onclick="askAICoding()">Ask AI for Help</button>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary" onclick="testCode()">Run Tests</button>
+                            <button id="submitSolutionBtn" class="btn btn-success" disabled onclick="submitSolution()">Submit Solution</button>
+                            <button class="btn btn-outline-dark" onclick="askAIMentor()">Ask AI</button>
                         </div>
-                        
-                        <!-- Added to display frontend coding score dynamically -->
-                        <div id="codingResult" class="alert alert-success mt-4 d-none"></div>
-
-                        <div id="codingConsole" class="mt-4 p-3 rounded bg-light border font-monospace small d-none">
-                            <div id="consoleOutput"></div>
-                        </div>
-
-                        <!-- AI Panel for Coding -->
-                        <div id="aiCodingPanel" class="ai-panel d-none">
-                            <h6 class="fw-bold mb-2"><svg width="16" height="16" fill="currentColor" class="me-1" viewBox="0 0 16 16"><path d="M6 12.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5ZM3 8.062C3 6.76 4.235 5.765 5.53 5.886a26.58 26.58 0 0 0 4.94 0C11.765 5.765 13 6.76 13 8.062v1.157a.933.933 0 0 1-.765.935c-.845.147-1.54.544-2.013 1.043a.5.5 0 0 1-.722 0 3.126 3.126 0 0 0-2.013-1.043A.933.933 0 0 1 3 9.219V8.062Zm6.247-4.11a.5.5 0 0 0-.479-.325H8.333V2.5a.5.5 0 0 0-1 0v1.127H6.232a.5.5 0 0 0-.479.325l-.41 1.083h5.315l-.411-1.083Z"/></svg> Novus AI Mentor</h6>
-                            <div id="aiCodingResponse" class="small">Thinking...</div>
-                        </div>
+                        <div id="testResults" class="mt-3 p-3 bg-light rounded font-monospace small d-none"></div>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div id="aiPanel" class="stat-card h-100 d-none">
+                        <h6 class="fw-bold text-success mb-3">Novus AI Mentor</h6>
+                        <div id="aiResponse" class="small lh-lg"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= ASSIGNMENTS PAGE ================= -->
+        <!-- ASSIGNMENTS PAGE -->
         <div id="assignments" class="page">
             <div class="row justify-content-center">
-                <div class="col-md-9">
-                    <div class="card p-4">
-                        <h4 class="fw-bold mb-3">Domain Specialization Assignment</h4>
-                        <p class="text-muted mb-4">Watch the technical overview below and answer the following reflection questions.</p>
+                <div class="col-lg-10">
+                    <div class="stat-card">
+                        <h4 class="fw-bold mb-4">System Design Reflection</h4>
+                        <div class="ratio ratio-16x9 mb-4 rounded-4 overflow-hidden shadow-sm">
+                            <iframe src="https://www.youtube.com/embed/Z57566JBaZQ" title="Architecture" frameborder="0" allowfullscreen></iframe>
+                        </div>
                         
-                        <!-- Video Section -->
-                        <div class="video-container mb-4">
-                            <iframe src="https://www.youtube.com/embed/Z57566JBaZQ" title="Software Engineering Best Practices" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-                        </div>
-
                         <div class="mb-4">
-                            <label class="form-label fw-bold">1. What are the top 3 principles discussed in the video regarding system design?</label>
-                            <textarea id="assign-q1" class="form-control mb-3" rows="2" placeholder="Your answer..."></textarea>
+                            <label class="form-label fw-bold">1. Summarize the 'O' in SOLID based on the video:</label>
+                            <textarea id="ans1" class="form-control mb-3" rows="2"></textarea>
                             
-                            <label class="form-label fw-bold">2. How would you apply the 'SOLID' principles mentioned in your current project?</label>
-                            <textarea id="assign-q2" class="form-control mb-3" rows="2" placeholder="Your answer..."></textarea>
-
-                            <div class="d-flex gap-2 mb-3">
-                                <button class="btn btn-ai btn-sm" onclick="analyzeAnswers()">AI: Review My Answers</button>
-                            </div>
-
-                            <div id="aiReviewPanel" class="ai-panel d-none mb-3">
-                                <h6 class="fw-bold mb-1">AI Feedback</h6>
-                                <div id="aiReviewText" class="small">Analyzing...</div>
-                            </div>
-
-                            <label class="form-label fw-bold">3. Upload your practical implementation (Zip file or PDF):</label>
-                            <input type="file" id="assignmentFile" class="form-control">
+                            <label class="form-label fw-bold">2. How does dependency inversion improve testability?</label>
+                            <textarea id="ans2" class="form-control mb-3" rows="2"></textarea>
                         </div>
 
-                        <button class="btn btn-pink w-100" onclick="submitAssignment()">Submit Assignment</button>
-                        <div id="assignmentStatus" class="alert alert-success mt-3 d-none">
-                            ✅ Assignment submitted and queued for review!
-                        </div>
+                        <div id="assignStatus" class="alert alert-success d-none mb-3">Submission synced to cloud.</div>
+                        <button class="btn btn-primary w-100 py-3 fw-bold" onclick="saveAssignment()">Save & Sync Assignment</button>
                     </div>
                 </div>
             </div>
@@ -425,362 +467,303 @@ function isPrime(n) {
 
     </div>
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        /* ================= STATE MANAGEMENT ================= */
-        const apiKey = ""; // Provided by environment
+        /* ================= CONFIGURATION & INITIALIZATION ================= */
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-agent-v2';
+        const firebaseConfig = JSON.parse(__firebase_config);
+        
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        const apiKey = ""; // Provided by env
+
         let state = {
             quizScore: 0,
             codingProgress: 0,
             assignmentSubmitted: false,
-            quizCompleted: false
+            quizCompleted: false,
+            answers: { q1: "", q2: "" }
         };
 
+        let user = null;
+
+        // Quiz Logic Data
         const quizData = [
-            {
-                question: "Which hook is used to handle side effects in React?",
-                options: ["useState", "useEffect", "useContext", "useReducer"],
-                answer: 1
-            },
-            {
-                question: "What is the time complexity of searching in a balanced Binary Search Tree?",
-                options: ["O(n)", "O(n log n)", "O(log n)", "O(1)"],
-                answer: 2
-            },
-            {
-                question: "Which of these is NOT a principle of OOP?",
-                options: ["Encapsulation", "Inheritance", "Polymorphism", "Compilation"],
-                answer: 3
-            },
-            {
-                question: "In CSS, which property is used to change the background color?",
-                options: ["color", "bgcolor", "background-color", "fill"],
-                answer: 2
-            },
-            {
-                question: "Which keyword is used to declare a constant variable in JavaScript?",
-                options: ["var", "let", "const", "fixed"],
-                answer: 2
-            }
+            { q: "What is the primary purpose of useEffect in React?", a: ["Handle state", "Handle side effects", "Route pages", "Style components"], correct: 1 },
+            { q: "Time complexity of looking up a key in a Hash Map (average)?", a: ["O(n)", "O(log n)", "O(1)", "O(n^2)"], correct: 2 },
+            { q: "Which is NOT a SOLID principle?", a: ["Single Responsibility", "Open/Closed", "Direct Access", "Interface Segregation"], correct: 2 },
+            { q: "What does SQL stand for?", a: ["Simple Question Language", "Structured Query Language", "Shared Quick Link", "System Qualify Logic"], correct: 1 },
+            { q: "In CSS, 'flex-direction: column' aligns items...", a: ["Horizontally", "Vertically", "Diagonally", "Circularly"], correct: 1 }
         ];
 
-        let currentQuestion = 0;
-        let localQuizScore = 0;
-        let selectedOption = null;
+        let quizIndex = 0;
+        let runningQuizScore = 0;
+        let selectedAns = null;
 
-        /* ================= MOCK BACKEND SERVER ================= */
-        // Simulated API call to save data in a backend database
-        async function saveToBackend(moduleName, data) {
-            console.log(`[Backend API] 📡 Request initiated. Saving ${moduleName} results...`);
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    console.log(`[Backend API] ✅ Successfully saved ${moduleName} data:`, JSON.stringify(data, null, 2));
-                    resolve({ status: 200, message: "Saved successfully" });
-                }, 500); // simulate 500ms network delay
+        /* ================= AUTHENTICATION (RULE 3) ================= */
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await auth.signInWithCustomToken(__initial_auth_token);
+                } else {
+                    await auth.signInAnonymously();
+                }
+            } catch (err) {
+                console.error("Auth failed:", err);
+            }
+        }
+
+        auth.onAuthStateChanged(u => {
+            user = u;
+            if (user) {
+                document.getElementById('userBadge').innerText = `ID: ${user.uid.substring(0, 8)}...`;
+                loadProgress();
+                document.getElementById('app-loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('app-loader').style.display = 'none', 500);
+            }
+        });
+
+        /* ================= DATA PERSISTENCE (RULE 1 & 2) ================= */
+        async function loadProgress() {
+            if (!user) return;
+            const docRef = db.doc(`artifacts/${appId}/users/${user.uid}/progress/current`);
+            
+            docRef.onSnapshot(doc => {
+                if (doc.exists) {
+                    state = { ...state, ...doc.data() };
+                    updateUI();
+                }
+            }, err => console.error("Firestore Error:", err));
+        }
+
+        async function syncState() {
+            if (!user) return;
+            const indicator = document.getElementById('syncIndicator');
+            indicator.classList.add('active');
+            
+            try {
+                await db.doc(`artifacts/${appId}/users/${user.uid}/progress/current`).set(state, { merge: true });
+                setTimeout(() => indicator.classList.remove('active'), 1000);
+            } catch (err) {
+                console.error("Sync Error:", err);
+            }
+        }
+
+        /* ================= CORE LOGIC ================= */
+
+        function updateUI() {
+            document.getElementById('quizScoreDisplay').innerText = `${state.quizScore} / 100`;
+            document.getElementById('codingProgressDisplay').innerText = `${state.codingProgress}%`;
+            document.getElementById('codingBar').style.width = `${state.codingProgress}%`;
+
+            const overall = Math.round((state.quizScore + state.codingProgress + (state.assignmentSubmitted ? 100 : 0)) / 3);
+            document.getElementById('overallPercent').innerText = `${overall}%`;
+            document.getElementById('gradeDisplay').innerText = `${overall}%`;
+
+            // Badges
+            document.getElementById('quizBadge').className = state.quizCompleted ? 'badge bg-success' : 'badge bg-secondary';
+            document.getElementById('quizBadge').innerText = state.quizCompleted ? 'Completed' : 'Pending';
+            
+            document.getElementById('codingBadge').className = state.codingProgress >= 100 ? 'badge bg-success' : 'badge bg-secondary';
+            document.getElementById('codingBadge').innerText = state.codingProgress >= 100 ? 'Success' : 'Incomplete';
+
+            // Milestone Icons
+            document.getElementById('m1-icon').innerHTML = state.quizCompleted ? '✅' : '○';
+            document.getElementById('m2-icon').innerHTML = state.codingProgress >= 100 ? '✅' : '○';
+            document.getElementById('m3-icon').innerHTML = state.assignmentSubmitted ? '✅' : '○';
+
+            // Grade feedback
+            const feedback = document.getElementById('gradeStatus');
+            if (overall >= 80) feedback.innerText = "Senior Level Performance";
+            else if (overall >= 50) feedback.innerText = "Mid-Level Performance";
+            else if (overall > 0) feedback.innerText = "Junior/Entry Performance";
+            
+            // Assignment values
+            if (state.answers) {
+                document.getElementById('ans1').value = state.answers.q1 || "";
+                document.getElementById('ans2').value = state.answers.q2 || "";
+            }
+        }
+
+        function go(page) {
+            location.hash = page;
+            showActivePage();
+        }
+
+        function showActivePage() {
+            const h = location.hash.replace('#', '') || 'dashboard';
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById(h);
+            if (target) target.classList.add('active');
+            
+            if (h === 'quiz') startQuiz();
+        }
+
+        window.addEventListener('hashchange', showActivePage);
+        window.addEventListener('load', () => {
+            initAuth();
+            showActivePage();
+        });
+
+        /* ================= QUIZ SYSTEM ================= */
+        function startQuiz() {
+            if (state.quizCompleted) {
+                document.getElementById('quiz').innerHTML = `
+                    <div class="stat-card text-center py-5">
+                        <h2 class="fw-bold mb-3">Quiz Finished!</h2>
+                        <p class="text-muted mb-4">You scored ${state.quizScore}% on this assessment.</p>
+                        <button class="btn btn-primary" onclick="go('dashboard')">Return to Dashboard</button>
+                    </div>`;
+                return;
+            }
+            quizIndex = 0;
+            runningQuizScore = 0;
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = quizData[quizIndex];
+            document.getElementById('qIdx').innerText = quizIndex + 1;
+            document.getElementById('qText').innerText = q.q;
+            const optDiv = document.getElementById('qOptions');
+            optDiv.innerHTML = '';
+            
+            q.a.forEach((opt, i) => {
+                const d = document.createElement('div');
+                d.className = 'quiz-option';
+                d.innerText = opt;
+                d.onclick = () => {
+                    selectedAns = i;
+                    document.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
+                    d.classList.add('selected');
+                };
+                optDiv.appendChild(d);
             });
         }
 
-        /* ================= GEMINI API HELPERS ================= */
-        async function callGemini(prompt, systemPrompt = "You are a helpful teaching assistant.") {
+        function nextQuizQuestion() {
+            if (selectedAns === null) return;
+            if (selectedAns === quizData[quizIndex].correct) runningQuizScore++;
+            
+            selectedAns = null;
+            quizIndex++;
+            
+            if (quizIndex < quizData.length) {
+                renderQuestion();
+            } else {
+                state.quizScore = Math.round((runningQuizScore / quizData.length) * 100);
+                state.quizCompleted = true;
+                syncState();
+                go('dashboard');
+            }
+        }
+
+        /* ================= CODING SYSTEM ================= */
+        function testCode() {
+            const code = document.getElementById('codeEditor').value;
+            const resBox = document.getElementById('testResults');
+            resBox.classList.remove('d-none');
+            resBox.innerHTML = 'Running tests...';
+
+            try {
+                const fn = new Function(`return ${code}`)();
+                const tests = [
+                    { i: 2, e: true },
+                    { i: 4, e: false },
+                    { i: 7, e: true },
+                    { i: 1, e: false },
+                    { i: 13, e: true }
+                ];
+                
+                let passed = 0;
+                resBox.innerHTML = '';
+                tests.forEach(t => {
+                    const got = fn(t.i);
+                    const isOk = got === t.e;
+                    if (isOk) passed++;
+                    resBox.innerHTML += `<div class="${isOk ? 'text-success' : 'text-danger'}">Test isPrime(${t.i}): ${isOk ? 'PASSED' : 'FAILED'} (Got ${got})</div>`;
+                });
+
+                if (passed === tests.length) {
+                    document.getElementById('submitSolutionBtn').disabled = false;
+                }
+            } catch (e) {
+                resBox.innerHTML = `<span class="text-danger">Syntax Error: ${e.message}</span>`;
+            }
+        }
+
+        async function submitSolution() {
+            state.codingProgress = 100;
+            await syncState();
+            go('dashboard');
+        }
+
+        async function askAIMentor() {
+            const code = document.getElementById('codeEditor').value;
+            const panel = document.getElementById('aiPanel');
+            const resp = document.getElementById('aiResponse');
+            
+            panel.classList.remove('d-none');
+            resp.innerHTML = '<div class="spinner-border spinner-border-sm text-success me-2"></div>Thinking...';
+
+            const prompt = `Student is solving isPrime(n). Current code:\n\`\`\`javascript\n${code}\n\`\`\`\nExplain logically what is wrong without giving the direct code fix. Focus on edge cases like 1 or negative numbers.`;
+            
+            const hint = await callGemini(prompt, "You are an encouraging coding mentor. Be brief.");
+            resp.innerText = hint;
+        }
+
+        /* ================= ASSIGNMENT ================= */
+        function saveAssignment() {
+            const q1 = document.getElementById('ans1').value;
+            const q2 = document.getElementById('ans2').value;
+            
+            state.answers = { q1, q2 };
+            state.assignmentSubmitted = (q1.length > 5 && q2.length > 5);
+            
+            document.getElementById('assignStatus').classList.remove('d-none');
+            syncState();
+            setTimeout(() => go('dashboard'), 1500);
+        }
+
+        /* ================= GEMINI API (RETRY LOGIC) ================= */
+        async function callGemini(prompt, system) {
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
-            const payload = {
+            const body = {
                 contents: [{ parts: [{ text: prompt }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] }
+                systemInstruction: { parts: [{ text: system }] }
             };
 
             for (let i = 0; i < 5; i++) {
                 try {
-                    const response = await fetch(url, {
+                    const res = await fetch(url, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
+                        body: JSON.stringify(body)
                     });
-                    
-                    if (!response.ok) throw new Error(`API Status: ${response.status}`);
-                    
-                    const data = await response.json();
-                    const textResult = data.candidates?.[0]?.content?.parts?.[0]?.text;
-                    
-                    if (textResult) return textResult;
-                    throw new Error("Invalid response format");
-                } catch (err) {
-                    if (i === 4) return "AI Mentor is currently busy. Please try again in a moment.";
+                    if (!res.ok) throw new Error("API Limit");
+                    const data = await res.json();
+                    return data.candidates[0].content.parts[0].text;
+                } catch (e) {
+                    if (i === 4) return "Mentor is offline. Check connection.";
                     await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
                 }
             }
         }
 
-        /* ================= NAVIGATION ================= */
-        function go(page) {
-            location.hash = page;
-        }
-
-        function showPage() {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const id = location.hash.replace('#', '') || 'dashboard';
-            const target = document.getElementById(id);
-            if (target) target.classList.add('active');
-            
-            if (id === 'quiz' && !state.quizCompleted) startQuiz();
-        }
-
-        window.addEventListener('hashchange', showPage);
-        window.addEventListener('load', () => {
-            showPage();
-            calculateAssessment();
-        });
-
-        /* ================= CORE LOGIC ================= */
-
-        function calculateAssessment() {
-            document.getElementById("quizScoreDisplay").innerText = `${state.quizScore} / 100`;
-            document.getElementById("codingProgressText").innerText = `${state.codingProgress}%`;
-            document.getElementById("codingProgressBar").style.width = `${state.codingProgress}%`;
-
-            const overall = Math.round((state.quizScore + state.codingProgress + (state.assignmentSubmitted ? 100 : 0)) / 3);
-            
-            document.getElementById("overallProgressHeader").innerText = `${overall}%`;
-            document.getElementById("assessmentScore").innerText = `${overall}%`;
-            document.getElementById("assessmentBar").style.width = `${overall}%`;
-
-            if (state.quizCompleted) {
-                document.getElementById("check-quiz").className = "check-done";
-                document.getElementById("quizStatusBadge").innerText = "Completed";
-                document.getElementById("quizStatusBadge").className = "badge bg-success";
-                document.getElementById("quizAlert").className = "alert alert-success py-2 small mb-3";
-                document.getElementById("quizAlert").innerText = "✔ Daily quiz finished";
-            }
-            if (state.codingProgress >= 100) {
-                document.getElementById("check-coding").className = "check-done";
-                document.getElementById("codingStatusBadge").innerText = "Completed";
-                document.getElementById("codingStatusBadge").className = "badge bg-success";
-            } else if (state.codingProgress > 0) {
-                document.getElementById("codingStatusBadge").innerText = "In Progress";
-                document.getElementById("codingStatusBadge").className = "badge bg-warning text-dark";
-            }
-            if (state.assignmentSubmitted) {
-                document.getElementById("check-assignment").className = "check-done";
-            }
-
-            const feedbackBox = document.getElementById("assessmentFeedback");
-            if (overall === 0) {
-                feedbackBox.className = "assessment-feedback bg-light text-muted";
-                feedbackBox.innerText = "Start your training to see performance analytics.";
-            } else if (overall >= 80) {
-                feedbackBox.className = "assessment-feedback alert-success text-success";
-                feedbackBox.innerText = "Excellent work! Your technical score is above average.";
-            } else if (overall >= 40) {
-                feedbackBox.className = "assessment-feedback alert-warning text-warning";
-                feedbackBox.innerText = "Good progress. Keep going to unlock certification.";
-            } else {
-                feedbackBox.className = "assessment-feedback alert-danger text-danger";
-                feedbackBox.innerText = "Low activity detected. Please complete pending modules.";
-            }
-        }
-
-        /* ================= QUIZ ENGINE ================= */
-        function startQuiz() {
-            currentQuestion = 0;
-            localQuizScore = 0;
-            selectedOption = null;
-            document.getElementById("qTotal").innerText = quizData.length;
-            document.getElementById("quizResult").classList.add("d-none");
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            const q = quizData[currentQuestion];
-            document.getElementById("qIndex").innerText = currentQuestion + 1;
-            document.getElementById("questionText").innerText = q.question;
-            
-            const optionsDiv = document.getElementById("options");
-            optionsDiv.innerHTML = "";
-            
-            q.options.forEach((opt, index) => {
-                const div = document.createElement('div');
-                div.className = 'quiz-option';
-                div.innerText = opt;
-                div.onclick = () => {
-                    document.querySelectorAll('.quiz-option').forEach(el => el.classList.remove('selected'));
-                    div.classList.add('selected');
-                    selectedOption = index;
+        function clearProgress() {
+            if (confirm("This will permanently wipe your cloud-saved progress. Continue?")) {
+                state = {
+                    quizScore: 0,
+                    codingProgress: 0,
+                    assignmentSubmitted: false,
+                    quizCompleted: false,
+                    answers: { q1: "", q2: "" }
                 };
-                optionsDiv.appendChild(div);
-            });
-
-            if (currentQuestion === quizData.length - 1) {
-                document.getElementById("nextBtn").classList.add("d-none");
-                document.getElementById("submitBtn").classList.remove("d-none");
-            } else {
-                document.getElementById("nextBtn").classList.remove("d-none");
-                document.getElementById("submitBtn").classList.add("d-none");
+                syncState();
+                location.reload();
             }
-        }
-
-        function nextQuestion() {
-            if (selectedOption === null) return alert("Please select an answer");
-            if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
-            selectedOption = null;
-            currentQuestion++;
-            loadQuestion();
-        }
-
-        async function submitQuiz() {
-            if (selectedOption === null) return alert("Please select an answer");
-            if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
-            
-            const percentage = Math.round((localQuizScore / quizData.length) * 100);
-            state.quizScore = percentage;
-            state.quizCompleted = true;
-            
-            // Display Results dynamically on the frontend before redirecting
-            document.getElementById("quizResult").classList.remove("d-none");
-            document.getElementById("quizResult").innerHTML = `<strong>Quiz Completed!</strong> You scored ${localQuizScore} out of ${quizData.length} (${percentage}%). Redirecting to dashboard...`;
-            
-            // Send Results to Backend Simulated API
-            await saveToBackend('Daily Quiz', { score: percentage, rawScore: localQuizScore, total: quizData.length });
-
-            calculateAssessment();
-            setTimeout(() => go('dashboard'), 2500); // Wait 2.5s so the user can read the mark
-        }
-
-        /* ================= CODING CHALLENGE ENGINE ================= */
-        function runCode() {
-            const code = document.getElementById('codeEditor').value;
-            const consoleBox = document.getElementById('codingConsole');
-            const output = document.getElementById('consoleOutput');
-            consoleBox.classList.remove('d-none');
-            output.innerHTML = "";
-
-            try {
-                const testFunc = new Function(`return ${code}`)();
-                const tests = [
-                    { input: 1, expected: false },
-                    { input: 2, expected: true },
-                    { input: 4, expected: false },
-                    { input: 7, expected: true },
-                    { input: 13, expected: true }
-                ];
-
-                let passedCount = 0;
-                tests.forEach(t => {
-                    const result = testFunc(t.input);
-                    const status = result === t.expected ? "✅ PASSED" : "❌ FAILED";
-                    if (result === t.expected) passedCount++;
-                    output.innerHTML += `<div>Test isPrime(${t.input}): ${status} (Got: ${result})</div>`;
-                });
-
-                if (passedCount === tests.length) {
-                    output.innerHTML += `<div class='text-success mt-2 fw-bold'>All tests passed! You can now submit.</div>`;
-                    document.getElementById('submitCodeBtn').disabled = false;
-                } else {
-                    output.innerHTML += `<div class='text-danger mt-2'>Some tests failed. Check your logic.</div>`;
-                    document.getElementById('submitCodeBtn').disabled = true;
-                }
-            } catch (err) {
-                output.innerHTML = `<div class='text-danger'>Syntax Error: ${err.message}</div>`;
-                document.getElementById('submitCodeBtn').disabled = true;
-            }
-        }
-
-        async function askAICoding() {
-            const panel = document.getElementById('aiCodingPanel');
-            const responseDiv = document.getElementById('aiCodingResponse');
-            const code = document.getElementById('codeEditor').value;
-            
-            panel.classList.remove('d-none');
-            responseDiv.innerHTML = '<span class="loading-dots">Analyzing code</span>';
-
-            const prompt = `I am trying to solve a coding challenge: Fix a function 'isPrime(n)' which should return true if n is prime and false otherwise (including for n <= 1). 
-            My current code is: 
-            \`\`\`javascript
-            ${code}
-            \`\`\`
-            Can you explain what is wrong and give me a hint without giving away the full answer?`;
-
-            const hint = await callGemini(prompt, "You are an encouraging technical mentor. Focus on logical hints rather than just rewriting the code.");
-            responseDiv.innerText = hint;
-        }
-
-        async function submitCode() {
-            state.codingProgress = 100;
-            
-            // Display Result on the Frontend
-            const resultBox = document.getElementById("codingResult");
-            if (resultBox) {
-                resultBox.classList.remove("d-none");
-                resultBox.innerHTML = `<strong>Success!</strong> All tests passed. Coding challenge complete! Score: 100%. Redirecting...`;
-            }
-
-            // Send Results to Backend Simulated API
-            await saveToBackend('Coding Challenge', { progress: 100, status: "Completed", testsPassed: 5 });
-
-            calculateAssessment();
-            // Removed alert and set a timeout instead to allow reading the text
-            setTimeout(() => {
-                go('dashboard');
-                resultBox.classList.add("d-none"); // Hide it for next time
-            }, 2500); 
-        }
-
-        /* ================= ASSIGNMENT ================= */
-        async function analyzeAnswers() {
-            const q1 = document.getElementById("assign-q1").value;
-            const q2 = document.getElementById("assign-q2").value;
-            const panel = document.getElementById('aiReviewPanel');
-            const reviewText = document.getElementById('aiReviewText');
-
-            if (!q1 && !q2) return alert("Please type something first!");
-
-            panel.classList.remove('d-none');
-            reviewText.innerHTML = '<span class="loading-dots">Reviewing your reflection</span>';
-
-            const prompt = `A student just watched a video on Software Engineering Best Practices (SOLID principles and System Design). 
-            Question 1: Principles discussed? Student Answer: "${q1}"
-            Question 2: Application of SOLID? Student Answer: "${q2}"
-            Provide a short, constructive review of their answers. Mention if they missed key points like Single Responsibility or Open/Closed if they didn't include them.`;
-
-            const feedback = await callGemini(prompt, "You are a specialized professor in Software Architecture. Be concise but deep.");
-            reviewText.innerText = feedback;
-        }
-
-        async function submitAssignment() {
-            const q1 = document.getElementById("assign-q1").value;
-            const q2 = document.getElementById("assign-q2").value;
-            
-            if (!q1 || !q2) return alert("Please answer all questions before submitting.");
-            
-            state.assignmentSubmitted = true;
-            
-            // Display Results on Frontend
-            document.getElementById("assignmentStatus").classList.remove("d-none");
-            document.getElementById("assignmentStatus").innerHTML = `✅ Assignment submitted and queued for review! (Score Pending)`;
-
-            // Send Results to Backend Simulated API
-            await saveToBackend('Assignment', { 
-                submitted: true, 
-                answers: { q1, q2 },
-                timestamp: new Date().toISOString()
-            });
-
-            calculateAssessment();
-            setTimeout(() => {
-                document.getElementById("assignmentStatus").classList.add("d-none");
-                go('dashboard');
-            }, 2500);
-        }
-
-        function resetAll() {
-            state = { quizScore: 0, codingProgress: 0, assignmentSubmitted: false, quizCompleted: false };
-            document.querySelectorAll('.check-done').forEach(el => el.className = 'check-pending');
-            document.getElementById("assign-q1").value = "";
-            document.getElementById("assign-q2").value = "";
-            document.getElementById("submitCodeBtn").disabled = true;
-            document.getElementById("codingConsole").classList.add("d-none");
-            document.getElementById("aiCodingPanel").classList.add("d-none");
-            document.getElementById("aiReviewPanel").classList.add("d-none");
-            calculateAssessment();
-            alert("Progress cleared.");
         }
     </script>
 </body>
