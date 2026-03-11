@@ -383,9 +383,7 @@ if(!user){
 window.location.href="Novus_login.html";
 return;
 }
-
-document.getElementById("displayEmpId").innerText="EMP101";
-
+document.getElementById("displayEmpId").innerText=sessionStorage.getItem("loggedInEmpId") || "No ID";
 const userDoc=await getDoc(doc(db,"users",user.uid));
 if(userDoc.exists()){
 const d=userDoc.data();
@@ -471,5 +469,4 @@ document.getElementById('chatInput').addEventListener('keypress', (e) => {
 
 </body>
 </html>
-
 
