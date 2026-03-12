@@ -157,7 +157,8 @@ onAuthStateChanged(auth, async (user) => {
   if (docSnap.exists()) {
       const data = docSnap.data();
       document.getElementById("name").value = data.name || "";
-      document.getElementById("empid").value = data.employeeId || "";
+document.getElementById("displayEmpId").innerText =
+d.employee_id || sessionStorage.getItem("loggedInEmpId") || "No ID";
       document.getElementById("dept").value = data.department || "";
       document.getElementById("role").value = data.role || "";
       document.getElementById("phase").value = data.phase || "";
