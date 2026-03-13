@@ -11,7 +11,8 @@ load_dotenv()
 api_key = os.getenv("GEMINI_API_KEY")
 client = genai.Client(api_key=api_key)
 
-EMBEDDING_MODEL = "text-embedding-004" # Note: If 004 fails, use "gemini-embedding-001"
+# The correct embedding model
+EMBEDDING_MODEL = "text-embedding-004" 
 
 def embed_chunks(chunks: List[str]) -> List[List[float]]:
     """
@@ -19,7 +20,7 @@ def embed_chunks(chunks: List[str]) -> List[List[float]]:
     """
     try:
         response = client.models.embed_content(
-            model='gemini-embedding-001',
+            model=EMBEDDING_MODEL, # <-- FIXED: Now uses the correct variable
             contents=chunks,
             config={
                 'task_type': 'RETRIEVAL_DOCUMENT'
@@ -34,12 +35,12 @@ def embed_user_query(query: str) -> List[float]:
     """
     Embeds a single user query using the new Gemini SDK WITH AUTOMATIC RETRIES.
     """
-    max_retries = 3
+    max_retries = 4 
     
     for i in range(max_retries):
         try:
             response = client.models.embed_content(
-                model='gemini-embedding-001',
+                model=EMBEDDING_MODEL, # <-- FIXED: Now uses the correct variable
                 contents=query,
                 config={
                     'task_type': 'RETRIEVAL_QUERY'
@@ -48,9 +49,9 @@ def embed_user_query(query: str) -> List[float]:
             return response.embeddings[0].values
         except Exception as e:
             # If we hit the rate limit (429 Too Many Requests), wait and retry
-            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e) or "Quota" in str(e):
                 if i < max_retries - 1:
-                    wait_time = 5 * (2 ** i) # Waits 5s, then 10s
+                    wait_time = 15 * (i + 1) # Waits 15s, 30s, 45s
                     print(f"Rate limit hit! Automatically waiting {wait_time} seconds...")
                     time.sleep(wait_time)
                     continue # Try the loop again
