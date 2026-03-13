@@ -16,15 +16,15 @@ const db = getFirestore(app);
 // ================= AUTO FILL FROM LOGIN =================
 document.addEventListener("DOMContentLoaded", function () {
 
-  const savedName = localStorage.getItem("userName");
-  const savedEmail = localStorage.getItem("userEmail");
+  const savedName = sessionStorage.getItem("loggedInName");
+  const savedEmpId = sessionStorage.getItem("loggedInEmpId");
 
   if (savedName) {
     document.getElementById("name").value = savedName;
   }
 
-  if (savedEmail) {
-    document.getElementById("employeeId").value = savedEmail;
+  if (savedEmpId) {
+    document.getElementById("employeeId").value = savedEmpId;
   }
 
 });
