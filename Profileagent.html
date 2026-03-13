@@ -296,11 +296,10 @@ input, .form-control {
         <strong>ID:</strong> <span id="displayEmpId">Loading...</span>
     </div>
 
-    <div class="col-md-4">
-       <div class="col-md-4">
-    <strong>Department:</strong> <span id="department">Loading...</span>
-</div>
-    </div>
+<div class="col-md-4">
+       <strong>Department:</strong> <span id="department">Loading...</span>
+   </div>
+</div></div>
 </div>
 
 <div class="row mt-3">
@@ -565,7 +564,8 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById("name").innerText = data.name || "No Name";
         document.getElementById("displayEmpId").innerText =
 sessionStorage.getItem("loggedInEmpId") || data.employee_id || data.empId || "EMP1001";
-document.getElementById("department").value = data.department || "";
+
+document.getElementById("department").innerText = data.department || "Not Assigned";
       }
     } catch (error) { console.error(error); }
   }
