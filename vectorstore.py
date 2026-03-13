@@ -30,7 +30,7 @@ def store_in_pinecone(chunks: List[str], embeddings: List[List[float]], namespac
         index.upsert(vectors=batch, namespace=namespace)
 
 
-def search_in_pinecone(query_vector: List[float], top_k: int = 4, namespace: str = ""):
+def search_in_pinecone(query_vector: List[float], top_k: int = 2, namespace: str = ""):
     results = index.query(
         vector=query_vector,
         top_k=top_k,
