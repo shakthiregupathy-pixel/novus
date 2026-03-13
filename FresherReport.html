@@ -126,7 +126,8 @@ Generate Certificate
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, query, where, getDocs } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
@@ -144,7 +145,30 @@ const db = getFirestore(app);
 let overallScore = 0;
 let feedbackText = "";
 let skillLevel = "";
+async function loadAssessmentScores(empId){
 
+  // QUIZ
+  const quizQuery = query(collection(db,"quiz_results"), where("userId","==",empId));
+  const quizSnap = await getDocs(quizQuery);
+  quizSnap.forEach((doc)=>{
+    document.getElementById("quiz").value = doc.data().score || 0;
+  });
+
+  // CODING
+  const codingQuery = query(collection(db,"coding_submissions"), where("userId","==",empId));
+  const codingSnap = await getDocs(codingQuery);
+  codingSnap.forEach((doc)=>{
+    document.getElementById("coding").value = doc.data().score || 0;
+  });
+
+  // ASSIGNMENT
+  const assignQuery = query(collection(db,"assignments"), where("userId","==",empId));
+  const assignSnap = await getDocs(assignQuery);
+  assignSnap.forEach((doc)=>{
+    document.getElementById("assignment").value = doc.data().score || 0;
+  });
+
+}
 // 🔐 AUTO LOAD LOGGED-IN FRESHER
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
@@ -156,12 +180,15 @@ onAuthStateChanged(auth, async (user) => {
 
   if (docSnap.exists()) {
       const data = docSnap.data();
+
       document.getElementById("name").value = data.name || "";
 document.getElementById("empid").value =
 data.employee_id || data.employeeId || sessionStorage.getItem("loggedInEmpId") || "";      document.getElementById("dept").value = data.department || "";
       document.getElementById("role").value = data.role || "";
       document.getElementById("phase").value = data.phase || "";
       document.getElementById("certs").value = data.certs || "";
+      let empId = data.employee_id || data.employeeId;
+loadAssessmentScores(empId);
   } else {
       alert("User data not found in database.");
   }
