@@ -1,6 +1,6 @@
-pypdf
-openai
-pinecone
-dotenv
 streamlit
+google-genai
+pinecone-client
+python-dotenv
+pypdf
 
