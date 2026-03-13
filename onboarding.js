@@ -13,7 +13,21 @@ const firebaseConfig = {
 // ================= INITIALIZE =================
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+// ================= AUTO FILL FROM LOGIN =================
+document.addEventListener("DOMContentLoaded", function () {
 
+  const savedName = localStorage.getItem("userName");
+  const savedEmail = localStorage.getItem("userEmail");
+
+  if (savedName) {
+    document.getElementById("name").value = savedName;
+  }
+
+  if (savedEmail) {
+    document.getElementById("employeeId").value = savedEmail;
+  }
+
+});
 // ================= SAVE ONBOARDING DATA =================
 window.saveOnboardingData = async function () {
 
@@ -49,4 +63,3 @@ window.saveOnboardingData = async function () {
     alert("❌ Error saving data");
   }
 };
-
