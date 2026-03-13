@@ -304,18 +304,7 @@ input, .form-control {
 
 <div class="row mt-3">
     <div class="col-md-4">
-        <strong>Role:</strong>
-        <select id="role" class="form-control">
-            <option value="">Select Role</option>
-            <option>Software Developer</option>
-            <option>Frontend Developer</option>
-            <option>Backend Developer</option>
-            <option>Tester</option>
-            <option>Manager</option>
-            <option>Intern</option>
-            <option>Team Lead</option>
-        </select>
-    </div>
+        <strong>Role:</strong> <span id="role">Loading...</span>    </div>
 
     <div class="col-md-4">
         <strong>Phase:</strong> Foundation
@@ -566,7 +555,7 @@ onAuthStateChanged(auth, async (user) => {
 sessionStorage.getItem("loggedInEmpId") || data.employee_id || data.empId || "EMP1001";
 
 document.getElementById("department").innerText = data.department || "Not Assigned";
-document.getElementById("role").value = data.role || "";
+document.getElementById("role").innerText = data.role || "Not Assigned";
       }
     } catch (error) { console.error(error); }
   }
