@@ -215,7 +215,8 @@
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h2 class="fw-bold">Welcome back</h2>
-                        <p class="opacity-75 mb-1">Software Engineering Track • Student ID: FR2024‑001</p>
+                        <p class="opacity-75 mb-1">Software Engineering Track </p>
+                        <span id="studentId"></span>
                         <small class="opacity-50">Last Login: march 14, 2026</small>
                     </div>
                     <div class="col-md-4 text-center mt-3 mt-md-0">
@@ -459,6 +460,8 @@ if(!empId){
    alert("Session expired. Please login again.");
    window.location.href = "index.html";
 }       
+       // ⭐ ADD THIS LINE HERE
+document.getElementById("studentId").innerText = empId;
 
 window.db = db;
 window.addDoc = addDoc;
@@ -627,16 +630,30 @@ window.collection = collection;
             }
         }
 
-       function nextQuestion(){
+       function nextQuestion() {
 
-  currentQuestion++;
+    if (selectedOption === null) {
+        alert("Please select an answer");
+        return;
+    }
 
-  if(currentQuestion >= quizQuestions.length - 1){
-      document.getElementById("nextBtn").classList.add("d-none");
-      document.getElementById("submitBtn").classList.remove("d-none");
-  }
+    // check answer
+    if (selectedOption === quizData[currentQuestion].answer) {
+        localQuizScore++;
+    }
 
-  loadQuestion();
+    // move to next question
+    currentQuestion++;
+
+    selectedOption = null;
+
+    // if last question reached
+    if (currentQuestion >= quizData.length - 1) {
+        document.getElementById("nextBtn").classList.add("d-none");
+        document.getElementById("submitBtn").classList.remove("d-none");
+    }
+
+    loadQuestion();
 }
        async function submitQuiz() {
 
@@ -724,10 +741,11 @@ window.collection = collection;
             const hint = await callGemini(prompt, "You are an encouraging technical mentor. Focus on logical hints rather than just rewriting the code.");
             responseDiv.innerText = hint;
         }
-
-        async function submitCode() {
+async function submitCode() {
 
   const code = document.getElementById("codeEditor").value;
+
+  state.codingProgress = 100;   // ⭐ IMPORTANT
 
   await addDoc(collection(db, "coding_submissions"), {
     userId: empId,
@@ -741,6 +759,7 @@ window.collection = collection;
   alert("Solution successfully submitted!");
   go('dashboard');
 }
+      
         /* ================= ASSIGNMENT ================= */
         async function analyzeAnswers() {
             const q1 = document.getElementById("assign-q1").value;
@@ -773,7 +792,7 @@ window.collection = collection;
     userId: empId,
     answer1: q1,
     answer2: q2,
-    score: state.assignmentSubmitted ? 100 : 0,  
+    score: 100,  
     timestamp: new Date()
   });
 
