@@ -573,6 +573,7 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById("name").innerText = data.name || "No Name";
         document.getElementById("displayEmpId").innerText =
 sessionStorage.getItem("loggedInEmpId") || data.employee_id || data.empId || "EMP1001";
+document.getElementById("department").value = data.department || "";
       }
     } catch (error) { console.error(error); }
   }
