@@ -566,6 +566,7 @@ onAuthStateChanged(auth, async (user) => {
 sessionStorage.getItem("loggedInEmpId") || data.employee_id || data.empId || "EMP1001";
 
 document.getElementById("department").innerText = data.department || "Not Assigned";
+document.getElementById("role").value = data.role || "";
       }
     } catch (error) { console.error(error); }
   }
