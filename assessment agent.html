@@ -723,26 +723,10 @@ const storage = getStorage(app);
 
     state.codingProgress = 100;
 
-   import { getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    await setDoc(doc(db, "students", "alex"), {
+        codingProgress: 100
+    }, { merge: true });
 
-window.addEventListener('load', async () => {
-
-    const docRef = doc(db, "students", "alex");
-    const snap = await getDoc(docRef);
-
-    if (snap.exists()) {
-
-        const data = snap.data();
-
-        state.quizScore = data.quizScore || 0;
-        state.codingProgress = data.codingProgress || 0;
-        state.assignmentSubmitted = data.assignmentSubmitted || false;
-
-        calculateAssessment();
-
-    }
-
-});
     calculateAssessment();
 
     alert("Solution successfully submitted!");
@@ -792,7 +776,7 @@ window.addEventListener('load', async () => {
     }, { merge: true });
 
     document.getElementById("assignmentStatus").classList.remove("d-none");
-document.getElementById("assignmentLink").href = data.fileLink;
+
     calculateAssessment();
 
     setTimeout(() => {
