@@ -635,35 +635,29 @@ window.saveAssessment = saveAssessment;
                 document.getElementById("submitBtn").classList.add("d-none");
             }
         }
-
-  function nextQuestion() {
-
+function nextQuestion() {
     if (selectedOption === null) {
         alert("Please select an answer");
         return;
     }
 
-    // check answer
     if (selectedOption === quizData[currentQuestion].answer) {
         localQuizScore++;
     }
 
-    // move to next question
+    selectedOption = null;
     currentQuestion++;
 
-    selectedOption = null;
-
-    // ⭐ if reached last question
-    if (currentQuestion >= quizData.length - 1) {
-        document.getElementById("nextBtn").classList.add("d-none");
-        document.getElementById("submitBtn").classList.remove("d-none");
-    }
-
-    // only load if question exists
     if (currentQuestion < quizData.length) {
         loadQuestion();
     }
+
+    if (currentQuestion === quizData.length - 1) {
+        document.getElementById("nextBtn").classList.add("d-none");
+        document.getElementById("submitBtn").classList.remove("d-none");
+    }
 }
+ 
      async function submitQuiz() {
 
     if (selectedOption === null) return alert("Please select an answer");
@@ -684,6 +678,9 @@ window.saveAssessment = saveAssessment;
     document.getElementById("quizResult").classList.remove("d-none");
     document.getElementById("quizResult").innerText =
         `Quiz Completed! Score: ${percentage}%`;
+         document.getElementById("quizStatusBadge").innerText = "Completed";
+document.getElementById("quizStatusBadge").classList.remove("bg-secondary");
+document.getElementById("quizStatusBadge").classList.add("bg-success");
 
     calculateAssessment();
 
