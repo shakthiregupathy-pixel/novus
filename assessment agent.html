@@ -668,6 +668,11 @@ function nextQuestion() {
 
     state.quizScore = percentage;
     state.quizCompleted = true;
+    updateUI();
+            alert("Assignment submitted!");
+            go('dashboard');
+        }
+     
 
     await addDoc(collection(db, "quiz_results"), {
         userId: empId,
