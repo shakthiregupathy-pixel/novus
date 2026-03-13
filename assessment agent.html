@@ -466,6 +466,7 @@ document.getElementById("studentId").innerText = empId;
 window.db = db;
 window.addDoc = addDoc;
 window.collection = collection;
+window.saveAssessment = saveAssessment;       
 
 </script>
 
@@ -598,6 +599,11 @@ window.collection = collection;
             selectedOption = null;
             document.getElementById("qTotal").innerText = quizData.length;
             document.getElementById("quizResult").classList.add("d-none");
+
+             // reset buttons
+    document.getElementById("nextBtn").classList.remove("d-none");
+    document.getElementById("submitBtn").classList.add("d-none");
+
             loadQuestion();
         }
 
@@ -630,7 +636,7 @@ window.collection = collection;
             }
         }
 
-       function nextQuestion() {
+  function nextQuestion() {
 
     if (selectedOption === null) {
         alert("Please select an answer");
@@ -647,27 +653,28 @@ window.collection = collection;
 
     selectedOption = null;
 
-    // if last question reached
+    // ⭐ if reached last question
     if (currentQuestion >= quizData.length - 1) {
         document.getElementById("nextBtn").classList.add("d-none");
         document.getElementById("submitBtn").classList.remove("d-none");
     }
 
-    loadQuestion();
-}
-       async function submitQuiz() {
-
-    // check answer for last question
-    if (selectedOption !== null && selectedOption === quizData[currentQuestion].answer) {
-        localQuizScore++;
+    // only load if question exists
+    if (currentQuestion < quizData.length) {
+        loadQuestion();
     }
+}
+     async function submitQuiz() {
+
+    if (selectedOption === null) return alert("Please select an answer");
+
+    if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
 
     const percentage = Math.round((localQuizScore / quizData.length) * 100);
 
     state.quizScore = percentage;
     state.quizCompleted = true;
 
-    // save quiz result in firebase
     await addDoc(collection(db, "quiz_results"), {
         userId: empId,
         score: percentage,
@@ -675,15 +682,15 @@ window.collection = collection;
     });
 
     document.getElementById("quizResult").classList.remove("d-none");
-    document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
+    document.getElementById("quizResult").innerText =
+        `Quiz Completed! Score: ${percentage}%`;
 
     calculateAssessment();
 
-    setTimeout(() => {
-        go('dashboard');
-    }, 1500);
-}
+    setTimeout(() => go('dashboard'), 1500);
+}  
 
+    
         /* ================= CODING CHALLENGE ENGINE ================= */
         function runCode() {
             const code = document.getElementById('codeEditor').value;
@@ -817,4 +824,15 @@ async function submitCode() {
       </script>  
     
 </body>
+
+<script>
+const name = sessionStorage.getItem("loggedInName");
+const heroTitle = document.querySelector(".hero h2");    
+
+if(name && heroTitle){
+    heroTitle.innerText = "Welcome back " + name;
+}
+
+</script>
+
 </html>
