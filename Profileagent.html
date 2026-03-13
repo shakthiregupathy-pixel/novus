@@ -459,12 +459,10 @@ function updateProgress(value) {
 }
 
 function calculateProfile() {
-
     const quiz = parseFloat(document.getElementById("quiz").value) || 0;
     const coding = parseFloat(document.getElementById("coding").value) || 0;
     const assignment = parseFloat(document.getElementById("assignment").value) || 0;
     const progress = document.getElementById("progressSlider").value;
-
     const average = ((quiz + coding + assignment) / 3).toFixed(2);
     document.getElementById("averageScore").innerText = average;
 
@@ -476,13 +474,11 @@ function calculateProfile() {
         skill = "Advanced";
         badgeHTML = '<span class="badge badge-gold mt-2">Top Performer 🌟</span>';
         feedback = "Outstanding progress! Keep shining.";
-    } 
-    else if(average >= 60) {
+    } else if(average >= 60) {
         skill = "Intermediate";
         badgeHTML = '<span class="badge badge-silver mt-2">Growing Star ✨</span>';
         feedback = "Great improvement. Stay consistent.";
-    } 
-    else {
+    } else {
         feedback = "Keep practicing. You are improving steadily.";
     }
 
@@ -493,21 +489,8 @@ function calculateProfile() {
     let completion = Math.min((Number(progress) + certifications.length * 10), 100);
     document.getElementById("profileCompletionBar").style.width = completion + "%";
     document.getElementById("profileCompletionBar").innerText = completion + "%";
-
-    // 🔹 ADD THIS PART
-    const user = auth.currentUser;
-
-    if (user) {
-        setDoc(doc(db, "scores", user.uid), {
-            quiz: quiz,
-            coding: coding,
-            assignment: assignment,
-            average: average,
-            progress: progress,
-            updatedAt: new Date()
-        });
-    }
 }
+
 // CHATBOT LOGIC
 const apiKey = ""; 
 window.toggleChat = () => {
@@ -568,7 +551,8 @@ document.getElementById('chatInput').addEventListener('keypress', (e) => {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
   authDomain: "novus-9dfb8.firebaseapp.com",
@@ -578,7 +562,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-async function storeScores(user, quiz, coding, assignment, average, progress) { try { await setDoc(doc(db, "scores", user.uid), { quiz: quiz, coding: coding, assignment: assignment, average: average, progress: progress, updatedAt: new Date() }); console.log("Scores saved successfully"); } catch (error) { console.error("Error saving scores:", error); } }
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     try {
