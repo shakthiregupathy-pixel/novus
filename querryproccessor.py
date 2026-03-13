@@ -6,13 +6,17 @@ def process_user_query(query: str):
     # Embed the user's query to create a vector representation 
     query_vector = embed_user_query(query)
     
+    # SAFETY NET: If Gemini fails to embed (returns empty list), stop here gracefully
+    if not query_vector:
+        return "⚠️ **System Busy:** I am experiencing high traffic right now due to free-tier API limits. Please wait 60 seconds and try your question again."
+        
     # Search the vector DB to find top matching chunks related to the user's question
     matched_chunks = search_in_pinecone(query_vector)
     
     # Send the user query and the search results (query + context) to the LLM for Generating response
     generated_response = query_llm_with_context(query, matched_chunks)
     
-    # IMPORTANT: Changed from print() to return
+    # Return the response so Streamlit can display it on the website
     return generated_response
 
 if __name__ == "__main__":
