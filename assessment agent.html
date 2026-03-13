@@ -430,13 +430,12 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  apiKey: "YOUR_KEY",
   authDomain: "novus-9dfb8.firebaseapp.com",
   projectId: "novus-9dfb8",
   storageBucket: "novus-9dfb8.firebasestorage.app",
   messagingSenderId: "641276518161",
-  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0",
-  measurementId: "G-ELBC8YR66E"
+  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -638,13 +637,19 @@ window.collection = collection;
             loadQuestion();
         }
 
-        function submitQuiz() {
+        async function submitQuiz() {
             if (selectedOption === null) return alert("Please select an answer");
             if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
             
             const percentage = Math.round((localQuizScore / quizData.length) * 100);
             state.quizScore = percentage;
             state.quizCompleted = true;
+
+            await addDoc(collection(db, "quiz_results"), {
+               userId: "FR2024-001",
+               score: percentage,
+               timestamp: new Date()
+       });
             
             document.getElementById("quizResult").classList.remove("d-none");
             document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
