@@ -1,6 +1,7 @@
-streamlit
 google-genai
-pinecone
-python-dotenv
 pypdf
+pinecone
+dotenv
+streamlit
+
 
