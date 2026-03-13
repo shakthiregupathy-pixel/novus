@@ -13,22 +13,20 @@ const firebaseConfig = {
 // ================= INITIALIZE =================
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-// ================= AUTO FILL FROM LOGIN =================
 document.addEventListener("DOMContentLoaded", function () {
 
-  const savedName = sessionStorage.getItem("loggedInName");
-  const savedEmpId = sessionStorage.getItem("loggedInEmpId");
+  const name = sessionStorage.getItem("loggedInName");
+  const empId = sessionStorage.getItem("loggedInEmpId");
 
-  if (savedName) {
-    document.getElementById("name").value = savedName;
+  if(name){
+    document.getElementById("name").value = name;
   }
 
-  if (savedEmpId) {
-    document.getElementById("employeeId").value = savedEmpId;
+  if(empId){
+    document.getElementById("employeeId").value = empId;
   }
 
-});
-// ================= SAVE ONBOARDING DATA =================
+});// ================= SAVE ONBOARDING DATA =================
 window.saveOnboardingData = async function () {
 
   // 👉 READ VALUES AFTER USER TYPES
