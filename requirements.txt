@@ -1,6 +1,6 @@
 streamlit
 google-genai
-pinecone-client
+pinecone
 python-dotenv
 pypdf
 
