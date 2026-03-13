@@ -214,9 +214,9 @@
             <div class="hero">
                 <div class="row align-items-center">
                     <div class="col-md-8">
-                        <h2 class="fw-bold">Welcome back, Alex</h2>
+                        <h2 class="fw-bold">Welcome back</h2>
                         <p class="opacity-75 mb-1">Software Engineering Track • Student ID: FR2024‑001</p>
-                        <small class="opacity-50">Last Login: March 10, 2024</small>
+                        <small class="opacity-50">Last Login: march 14, 2026</small>
                     </div>
                     <div class="col-md-4 text-center mt-3 mt-md-0">
                         <div class="bg-white bg-opacity-10 p-3 rounded-4">
@@ -627,34 +627,45 @@ window.collection = collection;
             }
         }
 
-        function nextQuestion() {
-            if (selectedOption === null) return alert("Please select an answer");
-            if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
-            selectedOption = null;
-            currentQuestion++;
-            loadQuestion();
-        }
+       function nextQuestion(){
 
-        async function submitQuiz() {
-            if (selectedOption === null) return alert("Please select an answer");
-            if (selectedOption === quizData[currentQuestion].answer) localQuizScore++;
-            
-            const percentage = Math.round((localQuizScore / quizData.length) * 100);
-            state.quizScore = percentage;
-            state.quizCompleted = true;
+  currentQuestion++;
 
-            await addDoc(collection(db, "quiz_results"), {
-               userId: empId,
-               score: percentage,
-               timestamp: new Date()
-       });
-            
-            document.getElementById("quizResult").classList.remove("d-none");
-            document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
-            
-            calculateAssessment();
-            setTimeout(() => go('dashboard'), 1500);
-        }
+  if(currentQuestion >= quizQuestions.length - 1){
+      document.getElementById("nextBtn").classList.add("d-none");
+      document.getElementById("submitBtn").classList.remove("d-none");
+  }
+
+  loadQuestion();
+}
+       async function submitQuiz() {
+
+    // check answer for last question
+    if (selectedOption !== null && selectedOption === quizData[currentQuestion].answer) {
+        localQuizScore++;
+    }
+
+    const percentage = Math.round((localQuizScore / quizData.length) * 100);
+
+    state.quizScore = percentage;
+    state.quizCompleted = true;
+
+    // save quiz result in firebase
+    await addDoc(collection(db, "quiz_results"), {
+        userId: empId,
+        score: percentage,
+        timestamp: new Date()
+    });
+
+    document.getElementById("quizResult").classList.remove("d-none");
+    document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
+
+    calculateAssessment();
+
+    setTimeout(() => {
+        go('dashboard');
+    }, 1500);
+}
 
         /* ================= CODING CHALLENGE ENGINE ================= */
         function runCode() {
