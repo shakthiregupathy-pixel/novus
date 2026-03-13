@@ -4,10 +4,11 @@ import { getFirestore, collection, addDoc } from "https://www.gstatic.com/fireba
 
 // ================= FIREBASE CONFIG =================
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  authDomain: "novus-9dfb8.firebaseapp.com",
+  projectId: "novus-9dfb8"
 };
+
 
 // ================= INITIALIZE =================
 const app = initializeApp(firebaseConfig);
@@ -41,7 +42,7 @@ window.saveOnboardingData = async function () {
   };
 
   try {
-    await addDoc(collection(db, "onboardingUsers"), data);
+   await addDoc(collection(db, "users"), data);
     alert("✅ Onboarding data saved successfully!");
   } catch (error) {
     console.error(error);
