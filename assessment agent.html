@@ -668,9 +668,12 @@ function nextQuestion() {
 
     state.quizScore = percentage;
     state.quizCompleted = true;
-    updateUI();
-            alert("Assignment submitted!");
-            go('dashboard');
+
+    document.getElementById("quizResult").classList.remove("d-none");
+    document.getElementById("quizResult").innerText = `Quiz Completed! Score: ${percentage}%`;
+            
+            calculateAssessment();
+            setTimeout(() => go('dashboard'), 1500);
         }
      
 
