@@ -430,7 +430,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
   authDomain: "novus-9dfb8.firebaseapp.com",
   projectId: "novus-9dfb8",
   storageBucket: "novus-9dfb8.firebasestorage.app",
@@ -440,6 +440,25 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+ async function saveAssessment(empId, quizScore, codingScore, assignmentScore){
+
+  await addDoc(collection(db, "assessment_results"), {
+    userId: empId,
+    quiz: quizScore,
+    coding: codingScore,
+    assignment: assignmentScore,
+    timestamp: new Date()
+  });
+
+}
+
+// 🔑 GET EMPLOYEE ID FROM LOGIN SESSION
+const empId = sessionStorage.getItem("loggedInEmpId");
+
+if(!empId){
+   alert("Session expired. Please login again.");
+   window.location.href = "index.html";
+}       
 
 window.db = db;
 window.addDoc = addDoc;
@@ -555,40 +574,19 @@ window.collection = collection;
             document.getElementById("assessmentScore").innerText = `${overall}%`;
             document.getElementById("assessmentBar").style.width = `${overall}%`;
 
-            if (state.quizCompleted) {
-                document.getElementById("check-quiz").className = "check-done";
-                document.getElementById("quizStatusBadge").innerText = "Completed";
-                document.getElementById("quizStatusBadge").className = "badge bg-success";
-                document.getElementById("quizAlert").className = "alert alert-success py-2 small mb-3";
-                document.getElementById("quizAlert").innerText = "✔ Daily quiz finished";
-            }
-            if (state.codingProgress >= 100) {
-                document.getElementById("check-coding").className = "check-done";
-                document.getElementById("codingStatusBadge").innerText = "Completed";
-                document.getElementById("codingStatusBadge").className = "badge bg-success";
-            } else if (state.codingProgress > 0) {
-                document.getElementById("codingStatusBadge").innerText = "In Progress";
-                document.getElementById("codingStatusBadge").className = "badge bg-warning text-dark";
-            }
-            if (state.assignmentSubmitted) {
-                document.getElementById("check-assignment").className = "check-done";
-            }
+            // ⭐ SAVE TO FIREBASE WHEN EVERYTHING IS DONE
+   if(state.quizCompleted && state.codingProgress >= 100 && state.assignmentSubmitted){
 
-            const feedbackBox = document.getElementById("assessmentFeedback");
-            if (overall === 0) {
-                feedbackBox.className = "assessment-feedback bg-light text-muted";
-                feedbackBox.innerText = "Start your training to see performance analytics.";
-            } else if (overall >= 80) {
-                feedbackBox.className = "assessment-feedback alert-success text-success";
-                feedbackBox.innerText = "Excellent work! Your technical score is above average.";
-            } else if (overall >= 40) {
-                feedbackBox.className = "assessment-feedback alert-warning text-warning";
-                feedbackBox.innerText = "Good progress. Keep going to unlock certification.";
-            } else {
-                feedbackBox.className = "assessment-feedback alert-danger text-danger";
-                feedbackBox.innerText = "Low activity detected. Please complete pending modules.";
-            }
-        }
+      saveAssessment(
+         empId,
+         state.quizScore,
+         state.codingProgress,
+         100
+      );
+
+   }
+}
+    
 
         /* ================= QUIZ ENGINE ================= */
         function startQuiz() {
@@ -646,7 +644,7 @@ window.collection = collection;
             state.quizCompleted = true;
 
             await addDoc(collection(db, "quiz_results"), {
-               userId: "FR2024-001",
+               userId: empId,
                score: percentage,
                timestamp: new Date()
        });
@@ -721,13 +719,12 @@ window.collection = collection;
   const code = document.getElementById("codeEditor").value;
 
   await addDoc(collection(db, "coding_submissions"), {
-    userId: "FR2024-001",
+    userId: empId,
     code: code,
     score: 100,
     timestamp: new Date()
   });
 
-  state.codingProgress = 100;
   calculateAssessment();
 
   alert("Solution successfully submitted!");
@@ -762,9 +759,10 @@ window.collection = collection;
   if (!q1 || !q2) return alert("Please answer all questions.");
 
   await addDoc(collection(db, "assignments"), {
-    userId: "FR2024-001",
+    userId: empId,
     answer1: q1,
     answer2: q2,
+    score: state.assignmentSubmitted ? 100 : 0,  
     timestamp: new Date()
   });
 
