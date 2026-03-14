@@ -454,8 +454,7 @@ const db = getFirestore(app);
 }
 
 // 🔑 GET EMPLOYEE ID FROM LOGIN SESSION
-const empId = sessionStorage.getItem("loggedInEmpId");
-
+window.empId = sessionStorage.getItem("loggedInEmpId");
 if(!empId){
    alert("Session expired. Please login again.");
    window.location.href = "index.html";
@@ -669,7 +668,7 @@ function nextQuestion() {
     state.quizCompleted = true;
 
     await window.addDoc(window.collection(window.db, "quiz_results"), {
-    userId: empId,
+    userId: window.empId,
     score: percentage,
     timestamp: new Date()
 });
@@ -684,8 +683,14 @@ function nextQuestion() {
     document.getElementById("quizStatusBadge").classList.add("bg-success");
 
     calculateAssessment();
-
-    setTimeout(() => go('dashboard'), 1500);
+    setTimeout(() => {
+    location.hash = "";
+    setTimeout(() => {
+        location.hash = "dashboard";
+        showPage();
+    }, 50);
+}, 1500);
+    
 }
 
     
