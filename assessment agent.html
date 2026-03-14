@@ -651,11 +651,6 @@ function nextQuestion() {
     if (currentQuestion < quizData.length) {
         loadQuestion();
     }
-
-    if (currentQuestion === quizData.length - 1) {
-        document.getElementById("nextBtn").classList.add("d-none");
-        document.getElementById("submitBtn").classList.remove("d-none");
-    }
 }
  async function submitQuiz() {
 
@@ -673,15 +668,16 @@ function nextQuestion() {
     state.quizScore = percentage;
     state.quizCompleted = true;
 
-    await addDoc(collection(db, "quiz_results"), {
-        userId: empId,
-        score: percentage,
-        timestamp: new Date()
-    });
+    await window.addDoc(window.collection(window.db, "quiz_results"), {
+    userId: empId,
+    score: percentage,
+    timestamp: new Date()
+});
 
     document.getElementById("quizResult").classList.remove("d-none");
     document.getElementById("quizResult").innerText =
         `Quiz Completed! Score: ${percentage}%`;
+     document.getElementById("submitBtn").disabled = true;
 
     document.getElementById("quizStatusBadge").innerText = "Completed";
     document.getElementById("quizStatusBadge").classList.remove("bg-secondary");
