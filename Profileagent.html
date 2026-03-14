@@ -467,7 +467,7 @@
         }
 
         // CHATBOT LOGIC
-        const apiKey = ""; 
+        const apiKey = "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo"; 
         window.toggleChat = () => {
             const win = document.getElementById('chatWindow');
             win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
@@ -521,39 +521,78 @@
         document.getElementById('chatInput').addEventListener('keypress', (e) => {
             if(e.key === 'Enter') sendMessage();
         });
-    </script>
-
+    
+ <div id="profileScores" class="p-4 border rounded">
+    <h5>Quiz: <span id="profileQuizScore">0%</span></h5>
+    <h5>Coding: <span id="profileCodingScore">0%</span></h5>
+    <h5>Assignment: <span id="profileAssignmentScore">0%</span></h5>
+    <h4>Overall: <span id="profileOverallScore">0%</span></h4>
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, query, where, getDocs, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-            authDomain: "novus-9dfb8.firebaseapp.com",
-            projectId: "novus-9dfb8"
-        };
+const firebaseConfig = {
+  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+  authDomain: "novus-9dfb8.firebaseapp.com",
+  projectId: "novus-9dfb8",
+  storageBucket: "novus-9dfb8.appspot.com",
+  messagingSenderId: "641276518161",
+  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0",
+  measurementId: "G-ELBC8YR66E"
+};
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                try {
-                    const docRef = doc(db, "users", user.uid);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        document.getElementById("name").innerText = data.name || "No Name";
-                        document.getElementById("displayEmpId").innerText = sessionStorage.getItem("loggedInEmpId") || data.employee_id || data.empId || "EMP1001";
-                        document.getElementById("department").innerText = data.department || "Not Assigned";
-                        document.getElementById("role").innerText = data.role || "Not Assigned";
-                    }
-                } catch (error) { console.error(error); }
-            }
-        });
-    </script>
+const userId = sessionStorage.getItem("loggedInEmpId");
+if(!userId){ alert("Session expired"); window.location.href="index.html"; }
+
+let quizScore = 0, codingScore = 0, assignmentScore = 0;
+
+function updateProfileScores(q, c, a){
+    const overall = Math.round((q + c + a)/3);
+    document.getElementById("profileQuizScore").innerText = q + "%";
+    document.getElementById("profileCodingScore").innerText = c + "%";
+    document.getElementById("profileAssignmentScore").innerText = a + "%";
+    document.getElementById("profileOverallScore").innerText = overall + "%";
+}
+
+async function fetchUserScores(){
+    // Quiz
+    const quizSnap = await getDocs(query(collection(db, "quiz_results"), where("userId", "==", userId)));
+    quizSnap.forEach(doc => { quizScore = doc.data().score; });
+
+    // Coding
+    const codingSnap = await getDocs(query(collection(db, "coding_submissions"), where("userId", "==", userId)));
+    codingSnap.forEach(doc => { codingScore = doc.data().score; });
+
+    // Assignment
+    const assignSnap = await getDocs(query(collection(db, "assessment_results"), where("userId", "==", userId)));
+    assignSnap.forEach(doc => { assignmentScore = doc.data().score; });
+
+    updateProfileScores(quizScore, codingScore, assignmentScore);
+}
+
+function subscribeToRealTimeUpdates(){
+    onSnapshot(query(collection(db, "quiz_results"), where("userId","==",userId)), snapshot => {
+        snapshot.forEach(doc => { quizScore = doc.data().score; });
+        updateProfileScores(quizScore, codingScore, assignmentScore);
+    });
+    onSnapshot(query(collection(db, "coding_submissions"), where("userId","==",userId)), snapshot => {
+        snapshot.forEach(doc => { codingScore = doc.data().score; });
+        updateProfileScores(quizScore, codingScore, assignmentScore);
+    });
+    onSnapshot(query(collection(db, "assessment_results"), where("userId","==",userId)), snapshot => {
+        snapshot.forEach(doc => { assignmentScore = doc.data().score; });
+        updateProfileScores(quizScore, codingScore, assignmentScore);
+    });
+}
+
+fetchUserScores();
+subscribeToRealTimeUpdates();
+</script>  
 
 </body>   
 </html>
