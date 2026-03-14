@@ -1,374 +1,349 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Mavericks Fresher Reporting</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mavericks Fresher Reporting</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Load jsPDF from a reliable CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-<style>
-body {
-    background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
-    font-family: 'Poppins', sans-serif;
-}
+    <style>
+        body {
+            background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+        }
 
-.card-custom {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    margin-bottom: 25px;
-}
+        .card-custom {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
 
-h2 {
-    font-weight: 600;
-}
+        h2 {
+            font-weight: 600;
+            color: #2d3436;
+        }
 
-.btn-generate {
-    background: #6a5acd;
-    color: white;
-    border-radius: 25px;
-}
+        .btn-generate {
+            background: #6a5acd;
+            color: white;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-generate:hover {
+            background: #5a4abd;
+            color: white;
+        }
 
-.btn-download {
-    background: linear-gradient(90deg, #84fab0, #8fd3f4);
-    border-radius: 25px;
-    font-weight: 600;
-}
-</style>
+        .btn-download {
+            background: linear-gradient(90deg, #84fab0, #8fd3f4);
+            border-radius: 25px;
+            font-weight: 600;
+            border: none;
+            color: #2d3436;
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="container mt-5">
+<div class="container mt-5 pb-5">
 
-<h2 class="text-center mb-4">Mavericks Freshers Reporting Dashboard</h2>
+    <h2 class="text-center mb-4">Mavericks Freshers Reporting Dashboard</h2>
 
-<!-- Candidate Details -->
-<div class="card-custom">
-<h5>Candidate Details</h5>
+    <!-- Candidate Details -->
+    <div class="card-custom">
+        <h5 class="mb-3">Candidate Details</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Name</label>
+                <input type="text" id="name" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Employee ID</label>
+                <input type="text" id="empid" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Department</label>
+                <input type="text" id="dept" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Role</label>
+                <input type="text" id="role" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Training Phase</label>
+                <input type="text" id="phase" class="form-control" readonly>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Certifications</label>
+                <input type="text" id="certs" class="form-control" readonly>
+            </div>
+        </div>
+    </div>
 
-<div class="row">
-<div class="col-md-4">
-<label>Name</label>
-<input type="text" id="name" class="form-control">
-</div>
-<div class="col-md-4">
-<label>Employee ID</label>
-<input type="text" id="empid" class="form-control">
-</div>
-<div class="col-md-4">
-<label>Department</label>
-<input type="text" id="dept" class="form-control">
-</div>
-</div>
+    <!-- Assessment Section -->
+    <div class="card-custom">
+        <h5 class="mb-3">Assessment Scores</h5>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Quiz Score (%)</label>
+                <input type="number" id="quiz" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Coding Score (%)</label>
+                <input type="number" id="coding" class="form-control" value="0">
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Assignment Score (%)</label>
+                <input type="number" id="assignment" class="form-control" value="0">
+            </div>
+        </div>
 
-<div class="row mt-3">
-<div class="col-md-4">
-<label>Role</label>
-<input type="text" id="role" class="form-control">
-</div>
-<div class="col-md-4">
-<label>Training Phase</label>
-<input type="text" id="phase" class="form-control">
-</div>
-</div>
-</div>
+        <div class="mt-4 d-flex gap-2">
+            <button class="btn btn-generate" onclick="window.generateReport()">Calculate Performance</button>
+            <button class="btn btn-success rounded-pill" onclick="window.generateCertificate()">Generate Certificate</button>
+        </div>
+    </div>
 
-<!-- Assessment Section -->
-<div class="card-custom">
-<h5>Assessment Scores</h5>
+    <!-- Output -->
+    <div class="card-custom">
+        <h5 class="mb-3">Performance Summary</h5>
+        <p><strong>Overall Performance:</strong> <span id="overall">-</span></p>
+        <p><strong>Skill Level:</strong> <span id="skill">-</span></p>
+        <h6>Recruitment Feedback</h6>
+        <p id="feedback" class="text-muted italic">-</p>
 
-<div class="row">
-<div class="col-md-4">
-<label>Quiz Score (%)</label>
-<input type="number" id="quiz" class="form-control">
-</div>
-<div class="col-md-4">
-<label>Coding Score (%)</label>
-<input type="number" id="coding" class="form-control">
-</div>
-<div class="col-md-4">
-<label>Assignment Score (%)</label>
-<input type="number" id="assignment" class="form-control">
-</div>
-</div>
-
-<button class="btn btn-generate mt-3" onclick="generateReport()">Generate Performance</button>
-    <button class="btn btn-success mt-3" onclick="generateCertificate()">
-Generate Certificate
-</button>
-
-</div>
-
-<!-- Output -->
-<div class="card-custom">
-<h5>Performance Summary</h5>
-
-<p><strong>Overall Performance:</strong> <span id="overall">-</span></p>
-<p><strong>Skill Level:</strong> <span id="skill">-</span></p>
-
-<h6>Recruitment Feedback</h6>
-<p id="feedback">-</p>
-
-<button class="btn btn-download mt-3" onclick="downloadPDF()">Download Clean PDF Report</button>
-</div>
+        <button class="btn btn-download mt-3 px-4 py-2" onclick="window.downloadPDF()">Download Clean PDF Report</button>
+    </div>
 
 </div>
 
-<!-- FIREBASE + SCRIPT -->
 <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, getDoc, collection, query, where, getDocs } 
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    // Firebase configuration with your provided keys
+    const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+        apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
+        authDomain: "novus-9dfb8.firebaseapp.com",
+        projectId: "novus-9dfb8",
+        storageBucket: "novus-9dfb8.firebasestorage.app",
+        messagingSenderId: "641276518161",
+        appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0",
+        measurementId: "G-ELBC8YR66E"
+    };
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDPe0Zp69bnM9251w0FfnH1UPhGedGh4qo",
-  authDomain: "novus-9dfb8.firebaseapp.com",
-  projectId: "novus-9dfb8",
-  storageBucket: "novus-9dfb8.firebasestorage.app",
-  messagingSenderId: "641276518161",
-  appId: "1:641276518161:web:ee2c11e2662e86e59bb6b0"
-};
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const appId = typeof __app_id !== 'undefined' ? __app_id : 'novus-9dfb8';
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+    let currentOverallScore = "0";
+    let currentFeedbackText = "-";
+    let currentSkillLevel = "-";
 
-let overallScore = 0;
-let feedbackText = "";
-let skillLevel = "";
-async function loadAssessmentScores(empId){
+    // Auth Initialization
+    async function initAuth() {
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+            await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+            await signInAnonymously(auth);
+        }
+    }
+    initAuth();
 
-  // QUIZ
-  const quizQuery = query(collection(db,"quiz_results"), where("userId","==",empId));
-  const quizSnap = await getDocs(quizQuery);
-  quizSnap.forEach((doc)=>{
-    document.getElementById("quiz").value = doc.data().score || 0;
-  });
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) return;
 
-  // CODING
-  const codingQuery = query(collection(db,"coding_submissions"), where("userId","==",empId));
-  const codingSnap = await getDocs(codingQuery);
-  codingSnap.forEach((doc)=>{
-    document.getElementById("coding").value = doc.data().score || 0;
-  });
+        try {
+            // Updated Path to follow Rule 1: /artifacts/{appId}/public/data/users
+            const docRef = doc(db, "artifacts", appId, "public", "data", "users", user.uid);
+            const docSnap = await getDoc(docRef);
 
-  // ASSIGNMENT
-  const assignQuery = query(collection(db,"assignments"), where("userId","==",empId));
-  const assignSnap = await getDocs(assignQuery);
-  assignSnap.forEach((doc)=>{
-    document.getElementById("assignment").value = doc.data().score || 0;
-  });
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                document.getElementById("name").value = data.name || "N/A";
+                document.getElementById("empid").value = data.employeeId || "N/A";
+                document.getElementById("dept").value = data.department || "N/A";
+                document.getElementById("role").value = data.role || "N/A";
+                document.getElementById("phase").value = data.phase || "N/A";
+                document.getElementById("certs").value = data.certs || "N/A";
+            }
+        } catch (error) {
+            console.error("Error fetching user data:", error);
+        }
+    });
 
-}
-// 🔐 AUTO LOAD LOGGED-IN FRESHER
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-      window.location.href = "index.html";
-      return;
-  }
+    window.generateReport = function() {
+        const quiz = parseFloat(document.getElementById("quiz").value) || 0;
+        const coding = parseFloat(document.getElementById("coding").value) || 0;
+        const assignment = parseFloat(document.getElementById("assignment").value) || 0;
 
-  const docSnap = await getDoc(doc(db, "users", user.uid));
+        const score = ((quiz + coding + assignment) / 3).toFixed(2);
+        currentOverallScore = score;
 
-  if (docSnap.exists()) {
-      const data = docSnap.data();
+        document.getElementById("overall").innerText = score + " %";
 
-      document.getElementById("name").value = data.name || "";
-document.getElementById("empid").value =
-data.employee_id || data.employeeId || sessionStorage.getItem("loggedInEmpId") || "";      document.getElementById("dept").value = data.department || "";
-      document.getElementById("role").value = data.role || "";
-      document.getElementById("phase").value = data.phase || "";
-      document.getElementById("certs").value = data.certs || "";
-      let empId = data.employee_id || data.employeeId;
-loadAssessmentScores(empId);
-  } else {
-      alert("User data not found in database.");
-  }
-});
+        if (score >= 85) {
+            currentSkillLevel = "Advanced";
+            currentFeedbackText = "Highly recommended for recruitment. Demonstrates excellent technical and problem-solving skills.";
+        } else if (score >= 60) {
+            currentSkillLevel = "Intermediate";
+            currentFeedbackText = "Recommended with minor improvement areas. Strong foundation and good learning capability.";
+        } else {
+            currentSkillLevel = "Beginner";
+            currentFeedbackText = "Requires additional training before recruitment consideration.";
+        }
 
-// PERFORMANCE CALCULATION
-window.generateReport = function() {
-  let quiz = parseFloat(document.getElementById("quiz").value) || 0;
-  let coding = parseFloat(document.getElementById("coding").value) || 0;
-  let assignment = parseFloat(document.getElementById("assignment").value) || 0;
+        document.getElementById("skill").innerText = currentSkillLevel;
+        document.getElementById("feedback").innerText = currentFeedbackText;
+    };
 
-  overallScore = ((quiz + coding + assignment) / 3).toFixed(2);
+    window.downloadPDF = function() {
+        if (!window.jspdf) return;
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
 
-  if (overallScore >= 85) {
-      skillLevel = "Advanced";
-      feedbackText = "Highly recommended for recruitment. Demonstrates excellent technical and problem-solving skills.";
-  }
-  else if (overallScore >= 60) {
-      skillLevel = "Intermediate";
-      feedbackText = "Recommended with minor improvement areas. Strong foundation and good learning capability.";
-  }
-  else {
-      skillLevel = "Beginner";
-      feedbackText = "Requires additional training before recruitment consideration.";
-  }
+        const name = document.getElementById("name").value || "Candidate";
+        const empid = document.getElementById("empid").value || "-";
+        const dept = document.getElementById("dept").value || "-";
+        const role = document.getElementById("role").value || "-";
+        const phase = document.getElementById("phase").value || "-";
+        const certs = document.getElementById("certs").value || "-";
+        const quiz = document.getElementById("quiz").value || "0";
+        const coding = document.getElementById("coding").value || "0";
+        const assignment = document.getElementById("assignment").value || "0";
 
-  document.getElementById("overall").innerText = overallScore + " %";
-  document.getElementById("skill").innerText = skillLevel;
-  document.getElementById("feedback").innerText = feedbackText;
-}
+        let y = 20;
+        pdf.setLineWidth(0.5);
+        pdf.rect(10, 10, 190, 277);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(18);
+        pdf.text("MAVERICKS TRAINING PERFORMANCE REPORT", 105, y, { align: "center" });
+        y += 10;
+        pdf.setFontSize(10);
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Generated on: " + new Date().toLocaleString(), 105, y, { align: "center" });
+        y += 10;
+        pdf.line(20, y, 190, y);
+        y += 15;
 
-// FULL PROFESSIONAL REPORT PDF
-window.downloadPDF = function() {
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+        pdf.text("Candidate Information", 20, y);
+        y += 10;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(11);
 
-const { jsPDF } = window.jspdf;
-const doc = new jsPDF();
+        const details = [
+            ["Name:", name],
+            ["Employee ID:", empid],
+            ["Department:", dept],
+            ["Role:", role],
+            ["Training Phase:", phase]
+        ];
 
-let name = document.getElementById("name").value || "-";
-let empid = document.getElementById("empid").value || "-";
-let dept = document.getElementById("dept").value || "-";
-let role = document.getElementById("role").value || "-";
-let phase = document.getElementById("phase").value || "-";
-let certs = document.getElementById("certs").value || "-";
-let quiz = document.getElementById("quiz").value || "0";
-let coding = document.getElementById("coding").value || "0";
-let assignment = document.getElementById("assignment").value || "0";
+        details.forEach(detail => {
+            pdf.text(detail[0], 20, y);
+            pdf.text(detail[1], 70, y);
+            y += 8;
+        });
 
-let y = 20;
+        pdf.text("Certifications:", 20, y);
+        const splitCerts = pdf.splitTextToSize(certs, 120);
+        pdf.text(splitCerts, 70, y);
+        y += (splitCerts.length * 6) + 5;
 
-// 🔷 BORDER
-doc.setLineWidth(1.5);
-doc.rect(10, 10, 190, 277);
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+        pdf.text("Assessment Performance", 20, y);
+        y += 10;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(11);
 
-// 🔷 HEADER
-doc.setFont("helvetica", "bold");
-doc.setFontSize(20);
-doc.text("MAVERICKS TRAINING PERFORMANCE REPORT", 105, y, null, null, "center");
+        const scores = [
+            ["Quiz Score:", quiz + " %"],
+            ["Coding Score:", coding + " %"],
+            ["Assignment Score:", assignment + " %"],
+            ["Overall Performance:", currentOverallScore + " %"],
+            ["Skill Level:", currentSkillLevel]
+        ];
 
-y += 8;
-doc.setFontSize(11);
-doc.setFont("helvetica", "normal");
-doc.text("Generated on: " + new Date().toLocaleString(), 105, y, null, null, "center");
+        scores.forEach(score => {
+            pdf.text(score[0], 20, y);
+            pdf.text(score[1], 70, y);
+            y += 8;
+        });
 
-y += 10;
-doc.line(20, y, 190, y);
-y += 12;
+        y += 10;
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(14);
+        pdf.text("Professional Summary", 20, y);
+        y += 10;
+        pdf.setFont("helvetica", "normal");
+        pdf.setFontSize(11);
 
-// 🔷 CANDIDATE DETAILS SECTION
-doc.setFont("helvetica", "bold");
-doc.setFontSize(14);
-doc.text("Candidate Information", 20, y);
-
-y += 10;
-doc.setFont("helvetica", "normal");
-doc.setFontSize(12);
-
-doc.text("Name:", 20, y); doc.text(name, 70, y);
-y += 8;
-doc.text("Employee ID:", 20, y); doc.text(empid, 70, y);
-y += 8;
-doc.text("Department:", 20, y); doc.text(dept, 70, y);
-y += 8;
-doc.text("Role:", 20, y); doc.text(role, 70, y);
-y += 8;
-doc.text("Training Phase:", 20, y); doc.text(phase, 70, y);
-y += 8;
-doc.text("Certifications:", 20, y);
-
-let splitCerts = doc.splitTextToSize(certs, 120);
-doc.text(splitCerts, 70, y);
-y += 15;
-
-// 🔷 ASSESSMENT SECTION
-doc.setFont("helvetica", "bold");
-doc.setFontSize(14);
-doc.text("Assessment Performance", 20, y);
-
-y += 10;
-doc.setFont("helvetica", "normal");
-doc.setFontSize(12);
-
-doc.text("Quiz Score:", 20, y); doc.text(quiz + " %", 70, y);
-y += 8;
-doc.text("Coding Score:", 20, y); doc.text(coding + " %", 70, y);
-y += 8;
-doc.text("Assignment Score:", 20, y); doc.text(assignment + " %", 70, y);
-y += 8;
-doc.text("Overall Performance:", 20, y); doc.text(overallScore + " %", 70, y);
-y += 8;
-doc.text("Skill Level:", 20, y); doc.text(skillLevel, 70, y);
-y += 15;
-
-// 🔷 PROFESSIONAL SUMMARY
-doc.setFont("helvetica", "bold");
-doc.setFontSize(14);
-doc.text("Professional Summary", 20, y);
-
-y += 10;
-doc.setFont("helvetica", "normal");
-doc.setFontSize(12);
-
-let summary = `
-${name} has successfully completed the ${phase} under the Mavericks Training Program in the ${dept} department. 
-The candidate has demonstrated ${skillLevel.toLowerCase()} level competency in technical assessments including quiz, coding, and assignments.
-
-Overall Performance: ${overallScore}%
+        const summaryText = `${name} has successfully completed the ${phase} under the Mavericks Training Program in the ${dept} department. The candidate has demonstrated ${currentSkillLevel.toLowerCase()} level competency across all technical modules.
 
 Recruitment Feedback:
-${feedbackText}
+${currentFeedbackText}
 
-The candidate exhibits strong learning ability, technical understanding, and adaptability to corporate standards.
-`;
+The candidate exhibits the required adaptability and technical proficiency for corporate alignment.`;
 
-let splitSummary = doc.splitTextToSize(summary, 170);
-doc.text(splitSummary, 20, y);
+        const splitSummary = pdf.splitTextToSize(summaryText, 170);
+        pdf.text(splitSummary, 20, y);
+        pdf.setFontSize(9);
+        pdf.setTextColor(100);
+        pdf.text("Mavericks Fresher Reporting System | Confidential Internal Document", 105, 285, { align: "center" });
 
-y += 40;
+        pdf.save(`${name.replace(/\s+/g, '_')}_Training_Report.pdf`);
+    };
 
-// 🔷 FOOTER
-doc.setFontSize(10);
-doc.text("Mavericks Fresher Reporting System | Confidential Internal Document", 105, 285, null, null, "center");
+    window.generateCertificate = function() {
+        if (!window.jspdf) return;
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF("landscape");
+        const name = document.getElementById("name").value || "Candidate";
 
-doc.save(name + "_Professional_Training_Report.pdf");
+        const img = new Image();
+        img.crossOrigin = "anonymous"; 
+        img.src = "certificate.jpeg"; 
 
-}
-
-// CERTIFICATE WITH CANVA BACKGROUND
-window.generateCertificate = function() {
-
-  if(overallScore == 0){
-      alert("Please generate performance first.");
-      return;
-  }
-
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF("landscape");
-
-  const name = document.getElementById("name").value || "Candidate";
-
-  // Certificate background image
-  const img = new Image();
-  img.src = "certificate.jpeg"; // Replace with your Canva certificate image path
-
-  img.onload = function () {
-      // Fill entire page with image
-      doc.addImage(img, "JPEG", 0, 0, 297, 210);
-
-      // Add candidate name dynamically
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(28);
-      doc.text(name, 148, 110, null, null, "center");
-
-      // Optional: Skill level
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(16);
-      doc.text("Skill Level: " + skillLevel, 148, 130, null, null, "center");
-
-      doc.save(name + "_Certificate.pdf");
-  };
-};
-
-</script>
-
-
+        img.onload = function () {
+            pdf.addImage(img, "JPEG", 0, 0, 297, 210);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(36);
+            pdf.setTextColor(40, 40, 40);
+            pdf.text(name, 148, 105, { align: "center" });
+            pdf.save(`${name.replace(/\s+/g, '_')}_Certificate.pdf`);
+        };
+        
+        img.onerror = function() {
+            pdf.setFillColor(245, 245, 245);
+            pdf.rect(0, 0, 297, 210, 'F');
+            pdf.setLineWidth(2);
+            pdf.setDrawColor(106, 90, 205);
+            pdf.rect(10, 10, 277, 190);
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(40);
+            pdf.text("CERTIFICATE OF COMPLETION", 148, 60, { align: "center" });
+            pdf.setFontSize(20);
+            pdf.text("This is to certify that", 148, 85, { align: "center" });
+            pdf.setFontSize(36);
+            pdf.text(name, 148, 110, { align: "center" });
+            pdf.setFontSize(18);
+            pdf.text("has successfully completed the Mavericks Training Program", 148, 135, { align: "center" });
+            pdf.save(`${name.replace(/\s+/g, '_')}_Certificate.pdf`);
+        };
+    };
 </script>
 
 </body>
